@@ -8,12 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		AC3CC8171CAB2BC800507EBB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8161CAB2BC800507EBB /* AppDelegate.swift */; };
-		AC3CC8191CAB2BC800507EBB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8181CAB2BC800507EBB /* ViewController.swift */; };
 		AC3CC81C1CAB2BC800507EBB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC3CC81A1CAB2BC800507EBB /* Main.storyboard */; };
 		AC3CC81E1CAB2BC800507EBB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC3CC81D1CAB2BC800507EBB /* Assets.xcassets */; };
 		AC3CC8211CAB2BC800507EBB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC3CC81F1CAB2BC800507EBB /* LaunchScreen.storyboard */; };
 		AC3CC82C1CAB2BC800507EBB /* ChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC82B1CAB2BC800507EBB /* ChatTests.swift */; };
 		AC3CC8371CAB2BC800507EBB /* ChatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8361CAB2BC800507EBB /* ChatUITests.swift */; };
+		AC3CC8451CAB2F1100507EBB /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8441CAB2F1100507EBB /* HomeViewController.swift */; };
+		AC3CC8471CAB353F00507EBB /* HomeMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8461CAB353F00507EBB /* HomeMessageCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +37,6 @@
 /* Begin PBXFileReference section */
 		AC3CC8131CAB2BC800507EBB /* Chat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC3CC8161CAB2BC800507EBB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		AC3CC8181CAB2BC800507EBB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		AC3CC81B1CAB2BC800507EBB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AC3CC81D1CAB2BC800507EBB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC3CC8201CAB2BC800507EBB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +47,8 @@
 		AC3CC8321CAB2BC800507EBB /* ChatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC3CC8361CAB2BC800507EBB /* ChatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUITests.swift; sourceTree = "<group>"; };
 		AC3CC8381CAB2BC800507EBB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC3CC8441CAB2F1100507EBB /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		AC3CC8461CAB353F00507EBB /* HomeMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeMessageCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,7 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				AC3CC8161CAB2BC800507EBB /* AppDelegate.swift */,
-				AC3CC8181CAB2BC800507EBB /* ViewController.swift */,
+				AC3CC8441CAB2F1100507EBB /* HomeViewController.swift */,
+				AC3CC8461CAB353F00507EBB /* HomeMessageCell.swift */,
 				AC3CC81A1CAB2BC800507EBB /* Main.storyboard */,
 				AC3CC81D1CAB2BC800507EBB /* Assets.xcassets */,
 				AC3CC81F1CAB2BC800507EBB /* LaunchScreen.storyboard */,
@@ -256,8 +259,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC3CC8191CAB2BC800507EBB /* ViewController.swift in Sources */,
+				AC3CC8451CAB2F1100507EBB /* HomeViewController.swift in Sources */,
 				AC3CC8171CAB2BC800507EBB /* AppDelegate.swift in Sources */,
+				AC3CC8471CAB353F00507EBB /* HomeMessageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
