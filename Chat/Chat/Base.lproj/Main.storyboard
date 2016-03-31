@@ -72,18 +72,18 @@
                                             <outlet property="userImage" destination="bw9-xz-81B" id="nf2-mH-N0f"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="32" id="SpD-jB-PGq">
-                                        <rect key="frame" x="0.0" y="182" width="600" height="32"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="contactCell" rowHeight="99" id="SpD-jB-PGq">
+                                        <rect key="frame" x="0.0" y="182" width="600" height="99"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SpD-jB-PGq" id="a3r-w0-eVl">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="31"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="98"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
-                                    <outlet property="dataSource" destination="3X4-0i-Jhy" id="5oz-3n-M4N"/>
-                                    <outlet property="delegate" destination="3X4-0i-Jhy" id="cGc-qg-cvz"/>
+                                    <outlet property="dataSource" destination="3X4-0i-Jhy" id="u1U-Ec-F0Y"/>
+                                    <outlet property="delegate" destination="3X4-0i-Jhy" id="tWP-IY-qov"/>
                                 </connections>
                             </tableView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="zvP-8E-aO2">
@@ -95,6 +95,9 @@
                                     <segment title="Chats"/>
                                     <segment title="Friends"/>
                                 </segments>
+                                <connections>
+                                    <action selector="segmentedControlChanged:" destination="3X4-0i-Jhy" eventType="valueChanged" id="lIQ-d7-fGN"/>
+                                </connections>
                             </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -109,6 +112,10 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="vOL-To-lEd"/>
+                    <connections>
+                        <outlet property="segmentedControl" destination="zvP-8E-aO2" id="AdJ-b1-nc3"/>
+                        <outlet property="tableView" destination="kC4-mX-Q4O" id="KDg-lc-1Tm"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WJI-aP-4nz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -130,7 +137,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="htf-iR-Kyk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1007" y="-85"/>
+            <point key="canvasLocation" x="1139" y="-85"/>
         </scene>
     </scenes>
 </document>
