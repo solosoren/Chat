@@ -72,13 +72,97 @@
                                             <outlet property="userImage" destination="bw9-xz-81B" id="nf2-mH-N0f"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="contactCell" rowHeight="99" id="SpD-jB-PGq">
-                                        <rect key="frame" x="0.0" y="182" width="600" height="99"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="addContact" id="ybr-qn-998">
+                                        <rect key="frame" x="0.0" y="182" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ybr-qn-998" id="8Xk-uv-2gr">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ADD CONTACT" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8OI-KN-ujX">
+                                                    <rect key="frame" x="240" y="11" width="121" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="8OI-KN-ujX" firstAttribute="centerX" secondItem="8Xk-uv-2gr" secondAttribute="centerX" id="00C-bQ-bwF"/>
+                                                <constraint firstItem="8OI-KN-ujX" firstAttribute="centerY" secondItem="8Xk-uv-2gr" secondAttribute="centerY" id="k54-af-aUf"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="contactCell" rowHeight="144" id="SpD-jB-PGq" customClass="ContactTableViewCell" customModule="Chat" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="226" width="600" height="144"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SpD-jB-PGq" id="a3r-w0-eVl">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="98"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="143"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="R4f-oM-ai6">
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="149"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="dhP-lc-F4e">
+                                                        <size key="itemSize" width="269" height="130"/>
+                                                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                    </collectionViewFlowLayout>
+                                                    <cells>
+                                                        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="contactItem" id="05z-x6-pbL" customClass="ContactCollectionCell" customModule="Chat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="0.0" width="269" height="130"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                                                <rect key="frame" x="0.0" y="0.0" width="269" height="130"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <subviews>
+                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ube-oy-vbW">
+                                                                        <rect key="frame" x="73" y="10" width="123" height="86"/>
+                                                                        <color key="backgroundColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" constant="123" id="Hp5-ph-Q7V"/>
+                                                                            <constraint firstAttribute="height" constant="86" id="sbB-Qq-YKz"/>
+                                                                        </constraints>
+                                                                    </imageView>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YbG-YX-8yJ">
+                                                                        <rect key="frame" x="115" y="101" width="38" height="21"/>
+                                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
+                                                                </subviews>
+                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                            </view>
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                            <constraints>
+                                                                <constraint firstItem="Ube-oy-vbW" firstAttribute="centerX" secondItem="05z-x6-pbL" secondAttribute="centerX" id="MYq-Aa-CYX"/>
+                                                                <constraint firstItem="YbG-YX-8yJ" firstAttribute="centerX" secondItem="05z-x6-pbL" secondAttribute="centerX" id="oZ9-9S-KGi"/>
+                                                                <constraint firstItem="Ube-oy-vbW" firstAttribute="top" secondItem="05z-x6-pbL" secondAttribute="top" constant="10" id="xKb-9J-aL4"/>
+                                                                <constraint firstItem="YbG-YX-8yJ" firstAttribute="top" secondItem="Ube-oy-vbW" secondAttribute="bottom" constant="5" id="zPM-Km-NCe"/>
+                                                            </constraints>
+                                                            <connections>
+                                                                <outlet property="contactImage" destination="Ube-oy-vbW" id="Fqs-M4-QVi"/>
+                                                                <outlet property="contactName" destination="YbG-YX-8yJ" id="SwO-4H-mHw"/>
+                                                            </connections>
+                                                        </collectionViewCell>
+                                                    </cells>
+                                                    <connections>
+                                                        <outlet property="dataSource" destination="3X4-0i-Jhy" id="tDK-PH-Wfj"/>
+                                                        <outlet property="delegate" destination="3X4-0i-Jhy" id="sEl-sc-dgC"/>
+                                                    </connections>
+                                                </collectionView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="leading" secondItem="a3r-w0-eVl" secondAttribute="leadingMargin" constant="-8" id="5QR-dE-7qs"/>
+                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="bottom" secondItem="a3r-w0-eVl" secondAttribute="bottomMargin" constant="14" id="FX6-NO-N9G"/>
+                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="top" secondItem="a3r-w0-eVl" secondAttribute="topMargin" constant="-8" id="eRZ-q5-B10"/>
+                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="trailing" secondItem="a3r-w0-eVl" secondAttribute="trailingMargin" constant="8" id="vMf-bu-0Vh"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="collectionView" destination="R4f-oM-ai6" id="0jd-Rf-xaY"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -111,7 +195,10 @@
                             <constraint firstItem="H8C-hr-wgi" firstAttribute="top" secondItem="zvP-8E-aO2" secondAttribute="bottom" id="x2A-kz-7Vy"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="vOL-To-lEd"/>
+                    <navigationItem key="navigationItem" id="vOL-To-lEd">
+                        <barButtonItem key="leftBarButtonItem" title="Item" id="qt8-Ll-aEY"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="BEK-GG-6CS"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="segmentedControl" destination="zvP-8E-aO2" id="AdJ-b1-nc3"/>
                         <outlet property="tableView" destination="kC4-mX-Q4O" id="KDg-lc-1Tm"/>
