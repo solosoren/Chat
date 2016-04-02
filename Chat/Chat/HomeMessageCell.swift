@@ -11,7 +11,7 @@ import UIKit
 class HomeMessageCell: UITableViewCell {
     
     @IBOutlet weak var userImage: UIImageView!
-    @IBOutlet weak var messageText: UITextView!
+    @IBOutlet weak var messageText: UILabel!
     @IBOutlet weak var messageTime: UILabel!
     
     

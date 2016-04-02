@@ -14,13 +14,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
  
-//    MARK: Segmented Control
+// MARK: Segmented Control
     
     @IBAction func segmentedControlChanged(sender: AnyObject) {
         tableView.reloadData()
     }
     
-//    MARK: TableView
+// MARK: TableView
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         
@@ -54,20 +54,18 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return contactCell
             }
         }
-    
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if segmentedControl.selectedSegmentIndex == 0 {
             return 2
-            
         } else {
             return 2
         }
     }
  
-//    MARK: Collection View
+// MARK: Collection View
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
@@ -76,12 +74,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return 5
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
-        let size = CGSize(width:(self.view.bounds.width / 2) - 20, height:130)
+        let size = CGSize(width:(self.view.bounds.width / 2) - 10, height:130)
         return size
     }
 
