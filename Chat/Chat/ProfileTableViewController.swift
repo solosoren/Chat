@@ -6,4 +6,16 @@
 //  Copyright © 2016 SORN. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+class ProfileTableViewController: UITableViewController {
+    
+    @IBOutlet weak var displayName: UITextField!
+    
+    
+    override func viewDidLoad() {
+        
+    }
+    
+    
+}

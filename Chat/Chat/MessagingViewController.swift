@@ -10,13 +10,31 @@ import UIKit
 
 class MessagingViewController: UIViewController, UITableViewDataSource {
     
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var sendButton: UIButton!
+    @IBOutlet weak var messageTextView: UITextView!
+    
+    override func viewDidLoad() {
+        tableView.estimatedRowHeight = 70
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.separatorColor = UIColor.whiteColor()
+    }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return 5
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let messageCell = tableView.dequeueReusableCellWithIdentifier("messageCell", forIndexPath: indexPath)
-        return messageCell
+        if indexPath.row == 0 {
+            let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath)
+            return themMessageCell
+        } else {
+            let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath)
+            return meMessageCell
+        }
+        
     }
+    
+    
     
 }
