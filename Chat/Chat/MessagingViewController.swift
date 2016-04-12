@@ -11,8 +11,7 @@ import UIKit
 class MessagingViewController: UIViewController, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var sendButton: UIButton!
-    @IBOutlet weak var messageTextView: UITextView!
+    @IBOutlet var keyboardView: UIView!
     
     override func viewDidLoad() {
         tableView.estimatedRowHeight = 70
@@ -32,9 +31,18 @@ class MessagingViewController: UIViewController, UITableViewDataSource {
             let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath)
             return meMessageCell
         }
-        
     }
     
+    override var inputAccessoryView: UIView {
+        return keyboardView
+    }
+    
+    override func canBecomeFirstResponder() -> Bool {
+        return true
+    }
+    
+    @IBAction func sendMessageTapped(sender: AnyObject) {
+    }
     
     
 }

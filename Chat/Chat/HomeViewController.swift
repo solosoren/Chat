@@ -11,8 +11,10 @@ import UIKit
 
 class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
     
+    @IBOutlet var contactView: UIView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
+    let darkView = UIView()
  
 // MARK: Segmented Control
     
@@ -34,7 +36,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             } else {
                 let contactCellHeight = (self.view.bounds.height * 4)
                 return contactCellHeight
-            }
+                           }
         }
     }
     
@@ -83,6 +85,25 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return size
     }
 
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        contactView.center.x = view.center.x
+        contactView.center.y = view.center.y
+        darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)
+        darkView.backgroundColor = UIColor.blackColor()
+        darkView.alpha = 0.3
+        
+        self.view.addSubview(darkView)
+        self.view.addSubview(contactView)
+        
+    }
+    
+// MARK: Contact View
+    
+    @IBAction func contactDismissButtonTapped(sender: AnyObject) {
+        contactView.removeFromSuperview()
+        darkView.removeFromSuperview()
+    }
+    
 
 }
 
