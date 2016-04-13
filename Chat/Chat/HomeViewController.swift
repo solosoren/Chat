@@ -66,6 +66,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return 2
         }
     }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if segmentedControl.selectedSegmentIndex == 0 {
+            performSegueWithIdentifier("messageSegue", sender: self)
+        }
+    }
  
 // MARK: Collection View
     
@@ -108,6 +114,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         self.performSegueWithIdentifier("addToGroup", sender: self)
     }
     
+    @IBAction func sendMessageButtonTapped(sender: AnyObject) {
+        self.performSegueWithIdentifier("messageSegue", sender: self)
+    }
 
 }
 
