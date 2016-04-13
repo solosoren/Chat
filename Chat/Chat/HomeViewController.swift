@@ -104,6 +104,10 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         darkView.removeFromSuperview()
     }
     
+    @IBAction func addToGroupButtonPressed(sender: AnyObject) {
+        self.performSegueWithIdentifier("addToGroup", sender: self)
+    }
+    
 
 }
 

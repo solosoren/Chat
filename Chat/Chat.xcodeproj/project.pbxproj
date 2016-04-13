@@ -20,6 +20,7 @@
 		AC3CC8571CAF3A2500507EBB /* AddContactTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */; };
 		AC3CC8591CAF51B500507EBB /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */; };
 		AC3CC85B1CAF533400507EBB /* ProfileTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */; };
+		AC8600E51CBDF2370082F1C4 /* CreateGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactTableViewController.swift; sourceTree = "<group>"; };
 		AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingViewController.swift; sourceTree = "<group>"; };
 		AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewController.swift; sourceTree = "<group>"; };
+		AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGroupViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 			children = (
 				AC3CC8161CAB2BC800507EBB /* AppDelegate.swift */,
 				AC3CC8541CAE22C300507EBB /* Home View */,
+				AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */,
 				AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */,
 				AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */,
 				AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */,
@@ -295,6 +298,7 @@
 				AC3CC8591CAF51B500507EBB /* MessagingViewController.swift in Sources */,
 				AC3CC8571CAF3A2500507EBB /* AddContactTableViewController.swift in Sources */,
 				AC3CC8531CAE22B400507EBB /* ContactCollectionCell.swift in Sources */,
+				AC8600E51CBDF2370082F1C4 /* CreateGroupViewController.swift in Sources */,
 				AC3CC8171CAB2BC800507EBB /* AppDelegate.swift in Sources */,
 				AC3CC85B1CAF533400507EBB /* ProfileTableViewController.swift in Sources */,
 				AC3CC8471CAB353F00507EBB /* HomeMessageCell.swift in Sources */,
@@ -522,6 +526,7 @@
 				AC3CC83D1CAB2BC800507EBB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AC3CC83E1CAB2BC800507EBB /* Build configuration list for PBXNativeTarget "ChatTests" */ = {
 			isa = XCConfigurationList;
@@ -530,6 +535,7 @@
 				AC3CC8401CAB2BC800507EBB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AC3CC8411CAB2BC800507EBB /* Build configuration list for PBXNativeTarget "ChatUITests" */ = {
 			isa = XCConfigurationList;
@@ -538,6 +544,7 @@
 				AC3CC8431CAB2BC800507EBB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
