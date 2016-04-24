@@ -29,10 +29,10 @@ class AddContactTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         bigContactView.center.x = view.center.x
-        bigContactView.center.y = view.center.y
+        bigContactView.center.y = view.center.y - 40
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)
         darkView.backgroundColor = UIColor.blackColor()
-        darkView.alpha = 0.3
+        darkView.alpha = 0.4
         
         self.view.addSubview(darkView)
         self.view.addSubview(bigContactView)

@@ -33,10 +33,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if indexPath.row == 0 {
                 return 55
                 
+            } else if indexPath.row == 1 {
+                return 55
+            
             } else {
                 let contactCellHeight = (self.view.bounds.height * 4)
                 return contactCellHeight
-                           }
+            }
         }
     }
     
@@ -51,6 +54,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 let addContactCell = tableView.dequeueReusableCellWithIdentifier("addContact", forIndexPath: indexPath)
                 return addContactCell
                 
+//        Im going to have to set all notifications for current user in an array and use that count
+//               else if indexpath.row == 1...(notificationCount + 1)
+            
+            } else if indexPath.row == 1 {
+                let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath)
+                return notificationCell
+            
             } else {
                 let contactCell = tableView.dequeueReusableCellWithIdentifier("contactCell", forIndexPath: indexPath) as! ContactTableViewCell
                 return contactCell
@@ -63,7 +73,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if segmentedControl.selectedSegmentIndex == 0 {
             return 2
         } else {
-            return 2
+            return 3
         }
     }
     
@@ -87,7 +97,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
-        let size = CGSize(width:(self.view.bounds.width / 2) - 10, height:130)
+        let size = CGSize(width:(self.view.bounds.width / 2) - 10, height:120)
         return size
     }
 
@@ -96,7 +106,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         contactView.center.y = view.center.y
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)
         darkView.backgroundColor = UIColor.blackColor()
-        darkView.alpha = 0.3
+        darkView.alpha = 0.4
         
         self.view.addSubview(darkView)
         self.view.addSubview(contactView)
