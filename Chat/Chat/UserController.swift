@@ -11,6 +11,7 @@ import CloudKit
 
 class UserController {
     
+    static let sharedInstance = UserController()
     var defaultContainer: CKContainer?
     var currentUser: User?
     
@@ -23,13 +24,12 @@ class UserController {
             if applicationPermissionStatus == CKApplicationPermissionStatus.Granted {
                 completion(success: true)
             } else {
-//                error handling
                 completion(success: false)
             }
         })
     }
     
-    func getUser(completion: (success: Bool, user: User?) -> Void) {
+    func fetchUser(completion: (success: Bool, user: User?) -> Void) {
         defaultContainer!.fetchUserRecordIDWithCompletionHandler { (userID, error) in
             if error == nil {
                 let privateDatabase = self.defaultContainer!.privateCloudDatabase
@@ -39,54 +39,25 @@ class UserController {
                         completion(success: true, user: user)
                     } else {
                         completion(success: false, user: nil)
-//                        error handling
+                        print("Couldn't fetch record with ID")
                     }
                 })
             } else {
                 completion(success: false, user: nil)
-//                error handling
+                print("Couldn't fetch user record ID")
             }
         }
     }
     
-    func getUserInfo(user: User, completion:(success: Bool, user: User?) -> Void) {
+    func fetchUserInfo(user: User, completion:(success: Bool, user: User?) -> Void) {
         defaultContainer!.discoverUserInfoWithUserRecordID(user.userID) { (info, error) in
             if error == nil {
-                user.pFirstName = info?.displayContact?.givenName
-                user.pLastName = info?.displayContact?.familyName
-//                let publicDatabase = self.defaultContainer!.publicCloudDatabase
+                user.firstName = info?.displayContact?.givenName
+                user.lastName = info?.displayContact?.familyName
                 completion(success: true, user: user)
             } else {
-//                error handling?
+                print("Couldn't fetch User info")
                 completion(success: false, user: nil)
-            }
-        }
-    }
-    
-
-//    move to log in View or move alert to view
-    
-    func iCloudLogin(completion:(success: Bool) -> Void) {
-        self.requestPermission { (success) in
-            if success {
-                self.getUser({ (success, user) in
-                    if success {
-                        self.currentUser = user!
-                        self.getUserInfo(user!, completion: { (success, user) in
-                            if success {
-                                completion(success: true)
-                            }
-                        })
-                    } else {
-//                        error handling
-                        print("Didn't Work")
-                    }
-                })
-            } else {
-                let iCloudAlert = UIAlertController(title: "iCloud Error", message: "Error connecting to iCloud. Go to Settings to change iCloud settings", preferredStyle: UIAlertControllerStyle.Alert)
-                let ok = UIAlertAction(title: "OK", style: .Default, handler: nil)
-                iCloudAlert.addAction(ok)
-//                presentViewController(icloudAlert)
             }
         }
     }

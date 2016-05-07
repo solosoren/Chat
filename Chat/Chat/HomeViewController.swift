@@ -15,6 +15,18 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     let darkView = UIView()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.checkForUser()
+    }
+    
+    func checkForUser() {
+        print(UserController.sharedInstance.currentUser?.firstName)
+        if UserController.sharedInstance.currentUser == nil {
+            self.performSegueWithIdentifier("loginSegue", sender: self)
+        }
+    }
  
 // MARK: Segmented Control
     
@@ -37,6 +49,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return 55
             
             } else {
+//                (120(cell height) * # of friends) + 10 
                 let contactCellHeight = (self.view.bounds.height * 4)
                 return contactCellHeight
             }

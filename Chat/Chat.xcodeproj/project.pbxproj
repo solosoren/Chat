@@ -24,7 +24,11 @@
 		AC3CC8571CAF3A2500507EBB /* AddContactTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */; };
 		AC3CC8591CAF51B500507EBB /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */; };
 		AC3CC85B1CAF533400507EBB /* ProfileTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */; };
+		AC7008941CD41EAF008E22E8 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7008931CD41EAF008E22E8 /* LoginViewController.swift */; };
+		AC7008961CD5EA1E008E22E8 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7008951CD5EA1E008E22E8 /* Group.swift */; };
 		AC8600E51CBDF2370082F1C4 /* CreateGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */; };
+		ACB1CB4D1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1CB4C1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift */; };
+		ACB1CB4F1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1CB4E1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift */; };
 		ACB69D5A1CC1E78C00FBAC24 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB69D591CC1E78C00FBAC24 /* CloudKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -69,7 +73,11 @@
 		AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactTableViewController.swift; sourceTree = "<group>"; };
 		AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingViewController.swift; sourceTree = "<group>"; };
 		AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewController.swift; sourceTree = "<group>"; };
+		AC7008931CD41EAF008E22E8 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		AC7008951CD5EA1E008E22E8 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGroupViewController.swift; sourceTree = "<group>"; };
+		ACB1CB4C1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemMessageTableViewCell.swift; sourceTree = "<group>"; };
+		ACB1CB4E1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeMessageTableViewCell.swift; sourceTree = "<group>"; };
 		ACB69D561CC1DEAB00FBAC24 /* Chat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Chat.entitlements; sourceTree = "<group>"; };
 		ACB69D591CC1E78C00FBAC24 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -105,6 +113,7 @@
 			children = (
 				AC2B921B1CC4AFDA00157FD7 /* Message.swift */,
 				AC2B921D1CC845BE00157FD7 /* User.swift */,
+				AC7008951CD5EA1E008E22E8 /* Group.swift */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -138,8 +147,9 @@
 				AC3CC8541CAE22C300507EBB /* Home View */,
 				AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */,
 				AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */,
-				AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */,
+				ACB1CB501CD00FD600AE25E0 /* Messaging */,
 				AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */,
+				AC7008931CD41EAF008E22E8 /* LoginViewController.swift */,
 				AC2B92231CCAC9B100157FD7 /* Objects */,
 				AC2B921F1CC847D400157FD7 /* MessageController.swift */,
 				AC2B92211CCAC9A400157FD7 /* UserController.swift */,
@@ -186,6 +196,16 @@
 				AC3CC8521CAE22B400507EBB /* ContactCollectionCell.swift */,
 			);
 			name = Contacts;
+			sourceTree = "<group>";
+		};
+		ACB1CB501CD00FD600AE25E0 /* Messaging */ = {
+			isa = PBXGroup;
+			children = (
+				AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */,
+				ACB1CB4C1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift */,
+				ACB1CB4E1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift */,
+			);
+			name = Messaging;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -326,15 +346,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC3CC8511CAE1FCB00507EBB /* ContactTableViewCell.swift in Sources */,
+				AC7008961CD5EA1E008E22E8 /* Group.swift in Sources */,
+				ACB1CB4D1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift in Sources */,
 				AC3CC8451CAB2F1100507EBB /* HomeViewController.swift in Sources */,
 				AC3CC8591CAF51B500507EBB /* MessagingViewController.swift in Sources */,
 				AC3CC8571CAF3A2500507EBB /* AddContactTableViewController.swift in Sources */,
 				AC3CC8531CAE22B400507EBB /* ContactCollectionCell.swift in Sources */,
 				AC2B92221CCAC9A400157FD7 /* UserController.swift in Sources */,
+				ACB1CB4F1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift in Sources */,
 				AC8600E51CBDF2370082F1C4 /* CreateGroupViewController.swift in Sources */,
 				AC3CC8171CAB2BC800507EBB /* AppDelegate.swift in Sources */,
 				AC2B92201CC847D400157FD7 /* MessageController.swift in Sources */,
 				AC2B921C1CC4AFDA00157FD7 /* Message.swift in Sources */,
+				AC7008941CD41EAF008E22E8 /* LoginViewController.swift in Sources */,
 				AC3CC85B1CAF533400507EBB /* ProfileTableViewController.swift in Sources */,
 				AC3CC8471CAB353F00507EBB /* HomeMessageCell.swift in Sources */,
 				AC2B921E1CC845BE00157FD7 /* User.swift in Sources */,

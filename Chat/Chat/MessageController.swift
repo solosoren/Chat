@@ -11,7 +11,7 @@ import CloudKit
 
 class MessageController: NSObject {
         
-    var messages: [Message] = []
+//    var messages: [CKRecord]()
     
     static func postMessage(message: Message, completion:(success: Bool) -> Void) {
         let record = CKRecord(recordType: "Message")
@@ -20,7 +20,6 @@ class MessageController: NSObject {
         let container = CKContainer.defaultContainer()
         container.publicCloudDatabase.saveRecord(record) { (message, error) in
             if error == nil {
-                print(message)
                 completion(success: true)
             } else {
                 print(error?.localizedDescription)
@@ -29,6 +28,10 @@ class MessageController: NSObject {
             }
         }
        
+    }
+    
+    static func fetchConversationMessages(completion:(success: Bool) -> Void) {
+        
     }
     
     

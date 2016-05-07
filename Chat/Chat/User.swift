@@ -12,12 +12,28 @@ import CloudKit
 class User {
     
     var userID: CKRecordID
-    var pFirstName: String?
-    var pLastName: String?
     var firstName: String?
     var lastName: String?
     
     init(userID: CKRecordID) {
         self.userID = userID
     }
+    
+    
+    
+//    init(firstName: String, lastName: String, userID: CKRecordID) {
+//        self.firstName = firstName
+//        self.lastName = lastName
+//        self.userID = userID
+//    }
+    
+//    init(user:CKRecord) {
+//        self.userID = user.creatorUserRecordID!
+//    }
+    
+//    func toAnyObject() -> AnyObject {
+//        return [userID,]
+//    }
+    
+    
 }

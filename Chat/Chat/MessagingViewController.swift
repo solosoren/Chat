@@ -26,10 +26,10 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITextVi
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
-            let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath)
+            let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath) as! ThemMessageTableViewCell
             return themMessageCell
         } else {
-            let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath)
+            let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath) as! MeMessageTableViewCell
             return meMessageCell
         }
     }
@@ -48,10 +48,11 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITextVi
             print("Nope")
         } else {
             messageTextView.resignFirstResponder()
-            let message = Message(senderUID: "Soren", messageText: messageTextView.text)
+            let message = Message(senderUID: (UserController.sharedInstance.currentUser?.userID)!, messageText: messageTextView.text)
             MessageController.postMessage(message) { (success) in
                 if success {
                     print("It Worked, You are a genius!")
+                    print(message.senderUID)
                 } else {
                     print("Not this time")
                 }
@@ -62,14 +63,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITextVi
 //    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
 //        keyboardView.resignFirstResponder()
 //    }
-    
-    func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            textView.resignFirstResponder()
-            return false
-        }
-        return true
-    }
     
 }
 

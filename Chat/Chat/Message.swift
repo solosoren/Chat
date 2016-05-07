@@ -11,25 +11,24 @@ import CloudKit
 
 class Message {
     
-    private let senderUIDKey = "SenderUID"
     private let textKey = "MessageText"
     private let userPicKey = "UserPic"
     
-    var senderUID: String
+    var senderUID: CKRecordID
     var messageText: String
 //    var time: NSDate?
 //    var userPic: CKAsset?
     
-    init(senderUID: String, messageText:String) {
+
+    init(senderUID: CKRecordID, messageText:String) {
         self.senderUID = senderUID
         self.messageText = messageText
 //        self.time = time
 //        self.userPic = userPic
     }
     
-//    set user to created by identifier
     init(record:CKRecord) {
-        self.senderUID = record.objectForKey(senderUIDKey) as? String ?? ""
+        self.senderUID = record.creatorUserRecordID!
         self.messageText = record.objectForKey(textKey) as? String ?? ""
 //        if record.creationDate != nil {
 //            let dateFormatter = NSDateFormatter()
