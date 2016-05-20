@@ -32,7 +32,7 @@ class AddContactTableViewController: UITableViewController {
         bigContactView.center.y = view.center.y - 40
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)
         darkView.backgroundColor = UIColor.blackColor()
-        darkView.alpha = 0.4
+        darkView.alpha = 0.5
         
         self.view.addSubview(darkView)
         self.view.addSubview(bigContactView)

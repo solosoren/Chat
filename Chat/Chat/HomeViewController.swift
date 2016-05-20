@@ -6,7 +6,7 @@
 //  Copyright © 2016 SORN. All rights reserved.
 //
 
-import Foundation
+import CloudKit
 import UIKit
 
 class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -18,13 +18,17 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.checkForUser()
-    }
-    
-    func checkForUser() {
-        print(UserController.sharedInstance.currentUser?.firstName)
-        if UserController.sharedInstance.currentUser == nil {
-            self.performSegueWithIdentifier("loginSegue", sender: self)
+        self.setNavBar()
+//        self.performSegueWithIdentifier("loginSegue", sender: self)
+
+        dispatch_async(dispatch_get_main_queue()) {
+            UserController.sharedInstance.checkForUser { (success) in
+                if success {
+//                    print("Current: \(UserController.sharedInstance.currentUser?.firstName)")
+                } else {
+                    self.performSegueWithIdentifier("loginSegue", sender: self)
+                }
+            }
         }
     }
  
@@ -116,10 +120,10 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         contactView.center.x = view.center.x
-        contactView.center.y = view.center.y
+        contactView.center.y = view.center.y - 40
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)
         darkView.backgroundColor = UIColor.blackColor()
-        darkView.alpha = 0.4
+        darkView.alpha = 0.5
         
         self.view.addSubview(darkView)
         self.view.addSubview(contactView)
@@ -138,9 +142,32 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     @IBAction func sendMessageButtonTapped(sender: AnyObject) {
-        self.performSegueWithIdentifier("messageSegue", sender: self)
+        let currentUserRef = CKReference(recordID: UserController.sharedInstance.currentUser!.userID, action: CKReferenceAction.None)
+        let conversation = Conversation.init(convoName: nil, users: [currentUserRef])
+        ConversationController.createConversation(conversation) { (success) in
+            if success {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.contactView.removeFromSuperview()
+                    self.darkView.removeFromSuperview()
+                    self.performSegueWithIdentifier("messageSegue", sender: self)
+                })
+                print("Convo: \(conversation.users)")
+            } else {
+                print("Not this time")
+            }
+            
+        }
     }
 
+}
+
+extension UIViewController {
+    
+    func setNavBar() {
+        self.navigationController?.navigationBar.barTintColor = UIColor.init(red: 0, green: 0.384, blue: 0.608, alpha: 1.0)
+        self.navigationController?.navigationBar.translucent = false
+        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black
+    }
 }
 
 

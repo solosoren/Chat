@@ -14,7 +14,10 @@ class ProfileTableViewController: UITableViewController {
     
     
     override func viewDidLoad() {
-        
+        if let firstName = UserController.sharedInstance.currentUser?.firstName,
+            lastName = UserController.sharedInstance.currentUser?.lastName {
+            self.displayName.text = (firstName + " " + lastName)
+        }
     }
     
     

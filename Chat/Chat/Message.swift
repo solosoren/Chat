@@ -16,6 +16,7 @@ class Message {
     
     var senderUID: CKRecordID
     var messageText: String
+    let ref: CKReference?
 //    var time: NSDate?
 //    var userPic: CKAsset?
     
@@ -23,6 +24,7 @@ class Message {
     init(senderUID: CKRecordID, messageText:String) {
         self.senderUID = senderUID
         self.messageText = messageText
+        self.ref = nil
 //        self.time = time
 //        self.userPic = userPic
     }
@@ -30,6 +32,7 @@ class Message {
     init(record:CKRecord) {
         self.senderUID = record.creatorUserRecordID!
         self.messageText = record.objectForKey(textKey) as? String ?? ""
+        self.ref = CKReference(record: record, action: CKReferenceAction.DeleteSelf)
 //        if record.creationDate != nil {
 //            let dateFormatter = NSDateFormatter()
 //            dateFormatter.timeStyle = .ShortStyle

@@ -13,8 +13,8 @@ class LoginViewController: UIViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
-    
     
     @IBAction func loginButtonTapped(sender: AnyObject) {
         self.iCloudLogin { (success) in
@@ -22,8 +22,7 @@ class LoginViewController: UIViewController {
                 dispatch_async(dispatch_get_main_queue()) { () -> Void in
                     self.dismissViewControllerAnimated(true, completion: nil)
                 }
-                print("Noice Job Mate!")
-                print(UserController.sharedInstance.currentUser?.firstName)
+                //                print("Current User: \(UserController.sharedInstance.currentUser?.firstName)")
             } else {
                 print("Not this time")
             }
@@ -37,20 +36,25 @@ class LoginViewController: UIViewController {
                     if success {
                         UserController.sharedInstance.fetchUserInfo(user!, completion: { (success, user) in
                             if success {
-                                UserController.sharedInstance.currentUser = user!
+                                UserController.sharedInstance.currentUser = user
                                 completion(success: true)
+                            } else {
+                                completion(success: false)
                             }
                         })
                     } else {
 //                        error handling
+                        completion(success: false)
                         print("Didn't Work")
                     }
                 })
             } else {
-                let iCloudAlert = UIAlertController(title: "iCloud Error", message: "Error connecting to iCloud. Check iCloud settings by going to Settings > iCloud.", preferredStyle: UIAlertControllerStyle.Alert)
-                let ok = UIAlertAction(title: "OK", style: .Default, handler: nil)
-                iCloudAlert.addAction(ok)
-                self.presentViewController(iCloudAlert, animated: true, completion: nil)
+                dispatch_async(dispatch_get_main_queue(), { 
+                    let iCloudAlert = UIAlertController(title: "iCloud Error", message: "Error connecting to iCloud. Check iCloud settings by going to Settings > iCloud.", preferredStyle: UIAlertControllerStyle.Alert)
+                    let ok = UIAlertAction(title: "OK", style: .Cancel, handler: nil)
+                    iCloudAlert.addAction(ok)
+                    self.presentViewController(iCloudAlert, animated: true, completion: nil)
+                })
             }
         }
     }

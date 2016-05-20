@@ -8,13 +8,14 @@
 
 import UIKit
 
-class MessagingViewController: UIViewController, UITableViewDataSource, UITextViewDelegate {
+class MessagingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var keyboardView: UIView!
     @IBOutlet weak var messageTextView: UITextView!
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         tableView.estimatedRowHeight = 70
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorColor = UIColor.whiteColor()
@@ -42,27 +43,23 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITextVi
         return true
     }
     
-//    need to figure out how to remove text
     @IBAction func sendMessageTapped(sender: AnyObject) {
-        if  messageTextView.text.isEmpty == true {
-            print("Nope")
-        } else {
+        if messageTextView.text.isEmpty == false {
             messageTextView.resignFirstResponder()
             let message = Message(senderUID: (UserController.sharedInstance.currentUser?.userID)!, messageText: messageTextView.text)
             MessageController.postMessage(message) { (success) in
                 if success {
-                    print("It Worked, You are a genius!")
+                    print("It Worked!")
                     print(message.senderUID)
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.messageTextView.text = ""
+                    })
                 } else {
                     print("Not this time")
                 }
             }
         }
     }
-    
-//    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-//        keyboardView.resignFirstResponder()
-//    }
     
 }
 

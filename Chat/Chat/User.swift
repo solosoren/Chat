@@ -11,28 +11,22 @@ import CloudKit
 
 class User {
     
+    private let friendsKey = "Friends"
+    
     var userID: CKRecordID
     var firstName: String?
     var lastName: String?
+    var testArray: [String]?
+    var friends: [CKReference]?
+    var userPic: CKAsset?
     
     init(userID: CKRecordID) {
         self.userID = userID
     }
     
-    
-    
-//    init(firstName: String, lastName: String, userID: CKRecordID) {
-//        self.firstName = firstName
-//        self.lastName = lastName
-//        self.userID = userID
-//    }
-    
-//    init(user:CKRecord) {
-//        self.userID = user.creatorUserRecordID!
-//    }
-    
-//    func toAnyObject() -> AnyObject {
-//        return [userID,]
+//    init(record:CKRecord) {
+//        self.userID = record.recordID
+//        self.friends = record.objectForKey(friendsKey) as? [CKRecordID] ?? []
 //    }
     
     
