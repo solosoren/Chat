@@ -98,6 +98,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if segmentedControl.selectedSegmentIndex == 0 {
             performSegueWithIdentifier("messageSegue", sender: self)
         }
+        self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
  
 // MARK: Collection View
@@ -167,6 +168,12 @@ extension UIViewController {
         self.navigationController?.navigationBar.barTintColor = UIColor.init(red: 0, green: 0.384, blue: 0.608, alpha: 1.0)
         self.navigationController?.navigationBar.translucent = false
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        let iconImage = UIImage.init(named: "White Icon")
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
+        imageView.contentMode = .ScaleAspectFit
+        imageView.image = iconImage
+        self.navigationItem.titleView = imageView
     }
 }
 

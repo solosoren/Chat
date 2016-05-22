@@ -14,7 +14,6 @@ class UserController {
     static let sharedInstance = UserController()
     var defaultContainer: CKContainer?
     var currentUser:User?
-    var strings = ["Soren", "Jack", "Nick", "Fred"]
     
     init() {
         defaultContainer = CKContainer.defaultContainer()
@@ -50,14 +49,13 @@ class UserController {
                                 }
                                 user!.setValue(references, forKey: "Friends")
 
-                                self.defaultContainer?.publicCloudDatabase.saveRecord(user!, completionHandler: { (user, error) in
+                                self.defaultContainer?.privateCloudDatabase.saveRecord(user!, completionHandler: { (user, error) in
                                     completion(success: true, user: newUser)
                                 })
                                 
                             } else {
                                 newUser.friends! = []
                                 completion(success: true, user: newUser)
-
                             }
                         })
                     } else {
@@ -101,7 +99,6 @@ class UserController {
                                     completion(success: false)
                                 }
                             })
-                            
                         } else {
                             print("error fetching user")
                             completion(success: false)
@@ -114,6 +111,20 @@ class UserController {
                 }
             })
             
+    }
+    
+    func fetchRecord(completion:(success: Bool, record: CKRecord?) -> Void) {
+        self.defaultContainer?.fetchUserRecordIDWithCompletionHandler({ (userID, error) in
+            if error == nil {
+                self.defaultContainer?.privateCloudDatabase.fetchRecordWithID(userID!, completionHandler: { (record, error) in
+                    if error == nil {
+                        completion(success: true, record: record)
+                    } else {
+                        completion(success: false, record: nil)
+                    }
+                })
+            }
+        })
     }
     
         

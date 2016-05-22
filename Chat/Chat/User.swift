@@ -16,7 +16,6 @@ class User {
     var userID: CKRecordID
     var firstName: String?
     var lastName: String?
-    var testArray: [String]?
     var friends: [CKReference]?
     var userPic: CKAsset?
     
@@ -26,7 +25,7 @@ class User {
     
 //    init(record:CKRecord) {
 //        self.userID = record.recordID
-//        self.friends = record.objectForKey(friendsKey) as? [CKRecordID] ?? []
+//        self.friends = record.objectForKey(friendsKey) as? [CKReference] ?? []
 //    }
     
     

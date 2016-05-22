@@ -13,16 +13,19 @@ class LoginViewController: UIViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return UIStatusBarStyle.LightContent
     }
     
     @IBAction func loginButtonTapped(sender: AnyObject) {
         self.iCloudLogin { (success) in
             if success {
                 dispatch_async(dispatch_get_main_queue()) { () -> Void in
-                    self.dismissViewControllerAnimated(true, completion: nil)
+                    self.performSegueWithIdentifier("addPhoto", sender: self)
+//                    self.dismissViewControllerAnimated(true, completion: nil)
                 }
-                //                print("Current User: \(UserController.sharedInstance.currentUser?.firstName)")
             } else {
                 print("Not this time")
             }

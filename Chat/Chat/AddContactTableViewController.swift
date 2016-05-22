@@ -13,6 +13,11 @@ class AddContactTableViewController: UITableViewController {
     @IBOutlet var bigContactView: UIView!
     let darkView = UIView()
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.setNavBar()
+    }
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
             let searchResultsCell = tableView.dequeueReusableCellWithIdentifier("searchResultsCell", forIndexPath: indexPath)

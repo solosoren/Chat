@@ -18,6 +18,7 @@ class ProfileTableViewController: UITableViewController {
             lastName = UserController.sharedInstance.currentUser?.lastName {
             self.displayName.text = (firstName + " " + lastName)
         }
+        self.setNavBar()
     }
     
     

@@ -16,9 +16,11 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tableView.estimatedRowHeight = 70
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorColor = UIColor.whiteColor()
+        self.setNavBar()
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
