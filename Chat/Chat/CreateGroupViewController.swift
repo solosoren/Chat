@@ -17,6 +17,7 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         self.setNavBar()
+        self.navBarImage()
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {

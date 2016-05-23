@@ -340,26 +340,26 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="143"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="R4f-oM-ai6">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="149"/>
+                                                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="R4f-oM-ai6">
+                                                    <rect key="frame" x="4" y="4" width="592" height="145"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="dhP-lc-F4e">
-                                                        <size key="itemSize" width="269" height="130"/>
+                                                        <size key="itemSize" width="269" height="138"/>
                                                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                                         <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                                     </collectionViewFlowLayout>
                                                     <cells>
                                                         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="contactItem" id="05z-x6-pbL" customClass="ContactCollectionCell" customModule="Chat" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="0.0" width="269" height="130"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="269" height="138"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                                                <rect key="frame" x="0.0" y="0.0" width="269" height="130"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="269" height="138"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ube-oy-vbW">
-                                                                        <rect key="frame" x="73" y="11" width="123" height="86"/>
-                                                                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                                        <rect key="frame" x="73" y="14" width="123" height="86"/>
+                                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="123" id="Hp5-ph-Q7V"/>
                                                                             <constraint firstAttribute="height" constant="86" id="sbB-Qq-YKz"/>
@@ -371,21 +371,26 @@
                                                                         </userDefinedRuntimeAttributes>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YbG-YX-8yJ">
-                                                                        <rect key="frame" x="115" y="102" width="38" height="21"/>
+                                                                        <rect key="frame" x="115" y="105" width="38" height="21"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                        <color key="textColor" red="0.0" green="0.21960784310000001" blue="0.39607843139999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                 </subviews>
                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                             </view>
-                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                            <color key="backgroundColor" red="0.0" green="0.38431372549999998" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
                                                             <constraints>
                                                                 <constraint firstItem="Ube-oy-vbW" firstAttribute="centerX" secondItem="05z-x6-pbL" secondAttribute="centerX" id="MYq-Aa-CYX"/>
-                                                                <constraint firstItem="Ube-oy-vbW" firstAttribute="centerY" secondItem="05z-x6-pbL" secondAttribute="centerY" constant="-11" id="oGU-5c-YDo"/>
+                                                                <constraint firstItem="Ube-oy-vbW" firstAttribute="centerY" secondItem="05z-x6-pbL" secondAttribute="centerY" constant="-12" id="oGU-5c-YDo"/>
                                                                 <constraint firstItem="YbG-YX-8yJ" firstAttribute="centerX" secondItem="05z-x6-pbL" secondAttribute="centerX" id="oZ9-9S-KGi"/>
                                                                 <constraint firstItem="YbG-YX-8yJ" firstAttribute="top" secondItem="Ube-oy-vbW" secondAttribute="bottom" constant="5" id="zPM-Km-NCe"/>
                                                             </constraints>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                    <integer key="value" value="8"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <outlet property="contactImage" destination="Ube-oy-vbW" id="Fqs-M4-QVi"/>
                                                                 <outlet property="contactName" destination="YbG-YX-8yJ" id="SwO-4H-mHw"/>
@@ -399,10 +404,10 @@
                                                 </collectionView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="leading" secondItem="a3r-w0-eVl" secondAttribute="leadingMargin" constant="-8" id="5QR-dE-7qs"/>
+                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="top" secondItem="a3r-w0-eVl" secondAttribute="top" constant="4" id="5c5-pw-d8g"/>
+                                                <constraint firstAttribute="trailing" secondItem="R4f-oM-ai6" secondAttribute="trailing" constant="4" id="C5a-dT-XaM"/>
+                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="leading" secondItem="a3r-w0-eVl" secondAttribute="leading" constant="4" id="Eeh-3M-RS1"/>
                                                 <constraint firstItem="R4f-oM-ai6" firstAttribute="bottom" secondItem="a3r-w0-eVl" secondAttribute="bottomMargin" constant="14" id="FX6-NO-N9G"/>
-                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="top" secondItem="a3r-w0-eVl" secondAttribute="topMargin" constant="-8" id="eRZ-q5-B10"/>
-                                                <constraint firstItem="R4f-oM-ai6" firstAttribute="trailing" secondItem="a3r-w0-eVl" secondAttribute="trailingMargin" constant="8" id="vMf-bu-0Vh"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
@@ -655,7 +660,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="1Ps-Ju-YHs">
                         <barButtonItem key="leftBarButtonItem" title="X" id="k5l-Lk-Wd5">
-                            <color key="tintColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="dismissButtonTapped:" destination="a7B-p9-6Mo" id="GXc-YB-k7l"/>
                             </connections>

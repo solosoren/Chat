@@ -16,6 +16,7 @@ class AddContactTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavBar()
+        self.navBarImage()
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

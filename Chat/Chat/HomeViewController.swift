@@ -19,6 +19,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavBar()
+        self.homeNavBarImage()
 //        self.performSegueWithIdentifier("loginSegue", sender: self)
 
         dispatch_async(dispatch_get_main_queue()) {
@@ -169,11 +170,24 @@ extension UIViewController {
         self.navigationController?.navigationBar.translucent = false
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        let iconImage = UIImage.init(named: "White Icon")
-        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
+    }
+    
+    func homeNavBarImage() {
+        let iconImage = UIImage.init(named: "Little White Icon")
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
         imageView.contentMode = .ScaleAspectFit
         imageView.image = iconImage
         self.navigationItem.titleView = imageView
+
+    }
+    
+    func navBarImage() {
+        let iconImage = UIImage.init(named: "Little White Icon")
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        imageView.contentMode = .ScaleAspectFit
+        imageView.image = iconImage
+        self.navigationItem.titleView = imageView
+
     }
 }
 

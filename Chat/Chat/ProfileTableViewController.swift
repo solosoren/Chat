@@ -19,6 +19,7 @@ class ProfileTableViewController: UITableViewController {
             self.displayName.text = (firstName + " " + lastName)
         }
         self.setNavBar()
+        self.navBarImage()
     }
     
     
