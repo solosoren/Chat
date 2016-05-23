@@ -24,7 +24,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         dispatch_async(dispatch_get_main_queue()) {
             UserController.sharedInstance.checkForUser { (success) in
                 if success {
-//                    print("Current: \(UserController.sharedInstance.currentUser?.firstName)")
+
                 } else {
                     self.performSegueWithIdentifier("loginSegue", sender: self)
                 }

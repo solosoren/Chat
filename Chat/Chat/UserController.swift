@@ -86,31 +86,29 @@ class UserController {
     }
     
     func checkForUser(completion:(success: Bool) -> Void) {
-            self.defaultContainer?.accountStatusWithCompletionHandler({ (accountStatus, error) in
-                if accountStatus == CKAccountStatus.Available {
-                    self.fetchUser({ (success, user) in
-                        if success {
-                            self.fetchUserInfo(user!, completion: { (success, user) in
-                                if success {
-                                    self.currentUser = user
-                                    completion(success: true)
-                                } else {
-                                    print("error fecthing user info")
-                                    completion(success: false)
-                                }
-                            })
-                        } else {
-                            print("error fetching user")
-                            completion(success: false)
-                        }
-                    })
-                } else {
-//                    handle other options
-                    print("account status problem")
-                    completion(success: false)
-                }
-            })
-            
+        self.defaultContainer?.statusForApplicationPermission(.UserDiscoverability, completionHandler: { (permissionStatus, error) in
+            if permissionStatus == CKApplicationPermissionStatus.Granted {
+                self.fetchUser({ (success, user) in
+                    if success {
+                        self.fetchUserInfo(user!, completion: { (success, user) in
+                            if success {
+                                self.currentUser = user
+                                completion(success: true)
+                            } else {
+                                print("error fecthing user info")
+                                completion(success: false)
+                            }
+                        })
+                    } else {
+                        print("error fetching user")
+                        completion(success: false)
+                    }
+                })
+            } else {
+                completion(success: false)
+            }
+        })
+        
     }
     
     func fetchRecord(completion:(success: Bool, record: CKRecord?) -> Void) {
