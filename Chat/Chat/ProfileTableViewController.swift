@@ -7,19 +7,33 @@
 //
 
 import UIKit
+import CloudKit
 
 class ProfileTableViewController: UITableViewController {
     
     @IBOutlet weak var displayName: UITextField!
     
+    @IBOutlet weak var profilePic: UIImageView!
     
     override func viewDidLoad() {
-        if let firstName = UserController.sharedInstance.currentUser?.firstName,
-            lastName = UserController.sharedInstance.currentUser?.lastName {
-            self.displayName.text = (firstName + " " + lastName)
+        super.viewDidLoad()
+        self.setUpView()
+    }
+    
+    func setUpView() {
+        dispatch_async(dispatch_get_main_queue()) { 
+            if let firstName = UserController.sharedInstance.currentUser?.firstName,
+                lastName = UserController.sharedInstance.currentUser?.lastName {
+                self.displayName.text = (firstName + " " + lastName)
+            }
+            UserController.sharedInstance.setImage { (success, image) in
+                if success {
+                    self.profilePic.image = image
+                }
+            }
+
         }
         self.setNavBar()
-        self.navBarImage()
     }
     
     

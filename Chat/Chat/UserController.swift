@@ -37,7 +37,7 @@ class UserController {
                 privateDatabase.fetchRecordWithID(userID!, completionHandler: { (user: CKRecord?, error) in
                     if error == nil {
                         let newUser = User.init(userID: userID!)
-                        
+            
                         self.defaultContainer?.discoverAllContactUserInfosWithCompletionHandler({ (info, error) in
                             if error == nil {
                                 var references = [CKReference]()
@@ -123,6 +123,18 @@ class UserController {
                 })
             }
         })
+    }
+    
+    func setImage(completion:(success:Bool, image: UIImage?) -> Void) {
+        self.fetchRecord { (success, record) in
+            if success {
+                if let asset = record!["ImageKey"] as? CKAsset, image = asset.image {
+                    completion(success: success, image: image)
+                }
+            } else {
+                completion(success: false, image: nil)
+            }
+        }
     }
     
         

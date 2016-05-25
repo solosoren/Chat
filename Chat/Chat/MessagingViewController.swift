@@ -21,7 +21,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorColor = UIColor.whiteColor()
         self.setNavBar()
-        self.navBarImage()
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

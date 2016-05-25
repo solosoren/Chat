@@ -10,7 +10,7 @@ import UIKit
 import CloudKit
 
 class LoginViewController: UIViewController {
-        
+            
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -20,7 +20,8 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginButtonTapped(sender: AnyObject) {
-        self.iCloudLogin { (success) in
+        
+            self.iCloudLogin { (success) in
             if success {
                 dispatch_async(dispatch_get_main_queue()) { () -> Void in
                     self.performSegueWithIdentifier("addPhoto", sender: self)
