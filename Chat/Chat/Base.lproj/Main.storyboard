@@ -205,7 +205,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kC4-mX-Q4O">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="565"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="conversationCell" rowHeight="105" id="Ga7-q3-ul4" customClass="HomeMessageCell" customModule="Chat" customModuleProvider="target">
@@ -480,13 +480,14 @@
                                 </connections>
                             </tableView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="zvP-8E-aO2">
-                                <rect key="frame" x="-2" y="565" width="604" height="36"/>
+                                <rect key="frame" x="29" y="565" width="543" height="31"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="35" id="gPv-Je-SVN"/>
+                                    <constraint firstAttribute="height" constant="30" id="gPv-Je-SVN"/>
                                 </constraints>
                                 <segments>
-                                    <segment title="Chats"/>
-                                    <segment title="Friends"/>
+                                    <segment title="" image="Chat Filled"/>
+                                    <segment title="" image="Contact Card-50"/>
                                 </segments>
                                 <color key="tintColor" red="0.0" green="0.38431372549999998" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <userDefinedRuntimeAttributes>
@@ -502,16 +503,16 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="kC4-mX-Q4O" secondAttribute="trailing" id="Hbt-mv-wqa"/>
-                            <constraint firstItem="zvP-8E-aO2" firstAttribute="leading" secondItem="Hqf-X3-afN" secondAttribute="leading" constant="-2" id="IUH-vn-bJe"/>
-                            <constraint firstItem="zvP-8E-aO2" firstAttribute="top" secondItem="kC4-mX-Q4O" secondAttribute="bottom" id="PXt-NO-22x"/>
+                            <constraint firstItem="zvP-8E-aO2" firstAttribute="leading" secondItem="Hqf-X3-afN" secondAttribute="leading" constant="29" id="IUH-vn-bJe"/>
+                            <constraint firstItem="zvP-8E-aO2" firstAttribute="top" secondItem="kC4-mX-Q4O" secondAttribute="bottom" constant="-38" id="PXt-NO-22x"/>
                             <constraint firstItem="kC4-mX-Q4O" firstAttribute="leading" secondItem="Hqf-X3-afN" secondAttribute="leading" id="TSD-0c-bUP"/>
-                            <constraint firstAttribute="trailing" secondItem="zvP-8E-aO2" secondAttribute="trailing" constant="-2" id="awW-Mt-rnY"/>
+                            <constraint firstAttribute="trailing" secondItem="zvP-8E-aO2" secondAttribute="trailing" constant="28" id="awW-Mt-rnY"/>
                             <constraint firstItem="kC4-mX-Q4O" firstAttribute="top" secondItem="Hqf-X3-afN" secondAttribute="top" id="uJu-D2-3UI"/>
-                            <constraint firstItem="H8C-hr-wgi" firstAttribute="top" secondItem="zvP-8E-aO2" secondAttribute="bottom" id="x2A-kz-7Vy"/>
+                            <constraint firstItem="H8C-hr-wgi" firstAttribute="top" secondItem="zvP-8E-aO2" secondAttribute="bottom" constant="5" id="x2A-kz-7Vy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="vOL-To-lEd">
-                        <barButtonItem key="leftBarButtonItem" title="Item" id="qt8-Ll-aEY">
+                        <barButtonItem key="leftBarButtonItem" image="Contacts" id="qt8-Ll-aEY">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <segue destination="zfe-go-B7m" kind="show" id="N6l-F9-of6"/>
@@ -1339,6 +1340,9 @@
     </scenes>
     <resources>
         <image name="Add Camera-96" width="96" height="96"/>
+        <image name="Chat Filled" width="25" height="25"/>
+        <image name="Contact Card-50" width="25" height="25"/>
+        <image name="Contacts" width="25" height="25"/>
         <image name="White Icon" width="512" height="512"/>
     </resources>
 </document>

@@ -20,16 +20,26 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
         self.setNavBar()
 //        self.performSegueWithIdentifier("loginSegue", sender: self)
-
-        dispatch_async(dispatch_get_main_queue()) {
-            UserController.sharedInstance.checkForUser { (success) in
-                if success {
-                    
-                } else {
-                    self.performSegueWithIdentifier("loginSegue", sender: self)
-                }
-            }
-        }
+        
+//        dispatch_async(dispatch_get_main_queue()) {
+//            UserController.sharedInstance.checkForUser { (success) in
+//                if success {
+//                    UserController.sharedInstance.createRelationship { (success) in
+//                        if success {
+//                            
+//                        } else {
+//                            let alert = UIAlertController(title: "Couldn't Create Relationship", message: "Tell Soren it didn't work!", preferredStyle: .Alert)
+//                            let action = UIAlertAction(title: "Will Do", style: .Default, handler: nil)
+//                            alert.addAction(action)
+//                            self.presentViewController(alert, animated: true, completion: nil)
+//                            
+//                        }
+//                    }
+//                } else {
+//                    self.performSegueWithIdentifier("loginSegue", sender: self)
+//                }
+//            }
+//        }
     }
  
 // MARK: Segmented Control

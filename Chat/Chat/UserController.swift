@@ -221,7 +221,9 @@ class UserController {
                             let fullName = record["FullName"] as! String
                             let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:nil)
                             tempUsers.append(user)
-                            completion(success: true, users: tempUsers)
+                            if record == records.last {
+                                completion(success: true, users: tempUsers)
+                            }
                         } else {
                             completion(success: false, users: nil)
                             print("error searching users \(error?.localizedDescription)")
