@@ -14,11 +14,12 @@ class UserController {
     static let sharedInstance = UserController()
     var defaultContainer: CKContainer?
     var currentUser:User?
-    
+     
     init() {
         defaultContainer = CKContainer.defaultContainer()
     }
     
+//    request permission to access icloud
     func requestPermission(completion:(success: Bool) -> Void) {
         defaultContainer!.requestApplicationPermission(CKApplicationPermissions.UserDiscoverability, completionHandler: { applicationPermissionStatus, error in
             if applicationPermissionStatus == CKApplicationPermissionStatus.Granted {
@@ -30,13 +31,14 @@ class UserController {
         })
     }
     
+//    fetch user initially and find contacts. Set contacts to friends. Creates User
     func fetchUser(completion: (success: Bool, user: User?) -> Void) {
         defaultContainer!.fetchUserRecordIDWithCompletionHandler { (userID, error) in
             if error == nil {
                 let privateDatabase = self.defaultContainer!.privateCloudDatabase
                 privateDatabase.fetchRecordWithID(userID!, completionHandler: { (user: CKRecord?, error) in
                     if error == nil {
-                        let newUser = User.init(userID: userID!)
+                        let newUser = User.init(userID: userID!, fullName: nil, friends: nil, userPic: nil)
             
                         self.defaultContainer?.discoverAllContactUserInfosWithCompletionHandler({ (info, error) in
                             if error == nil {
@@ -71,20 +73,65 @@ class UserController {
     }
     
     
+//      get name for user
     func fetchUserInfo(user: User, completion:(success: Bool, user: User?) -> Void) {
-        defaultContainer!.discoverUserInfoWithUserRecordID(user.userID) { (info, error) in
-            if error == nil {
-                user.firstName = info?.displayContact?.givenName
-                user.lastName = info?.displayContact?.familyName
-                completion(success: true, user: user)
-                
-            } else {
-                print("Couldn't fetch User info")
-                completion(success: false, user: nil)
+        self.fetchRecord { (success, record) in
+            if success {
+                self.defaultContainer!.discoverUserInfoWithUserRecordID(user.userID) { (info, error) in
+                    if error == nil {
+                        if let firstName = info?.displayContact?.givenName,
+                        lastName = info?.displayContact!.familyName {
+                            let fullName = "\(firstName) \(lastName)"
+                            user.fullName = fullName
+                            completion(success: true, user: user)
+                        }
+                    } else {
+                        print("Couldn't fetch User info")
+                        completion(success: false, user: nil)
+                    }
+                }
             }
         }
+        
     }
     
+//      does the same thing as ^^ but this sets name to icloud
+    func fetchUserInfoAndSetUserName(user: User, completion:(success: Bool, user: User?) -> Void) {
+        self.fetchRecord { (success, record) in
+            if success {
+                self.defaultContainer!.discoverUserInfoWithUserRecordID(user.userID) { (info, error) in
+                    if error == nil {
+                        
+                        if let firstName = info?.displayContact?.givenName,
+                            lastName = info?.displayContact!.familyName {
+                            let fullName = "\(firstName) \(lastName)"
+                            user.fullName = fullName
+                            record?.setValue(fullName, forKey: "Name")
+                        }
+                        
+                        self.defaultContainer?.privateCloudDatabase.saveRecord(record!, completionHandler: { (record, error) in
+                            if error == nil {
+                                completion(success: true, user: user)
+                            } else {
+                                print("error")
+                                completion(success: false, user: nil)
+                            }
+                        
+                    })
+                        
+                        
+                    } else {
+                        print("Couldn't fetch User info")
+                        completion(success: false, user: nil)
+                    }
+                }
+            }
+        }
+        
+        
+    }
+
+//      startup app check to see if user has accepted permission
     func checkForUser(completion:(success: Bool) -> Void) {
         self.defaultContainer?.statusForApplicationPermission(.UserDiscoverability, completionHandler: { (permissionStatus, error) in
             if permissionStatus == CKApplicationPermissionStatus.Granted {
@@ -111,6 +158,7 @@ class UserController {
         
     }
     
+//    fetch record by user id
     func fetchRecord(completion:(success: Bool, record: CKRecord?) -> Void) {
         self.defaultContainer?.fetchUserRecordIDWithCompletionHandler({ (userID, error) in
             if error == nil {
@@ -125,6 +173,25 @@ class UserController {
         })
     }
     
+    func createRelationship(completion:(success: Bool) -> Void) {
+        let user = self.currentUser
+        let ref = CKReference(recordID: (user?.userID)!, action: .DeleteSelf)
+        let relationship = Relationship.init(fullName: (user?.fullName)!, userID: ref)
+        let record = CKRecord(recordType: "Relationship")
+        
+        record.setValuesForKeysWithDictionary(relationship.toAnyObject() as! [String: AnyObject])
+        self.defaultContainer!.publicCloudDatabase.saveRecord(record) { (message, error) in
+            if error == nil {
+                completion(success: true)
+            } else {
+                print(error?.localizedDescription)
+                completion(success: false)
+//                handle error
+            }
+        }
+        
+    }
+
     func setImage(completion:(success:Bool, image: UIImage?) -> Void) {
         self.fetchRecord { (success, record) in
             if success {
@@ -137,5 +204,44 @@ class UserController {
         }
     }
     
-        
+    
+    func searchAllUsers(searchTerm: String, completion:(success: Bool, users: [User]?) -> Void) {
+        var tempUsers = [User]()
+        let predicate = NSPredicate(format: "FullName BEGINSWITH %@", searchTerm)
+        let query = CKQuery(recordType: "Relationship", predicate: predicate)
+
+        self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
+            if let records = records {
+                for record in records {
+                    let ref = record["UserIDRef"] as! CKReference
+                    let ID = ref.recordID
+                    self.defaultContainer?.publicCloudDatabase.fetchRecordWithID(ID, completionHandler: { (userRecord, error) in
+                        if error == nil {
+                            let UID = userRecord?.recordID
+                            let fullName = record["FullName"] as! String
+                            let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:nil)
+                            tempUsers.append(user)
+                            completion(success: true, users: tempUsers)
+                        } else {
+                            completion(success: false, users: nil)
+                            print("error searching users \(error?.localizedDescription)")
+                        }
+                    })
+                }
+            } else {
+                completion(success: false, users: nil)
+                print("error searching users \(error?.localizedDescription)")
+            }
+        })
+    }
+    
 }
+
+
+
+
+
+
+
+
+

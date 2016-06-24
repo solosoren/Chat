@@ -11,7 +11,9 @@ import UIKit
 class AddContactTableViewController: UITableViewController {
     
     @IBOutlet var bigContactView: UIView!
+    var searchedUsers: [User] = []
     let darkView = UIView()
+    @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,12 +22,14 @@ class AddContactTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-            let searchResultsCell = tableView.dequeueReusableCellWithIdentifier("searchResultsCell", forIndexPath: indexPath)
-            return searchResultsCell
+        let searchResultsCell = tableView.dequeueReusableCellWithIdentifier("searchResultsCell", forIndexPath: indexPath) as! UserSearchTableViewCell
+        let user = searchedUsers[indexPath.row]
+        searchResultsCell.usernameLabel.text = user.fullName
+        return searchResultsCell
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return searchedUsers.count
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -41,6 +45,7 @@ class AddContactTableViewController: UITableViewController {
         
         self.view.addSubview(darkView)
         self.view.addSubview(bigContactView)
+        self.searchBar.resignFirstResponder()
         
     }
     
@@ -53,3 +58,49 @@ class AddContactTableViewController: UITableViewController {
     }
     
 }
+
+extension AddContactTableViewController: UISearchBarDelegate {
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchedUsers = []
+        dispatch_async(dispatch_get_main_queue()) { 
+            UserController.sharedInstance.searchAllUsers(searchText) { (success, users) in
+                if success {
+                    self.searchedUsers = users!
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.tableView.reloadData()
+                    })
+                } else {
+                    print("not working")
+                }
+            }
+        }
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

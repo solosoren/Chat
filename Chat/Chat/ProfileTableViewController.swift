@@ -22,9 +22,8 @@ class ProfileTableViewController: UITableViewController {
     
     func setUpView() {
         dispatch_async(dispatch_get_main_queue()) { 
-            if let firstName = UserController.sharedInstance.currentUser?.firstName,
-                lastName = UserController.sharedInstance.currentUser?.lastName {
-                self.displayName.text = (firstName + " " + lastName)
+            if let fullName = UserController.sharedInstance.currentUser?.fullName {
+                self.displayName.text = fullName
             }
             UserController.sharedInstance.setImage { (success, image) in
                 if success {

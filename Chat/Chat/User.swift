@@ -14,13 +14,13 @@ class User {
     private let friendsKey = "Friends"
     
     var userID: CKRecordID
-    var firstName: String?
-    var lastName: String?
+    var fullName: String?
     var friends: [CKReference]?
     var userPic: CKAsset?
     
-    init(userID: CKRecordID) {
+    init(userID: CKRecordID, fullName: String?, friends:[CKReference]?, userPic: CKAsset?) {
         self.userID = userID
+        self.fullName = fullName
     }
     
 //    init(record:CKRecord) {

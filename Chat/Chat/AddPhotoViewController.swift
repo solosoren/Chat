@@ -15,7 +15,6 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     @IBOutlet weak var backgroundToImage: UIView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var addImageButton: UIButton!
-    let progressIndicatorView = LoaderAnimation(frame: CGRectZero)
 
     
     override func viewDidLoad() {
@@ -50,16 +49,11 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     
     @IBAction func saveImageTapped(sender: AnyObject) {
         if self.imageView.image != nil {
-            view.addSubview(self.progressIndicatorView)
-            progressIndicatorView.frame = view.bounds
-            progressIndicatorView.autoresizingMask = .FlexibleWidth
-            progressIndicatorView.autoresizingMask = .FlexibleHeight
             self.saveImage({ (success) in
 //                    loading animation
 
                 if success {
-                    self.progressIndicatorView.progress = 1
-                    dispatch_async(dispatch_get_main_queue(), { 
+                    dispatch_async(dispatch_get_main_queue(), {
                         let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
                         let ok = UIAlertAction(title: "Okay", style: .Cancel, handler: {
                             (action) in

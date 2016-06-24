@@ -38,9 +38,17 @@ class LoginViewController: UIViewController {
             if success {
                 UserController.sharedInstance.fetchUser({ (success, user) in
                     if success {
-                        UserController.sharedInstance.fetchUserInfo(user!, completion: { (success, user) in
+                        UserController.sharedInstance.fetchUserInfoAndSetUserName(user!, completion: { (success, user) in
                             if success {
                                 UserController.sharedInstance.currentUser = user
+                                UserController.sharedInstance.createRelationship({ (success) in
+                                    if success {
+                                        completion(success: true)
+                                    } else {
+                                        completion(success: false)
+                                    }
+                                })
+                                
                                 completion(success: true)
                             } else {
                                 completion(success: false)

@@ -19,17 +19,17 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavBar()
-        self.performSegueWithIdentifier("loginSegue", sender: self)
+//        self.performSegueWithIdentifier("loginSegue", sender: self)
 
-//        dispatch_async(dispatch_get_main_queue()) {
-//            UserController.sharedInstance.checkForUser { (success) in
-//                if success {
-//
-//                } else {
-//                    self.performSegueWithIdentifier("loginSegue", sender: self)
-//                }
-//            }
-//        }
+        dispatch_async(dispatch_get_main_queue()) {
+            UserController.sharedInstance.checkForUser { (success) in
+                if success {
+                    
+                } else {
+                    self.performSegueWithIdentifier("loginSegue", sender: self)
+                }
+            }
+        }
     }
  
 // MARK: Segmented Control
@@ -50,11 +50,14 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return 55
                 
             } else if indexPath.row == 1 {
-                return 55
+                return 95
+                
+            } else if indexPath.row == 2 {
+                return 85
             
             } else {
 //                (120(cell height) * # of friends) + 10 
-                let contactCellHeight = (self.view.bounds.height * 4)
+                let contactCellHeight = (self.view.bounds.height * 2)
                 return contactCellHeight
             }
         }
@@ -78,6 +81,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath)
                 return notificationCell
             
+            } else if indexPath.row == 2 {
+                let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath) as! NotificationCell
+                notificationCell.inviteLabel.text = "Soren Nelson wants to add you as a contact"
+                notificationCell.memberLabel.hidden = true
+                return notificationCell
+                
             } else {
                 let contactCell = tableView.dequeueReusableCellWithIdentifier("contactCell", forIndexPath: indexPath) as! ContactTableViewCell
                 return contactCell
@@ -90,7 +99,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if segmentedControl.selectedSegmentIndex == 0 {
             return 2
         } else {
-            return 3
+            return 4
         }
     }
     
@@ -110,7 +119,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return 4
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
