@@ -20,15 +20,29 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginButtonTapped(sender: AnyObject) {
-        
-            self.iCloudLogin { (success) in
+        let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        indicator.center = view.center
+        view.addSubview(indicator)
+        indicator.startAnimating()
+        self.iCloudLogin { (success) in
             if success {
                 dispatch_async(dispatch_get_main_queue()) { () -> Void in
-                    self.performSegueWithIdentifier("addPhoto", sender: self)
-//                    self.dismissViewControllerAnimated(true, completion: nil)
+                    indicator.stopAnimating()
+                    let alert = UIAlertController(title: nil, message: "Successful iCloud Login", preferredStyle: .Alert)
+                    let action = UIAlertAction(title: "Cool", style: .Default, handler: { (action) in
+                        self.performSegueWithIdentifier("addPhoto", sender: self)
+                    })
+                    alert.addAction(action)
+                    self.presentViewController(alert, animated: true, completion: nil)
                 }
             } else {
-                print("Not this time")
+                dispatch_async(dispatch_get_main_queue(), {
+                    indicator.stopAnimating()
+                    let alert = UIAlertController(title: "Oops", message: "iCloud Login failed", preferredStyle: .Alert)
+                    let action = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+                    alert.addAction(action)
+                    self.presentViewController(alert, animated: true, completion: nil)
+                })
             }
         }
     }
@@ -41,23 +55,37 @@ class LoginViewController: UIViewController {
                         UserController.sharedInstance.fetchUserInfoAndSetUserName(user!, completion: { (success, user) in
                             if success {
                                 UserController.sharedInstance.currentUser = user
-                                UserController.sharedInstance.createRelationship({ (success) in
+                                UserController.sharedInstance.createRelationship(user!, completion: { (success) in
                                     if success {
                                         completion(success: true)
                                     } else {
+                                        dispatch_async(dispatch_get_main_queue(), {
+                                            let alert = UIAlertController(title: "Couldn't Create Relationship", message: "Tell Soren it didn't work!", preferredStyle: .Alert)
+                                            let action = UIAlertAction(title: "Will Do", style: .Default, handler: nil)
+                                            alert.addAction(action)
+                                            self.presentViewController(alert, animated: true, completion: nil)
+                                        })
                                         completion(success: false)
                                     }
                                 })
-                                
-                                completion(success: true)
                             } else {
+                                dispatch_async(dispatch_get_main_queue(), { 
+                                    let alert = UIAlertController(title: "Oops", message: "There was an issue fetching your user info", preferredStyle: .Alert)
+                                    let action = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+                                    alert.addAction(action)
+                                    self.presentViewController(alert, animated: true, completion: nil)
+                                })
                                 completion(success: false)
                             }
                         })
                     } else {
-//                        error handling
+                        dispatch_async(dispatch_get_main_queue(), { 
+                            let alert = UIAlertController(title: "Oops", message: "There was an issue fetching your account", preferredStyle: .Alert)
+                            let action = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+                            alert.addAction(action)
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        })
                         completion(success: false)
-                        print("Didn't Work")
                     }
                 })
             } else {
@@ -67,6 +95,7 @@ class LoginViewController: UIViewController {
                     iCloudAlert.addAction(ok)
                     self.presentViewController(iCloudAlert, animated: true, completion: nil)
                 })
+                completion(success: false)
             }
         }
     }

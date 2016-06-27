@@ -34,7 +34,7 @@ class UserController {
 //    fetch user initially and find contacts. Set contacts to friends. Creates User
     func fetchUser(completion: (success: Bool, user: User?) -> Void) {
         defaultContainer!.fetchUserRecordIDWithCompletionHandler { (userID, error) in
-            if error == nil {
+            if userID != nil {
                 let privateDatabase = self.defaultContainer!.privateCloudDatabase
                 privateDatabase.fetchRecordWithID(userID!, completionHandler: { (user: CKRecord?, error) in
                     if error == nil {
@@ -52,9 +52,14 @@ class UserController {
                                 user!.setValue(references, forKey: "Friends")
 
                                 self.defaultContainer?.privateCloudDatabase.saveRecord(user!, completionHandler: { (user, error) in
+                                    if error == nil {
+//                                        completion(success: true, user: newUser)
+                                    } else {
+                                        print("Couldn't get friends")
+//                                        completion(success: false, user: nil)
+                                    }
                                     completion(success: true, user: newUser)
                                 })
-                                
                             } else {
                                 newUser.friends! = []
                                 completion(success: true, user: newUser)
@@ -173,20 +178,18 @@ class UserController {
         })
     }
     
-    func createRelationship(completion:(success: Bool) -> Void) {
-        let user = self.currentUser
-        let ref = CKReference(recordID: (user?.userID)!, action: .DeleteSelf)
-        let relationship = Relationship.init(fullName: (user?.fullName)!, userID: ref)
+    func createRelationship(user: User, completion:(success: Bool) -> Void) {
+        let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
+        let relationship = Relationship.init(fullName: user.fullName!, userID: ref)
         let record = CKRecord(recordType: "Relationship")
         
         record.setValuesForKeysWithDictionary(relationship.toAnyObject() as! [String: AnyObject])
-        self.defaultContainer!.publicCloudDatabase.saveRecord(record) { (message, error) in
+        self.defaultContainer!.publicCloudDatabase.saveRecord(record) { (relationship, error) in
             if error == nil {
                 completion(success: true)
             } else {
                 print(error?.localizedDescription)
                 completion(success: false)
-//                handle error
             }
         }
         

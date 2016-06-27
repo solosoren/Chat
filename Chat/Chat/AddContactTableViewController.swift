@@ -47,16 +47,34 @@ class AddContactTableViewController: UITableViewController {
         self.view.addSubview(bigContactView)
         self.searchBar.resignFirstResponder()
         
+        
+        
+        
     }
+    
+    func getIndexOfUserWithUserId(user: User, userArray: [User]) -> Int {
+        var index = 0
+        for member in userArray {
+            if member.userID == user.userID {
+                return index
+            }
+            // Each time the for loop runs 1 gets added to the index
+            index += 1
+        }
+        return index
+    }
+
+    
+    
+    @IBAction func addContactButtonTapped(sender: AnyObject) {
+        
+    }
+    
     
     @IBAction func dismissButtonTapped(sender: AnyObject) {
         bigContactView.removeFromSuperview()
         darkView.removeFromSuperview()
     }
-    
-    @IBAction func addContactButtonTapped(sender: AnyObject) {
-    }
-    
 }
 
 extension AddContactTableViewController: UISearchBarDelegate {
