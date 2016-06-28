@@ -55,7 +55,7 @@ class UserController {
                                     if error == nil {
 //                                        completion(success: true, user: newUser)
                                     } else {
-                                        print("Couldn't get friends")
+                                        print("Couldn't get friends: %@", error?.localizedDescription)
 //                                        completion(success: false, user: nil)
                                     }
                                     completion(success: true, user: newUser)
@@ -112,28 +112,41 @@ class UserController {
                             let fullName = "\(firstName) \(lastName)"
                             user.fullName = fullName
                             record?.setValue(fullName, forKey: "Name")
-                        }
-                        
-                        self.defaultContainer?.privateCloudDatabase.saveRecord(record!, completionHandler: { (record, error) in
-                            if error == nil {
-                                completion(success: true, user: user)
-                            } else {
-                                print("error")
-                                completion(success: false, user: nil)
+                            
+                            if let record = record {
+                                let ckArray = [record]
+                                let savedRecordsOp = CKModifyRecordsOperation()
+                                savedRecordsOp.recordsToSave = ckArray
+                                savedRecordsOp.savePolicy = .ChangedKeys
+                                savedRecordsOp.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+                                    
+                                    if error != nil {
+                                        completion(success: false, user: nil)
+                                    } else {
+                                        completion(success: true, user: user)
+                                    }
+                                }
+                                self.defaultContainer?.privateCloudDatabase.addOperation(savedRecordsOp)
                             }
-                        
-                    })
-                        
-                        
+                        }
+//                        self.defaultContainer?.privateCloudDatabase.saveRecord(record!, completionHandler: { (record, error) in
+//                            if error == nil {
+//                                completion(success: true, user: user)
+//                            } else {
+//                                print("error")
+//                                completion(success: false, user: nil)
+//                            }
+//                        
+//                    })
                     } else {
                         print("Couldn't fetch User info")
                         completion(success: false, user: nil)
                     }
                 }
+            } else {
+                completion(success: false, user: nil)
             }
         }
-        
-        
     }
 
 //      startup app check to see if user has accepted permission
@@ -174,6 +187,8 @@ class UserController {
                         completion(success: false, record: nil)
                     }
                 })
+            } else {
+                completion(success: false, record: nil)
             }
         })
     }
