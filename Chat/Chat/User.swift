@@ -11,8 +11,6 @@ import CloudKit
 
 class User {
     
-    private let friendsKey = "Friends"
-    
     var userID: CKRecordID
     var fullName: String?
     var friends: [CKReference]?

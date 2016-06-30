@@ -19,17 +19,17 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavBar()
-        self.performSegueWithIdentifier("loginSegue", sender: self)
+//        self.performSegueWithIdentifier("loginSegue", sender: self)
         
-//        dispatch_async(dispatch_get_main_queue()) {
-//            UserController.sharedInstance.checkForUser { (success) in
-//                if success {
-//
-//                } else {
-//                    self.performSegueWithIdentifier("loginSegue", sender: self)
-//                }
-//            }
-//        }
+        dispatch_async(dispatch_get_main_queue()) {
+            UserController.sharedInstance.checkForUser { (success) in
+                if success {
+
+                } else {
+                    self.performSegueWithIdentifier("loginSegue", sender: self)
+                }
+            }
+        }
     }
  
 // MARK: Segmented Control

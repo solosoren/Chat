@@ -80,7 +80,6 @@ class AddContactTableViewController: UITableViewController {
 extension AddContactTableViewController: UISearchBarDelegate {
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        self.searchedUsers = []
         dispatch_async(dispatch_get_main_queue()) { 
             UserController.sharedInstance.searchAllUsers(searchText) { (success, users) in
                 if success {

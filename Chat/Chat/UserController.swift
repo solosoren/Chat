@@ -14,7 +14,8 @@ class UserController {
     static let sharedInstance = UserController()
     var defaultContainer: CKContainer?
     var currentUser:User?
-     
+//    var allUsers = [User]()
+    
     init() {
         defaultContainer = CKContainer.defaultContainer()
     }
@@ -35,36 +36,10 @@ class UserController {
     func fetchUser(completion: (success: Bool, user: User?) -> Void) {
         defaultContainer!.fetchUserRecordIDWithCompletionHandler { (userID, error) in
             if userID != nil {
-                let privateDatabase = self.defaultContainer!.privateCloudDatabase
-                privateDatabase.fetchRecordWithID(userID!, completionHandler: { (user: CKRecord?, error) in
+                let newUser = User.init(userID: userID!, fullName: nil, friends: nil, userPic: nil)
+                self.defaultContainer!.privateCloudDatabase.fetchRecordWithID(userID!, completionHandler: { (user: CKRecord?, error) in
                     if error == nil {
-                        let newUser = User.init(userID: userID!, fullName: nil, friends: nil, userPic: nil)
-            
-                        self.defaultContainer?.discoverAllContactUserInfosWithCompletionHandler({ (info, error) in
-                            if error == nil {
-                                var references = [CKReference]()
-                                for i in info! {
-                                    let recordID = i.userRecordID
-                                    let reference = CKReference(recordID: recordID!, action: CKReferenceAction.DeleteSelf)
-                                    
-                                    references.append(reference)
-                                }
-                                user!.setValue(references, forKey: "Friends")
-
-                                self.defaultContainer?.privateCloudDatabase.saveRecord(user!, completionHandler: { (user, error) in
-                                    if error == nil {
-//                                        completion(success: true, user: newUser)
-                                    } else {
-                                        print("Couldn't get friends: %@", error?.localizedDescription)
-//                                        completion(success: false, user: nil)
-                                    }
-                                    completion(success: true, user: newUser)
-                                })
-                            } else {
-                                newUser.friends! = []
-                                completion(success: true, user: newUser)
-                            }
-                        })
+                    completion(success: true, user: newUser)
                     } else {
                         completion(success: false, user: nil)
                         print("Couldn't fetch record with ID")
@@ -75,6 +50,34 @@ class UserController {
                 print("Couldn't fetch user record ID")
             }
         }
+    }
+    
+    
+//    TODO: FIX UP
+    func setFriends(user:User, record:CKRecord, completion:(success:Bool, user:User?) -> Void) {
+        self.defaultContainer?.discoverAllContactUserInfosWithCompletionHandler({ (info, error) in
+            if error == nil {
+                var references = [CKReference]()
+                for i in info! {
+                    let recordID = i.userRecordID
+                    let reference = CKReference(recordID: recordID!, action: CKReferenceAction.DeleteSelf)
+                    references.append(reference)
+                }
+                user.friends = references
+                record.setValue(references, forKey: "Friends")
+                
+                self.defaultContainer?.privateCloudDatabase.saveRecord(record, completionHandler: { (record, error) in
+                    if error == nil {
+                        completion(success: true, user: user)
+                    } else {
+                        NSLog("Couldn't get friends: \(error?.localizedDescription)")
+                        completion(success: false, user: nil)
+                    }
+                })
+            } else {
+                user.friends! = []
+            }
+        })
     }
     
     
@@ -94,6 +97,7 @@ class UserController {
                         print("Couldn't fetch User info")
                         completion(success: false, user: nil)
                     }
+                    
                 }
             }
         }
@@ -108,42 +112,46 @@ class UserController {
                     if error == nil {
                         
                         if let firstName = info?.displayContact?.givenName,
-                            lastName = info?.displayContact!.familyName {
+                            lastName = info?.displayContact?.familyName {
                             let fullName = "\(firstName) \(lastName)"
                             user.fullName = fullName
-                            record?.setValue(fullName, forKey: "Name")
-                            
-                            if let record = record {
-                                let ckArray = [record]
-                                let savedRecordsOp = CKModifyRecordsOperation()
-                                savedRecordsOp.recordsToSave = ckArray
-                                savedRecordsOp.savePolicy = .ChangedKeys
-                                savedRecordsOp.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
-                                    
-                                    if error != nil {
-                                        completion(success: false, user: nil)
-                                    } else {
-                                        completion(success: true, user: user)
-                                    }
-                                }
-                                self.defaultContainer?.privateCloudDatabase.addOperation(savedRecordsOp)
-                            }
-                        }
-//                        self.defaultContainer?.privateCloudDatabase.saveRecord(record!, completionHandler: { (record, error) in
-//                            if error == nil {
-//                                completion(success: true, user: user)
-//                            } else {
-//                                print("error")
-//                                completion(success: false, user: nil)
+                            completion(success: true, user: user)
+//                            record?.setObject(fullName, forKey: "FullName")
+//                            if let record = record {
+//                                self.defaultContainer?.privateCloudDatabase.saveRecord(record, completionHandler: { (record, error) in
+//                                    if error == nil {
+//                                        completion(success: true, user: user)
+//                                    } else {
+//                                        NSLog("ERROR: \(error?.localizedDescription)")
+//                                        completion(success: false, user: nil)
+//                                    }
+//                                })
 //                            }
-//                        
-//                    })
+
+                            
+//                            if let record = record {
+//                                let savedRecordsOp = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+//                                savedRecordsOp.savePolicy = .IfServerRecordUnchanged
+//                                savedRecordsOp.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+//                                    
+//                                    if error != nil {
+//                                        NSLog("ERROR: \(error?.localizedDescription)")
+//                                        completion(success: false, user: nil)
+//                                    } else {
+//                                        completion(success: true, user: user)
+//                                    }
+//                                }
+//                                self.defaultContainer?.privateCloudDatabase.addOperation(savedRecordsOp)
+//                            }
+
+                        }
                     } else {
-                        print("Couldn't fetch User info")
+                        NSLog("COULDN'T FETCH USER INFO")
                         completion(success: false, user: nil)
                     }
                 }
             } else {
+                NSLog("COULDN'T FETCH USER")
                 completion(success: false, user: nil)
             }
         }
@@ -203,7 +211,7 @@ class UserController {
             if error == nil {
                 completion(success: true)
             } else {
-                print(error?.localizedDescription)
+                NSLog("ERROR: \(error?.localizedDescription)")
                 completion(success: false)
             }
         }
@@ -221,38 +229,55 @@ class UserController {
             }
         }
     }
+
+//    func getAllUsers(completion:(users:[User]) -> Void) {
+//        let predicate = NSPredicate(value: true)
+//        let query = CKQuery(recordType: "Relationship", predicate: predicate)
+//        self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
+//            if let records = records {
+//                for record in records {
+//                    let ref = record["UserIDRef"] as! CKReference
+//                    let ID = ref.recordID
+//                    self.
+//                }
+//            } else {
+//                
+//            }
+//        })
+//    }
     
     
     func searchAllUsers(searchTerm: String, completion:(success: Bool, users: [User]?) -> Void) {
         var tempUsers = [User]()
         let predicate = NSPredicate(format: "FullName BEGINSWITH %@", searchTerm)
         let query = CKQuery(recordType: "Relationship", predicate: predicate)
-
-        self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
-            if let records = records {
-                for record in records {
-                    let ref = record["UserIDRef"] as! CKReference
-                    let ID = ref.recordID
-                    self.defaultContainer?.publicCloudDatabase.fetchRecordWithID(ID, completionHandler: { (userRecord, error) in
-                        if error == nil {
-                            let UID = userRecord?.recordID
-                            let fullName = record["FullName"] as! String
-                            let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:nil)
-                            tempUsers.append(user)
-                            if record == records.last {
-                                completion(success: true, users: tempUsers)
+        dispatch_async(dispatch_get_main_queue()) { 
+            self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
+                if let records = records {
+                    for record in records {
+                        let ref = record["UserIDRef"] as! CKReference
+                        let ID = ref.recordID
+                        self.defaultContainer?.publicCloudDatabase.fetchRecordWithID(ID, completionHandler: { (userRecord, error) in
+                            if error == nil {
+                                let UID = userRecord?.recordID
+                                let fullName = record["FullName"] as! String
+                                let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:nil)
+                                tempUsers.append(user)
+                                if record == records.last {
+                                    completion(success: true, users: tempUsers)
+                                }
+                            } else {
+                                completion(success: false, users: nil)
+                                print("error searching users \(error?.localizedDescription)")
                             }
-                        } else {
-                            completion(success: false, users: nil)
-                            print("error searching users \(error?.localizedDescription)")
-                        }
-                    })
+                        })
+                    }
+                } else {
+                    completion(success: false, users: nil)
+                    print("error searching users \(error?.localizedDescription)")
                 }
-            } else {
-                completion(success: false, users: nil)
-                print("error searching users \(error?.localizedDescription)")
-            }
-        })
+            })
+        }
     }
     
 }

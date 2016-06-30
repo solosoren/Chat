@@ -49,24 +49,67 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     
     @IBAction func saveImageTapped(sender: AnyObject) {
         if self.imageView.image != nil {
-            self.saveImage({ (success) in
-//                    loading animation
+            
+//        TODO: fix activity indicator throughout
+            let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+            indicator.center = view.center
+            view.addSubview(indicator)
+            indicator.startAnimating()
+            self.saveImage({ (success, record) in
+
 
                 if success {
                     dispatch_async(dispatch_get_main_queue(), {
-                        let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
-                        let ok = UIAlertAction(title: "Okay", style: .Cancel, handler: {
-                            (action) in
-                            self.performSegueWithIdentifier("loggedIn", sender: self)
+                        let alert = UIAlertController(title: "One last thing", message: "Would you like to add all your contacts that are already Socializing", preferredStyle: .Alert)
+                        let yes = UIAlertAction(title: "Yes", style: .Default, handler: { (action) in
+                            
+                            UserController.sharedInstance.setFriends(UserController.sharedInstance.currentUser!, record: record!, completion: { (success, user) in
+                                if success {
+                                    dispatch_async(dispatch_get_main_queue(), {
+                                        indicator.stopAnimating()
+                                        let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
+                                        let ok = UIAlertAction(title: "Okay", style: .Default, handler: {
+                                            (action) in
+                                            self.performSegueWithIdentifier("loggedIn", sender: self)
+                                        })
+                                        successAlert.addAction(ok)
+                                        self.presentViewController(successAlert, animated: true, completion:nil)
+                                    })
+                                } else {
+//         TODO: add where they can go to try again to get friends
+                                    dispatch_async(dispatch_get_main_queue(), {
+                                        indicator.stopAnimating()
+                                        let unsuccessful = UIAlertController(title: "Uh Oh", message: "We are having troubles getting your contacts", preferredStyle: .Alert)
+                                        let action = UIAlertAction(title: "Okay", style: .Default, handler: { (action) in
+                                            self.performSegueWithIdentifier("loggedIn", sender: self)
+                                        })
+                                        unsuccessful.addAction(action)
+                                        self.presentViewController(unsuccessful, animated: true, completion: nil)
+                                    })
+                                }
+                            })
                         })
-                        successAlert.addAction(ok)
-                        self.presentViewController(successAlert, animated: true, completion:nil)
+                        let no = UIAlertAction(title: "No", style: .Cancel, handler: { (action) in
+                            indicator.stopAnimating()
+                            let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
+                            let ok = UIAlertAction(title: "Okay", style: .Default, handler: {
+                                (action) in
+                                self.performSegueWithIdentifier("loggedIn", sender: self)
+                            })
+                            successAlert.addAction(ok)
+                            self.presentViewController(successAlert, animated: true, completion:nil)
+                        })
+                        
+                        alert.addAction(yes)
+                        alert.addAction(no)
+                        self.presentViewController(alert, animated: true, completion: nil)
                     })
                     
                 } else {
                     let errorAlert = UIAlertController(title: "Oops", message: "Error adding profile image to account", preferredStyle: .Alert)
                     let retry = UIAlertAction(title: "Retry", style: .Default, handler: nil)
                     errorAlert.addAction(retry)
+//                    TODO: fix?
                     let ignore = UIAlertAction(title: "Continue without one", style: .Default, handler: { (action) in
                         self.performSegueWithIdentifier("loggedIn", sender: self)
                     })
@@ -78,7 +121,7 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
             
         } else {
             let noImageAlert = UIAlertController(title: "No Image", message: "Add a photo to continue", preferredStyle: .Alert)
-            let ok = UIAlertAction(title: "Okay", style: .Cancel, handler: nil)
+            let ok = UIAlertAction(title: "Okay", style: .Default, handler: nil)
             noImageAlert.addAction(ok)
             self.presentViewController(noImageAlert, animated: true, completion: nil)
         }
@@ -86,7 +129,7 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
         
     }
     
-    func saveImage(completion:(success:Bool) -> Void) {
+    func saveImage(completion:(success:Bool, record: CKRecord?) -> Void) {
         UserController.sharedInstance.fetchRecord { (success, record) in
             if success {
                 do {
@@ -95,25 +138,33 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
                 }
                 catch {
                     print("Error creating assets", error)
-                    completion(success: false)
+                    completion(success: false, record: nil)
                 }
                 
                 CKContainer.defaultContainer().privateCloudDatabase.saveRecord(record!, completionHandler: { (record, error) in
                     if error == nil {
-                        completion(success: true)
+                        completion(success: true, record: record)
                     } else {
-                        completion(success: false)
+                        completion(success: false, record: nil)
                     }
                 })
             } else {
-                completion(success: false)
+                completion(success: false, record: nil)
             }
         }
     }
     
+//    figure out how to get record so I can ask if they want to add friends
     @IBAction func skipButtonTapped(sender: AnyObject) {
-        self.performSegueWithIdentifier("loggedIn", sender: self)
-        
+        dispatch_async(dispatch_get_main_queue(), {
+            let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
+            let ok = UIAlertAction(title: "Okay", style: .Default, handler: {
+                (action) in
+                self.performSegueWithIdentifier("loggedIn", sender: self)
+            })
+            successAlert.addAction(ok)
+            self.presentViewController(successAlert, animated: true, completion:nil)
+        })
     }
     
 }

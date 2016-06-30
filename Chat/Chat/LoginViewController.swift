@@ -19,12 +19,18 @@ class LoginViewController: UIViewController {
         return UIStatusBarStyle.LightContent
     }
     
+    @IBAction func cancelButtonTapped(sender: AnyObject) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
     @IBAction func loginButtonTapped(sender: AnyObject) {
+//        TODO: fix activity indicator
+        
         let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
         indicator.center = view.center
         view.addSubview(indicator)
         indicator.startAnimating()
-        self.iCloudLogin { (success) in
+        self.iCloudLogin { (success, user) in
             if success {
                 dispatch_async(dispatch_get_main_queue()) { () -> Void in
                     indicator.stopAnimating()
@@ -47,27 +53,31 @@ class LoginViewController: UIViewController {
         }
     }
     
-    func iCloudLogin(completion:(success: Bool) -> Void) {
+    func iCloudLogin(completion:(success: Bool, user: User?) -> Void) {
         UserController.sharedInstance.requestPermission { (success) in
             if success {
                 UserController.sharedInstance.fetchUser({ (success, user) in
-                    if success {
-                        UserController.sharedInstance.fetchUserInfoAndSetUserName(user!, completion: { (success, user) in
+                    if let user = user {
+                        UserController.sharedInstance.fetchUserInfoAndSetUserName(user, completion: { (success, user) in
                             if success {
-                                UserController.sharedInstance.currentUser = user
-                                UserController.sharedInstance.createRelationship(user!, completion: { (success) in
-                                    if success {
-                                        completion(success: true)
-                                    } else {
-                                        dispatch_async(dispatch_get_main_queue(), {
-                                            let alert = UIAlertController(title: "Couldn't Create Relationship", message: "Tell Soren it didn't work!", preferredStyle: .Alert)
-                                            let action = UIAlertAction(title: "Will Do", style: .Default, handler: nil)
-                                            alert.addAction(action)
-                                            self.presentViewController(alert, animated: true, completion: nil)
-                                        })
-                                        completion(success: false)
-                                    }
-                                })
+                                if let user = user {
+                                    UserController.sharedInstance.currentUser = user
+                                    UserController.sharedInstance.createRelationship(user, completion: { (success) in
+                                        if success {
+                                            completion(success: true, user: user)
+                                        } else {
+                                            dispatch_async(dispatch_get_main_queue(), {
+                                                let alert = UIAlertController(title: "Couldn't Create Relationship", message: "Tell Soren it didn't work!", preferredStyle: .Alert)
+                                                let action = UIAlertAction(title: "Will Do", style: .Default, handler: nil)
+                                                alert.addAction(action)
+                                                self.presentViewController(alert, animated: true, completion: nil)
+                                            })
+                                            completion(success: false, user: nil)
+                                        }
+                                    })
+                                } else {
+                                    completion(success: false, user: nil)
+                                }
                             } else {
                                 dispatch_async(dispatch_get_main_queue(), { 
                                     let alert = UIAlertController(title: "Oops", message: "There was an issue fetching your user info", preferredStyle: .Alert)
@@ -75,7 +85,7 @@ class LoginViewController: UIViewController {
                                     alert.addAction(action)
                                     self.presentViewController(alert, animated: true, completion: nil)
                                 })
-                                completion(success: false)
+                                completion(success: false, user: nil)
                             }
                         })
                     } else {
@@ -85,18 +95,19 @@ class LoginViewController: UIViewController {
                             alert.addAction(action)
                             self.presentViewController(alert, animated: true, completion: nil)
                         })
-                        completion(success: false)
+                        completion(success: false, user: nil)
                     }
                 })
             } else {
                 dispatch_async(dispatch_get_main_queue(), { 
-                    let iCloudAlert = UIAlertController(title: "iCloud Error", message: "Error connecting to iCloud. Check iCloud settings by going to Settings > iCloud.", preferredStyle: UIAlertControllerStyle.Alert)
+                    let iCloudAlert = UIAlertController(title: "iCloud Error", message: "Error connecting to iCloud. Check iCloud settings by going to Settings -> iCloud.", preferredStyle: UIAlertControllerStyle.Alert)
                     let ok = UIAlertAction(title: "OK", style: .Cancel, handler: nil)
                     iCloudAlert.addAction(ok)
                     self.presentViewController(iCloudAlert, animated: true, completion: nil)
                 })
-                completion(success: false)
+                completion(success: false, user: nil)
             }
         }
     }
+
 }

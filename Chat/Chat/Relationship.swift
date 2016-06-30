@@ -9,7 +9,7 @@
 import Foundation
 import CloudKit
 
-class Relationship {
+struct Relationship {
     
     private let nameKey = "FullName"
     private let userIDKey = "UserIDRef"

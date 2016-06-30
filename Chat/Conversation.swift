@@ -9,7 +9,7 @@
 import CloudKit
 import UIKit
 
-class Conversation {
+struct Conversation {
     
     private let groupNameKey = "GroupName"
     private let usersKey = "Users"

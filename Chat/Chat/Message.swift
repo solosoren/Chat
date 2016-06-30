@@ -9,7 +9,7 @@
 import UIKit
 import CloudKit
 
-class Message {
+struct Message {
     
     private let textKey = "MessageText"
     private let userPicKey = "UserPic"
