@@ -10,7 +10,8 @@ import UIKit
 
 class UserSearchTableViewCell: UITableViewCell {
     
+
     @IBOutlet weak var usernameLabel: UILabel!
-    
-    
+        
+    @IBOutlet var profilePic: UIImageView!
 }

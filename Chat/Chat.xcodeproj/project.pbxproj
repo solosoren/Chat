@@ -26,16 +26,18 @@
 		AC3CC8571CAF3A2500507EBB /* AddContactTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */; };
 		AC3CC8591CAF51B500507EBB /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */; };
 		AC3CC85B1CAF533400507EBB /* ProfileTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */; };
-		AC6891251CDEA0EA00D121F9 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6891241CDEA0EA00D121F9 /* Conversation.swift */; };
+		AC43C65E1D278C90008FCC25 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC43C65D1D278C90008FCC25 /* Conversation.swift */; };
 		AC7008941CD41EAF008E22E8 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7008931CD41EAF008E22E8 /* LoginViewController.swift */; };
 		AC78153F1CF0222800F1D04C /* AddPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC78153E1CF0222800F1D04C /* AddPhotoViewController.swift */; };
 		AC7815411CF1934700F1D04C /* CloudkitCKAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7815401CF1934600F1D04C /* CloudkitCKAsset.swift */; };
 		AC8079E01CE2572F004809EF /* ConversationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8079DF1CE2572F004809EF /* ConversationController.swift */; };
 		AC8600E51CBDF2370082F1C4 /* CreateGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */; };
 		AC9E1D3A1D1A56580074926C /* Relationship.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9E1D391D1A56580074926C /* Relationship.swift */; };
+		AC9E1D3C1D25B10A0074926C /* BigContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9E1D3B1D25B10A0074926C /* BigContactView.swift */; };
 		ACB1CB4D1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1CB4C1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift */; };
 		ACB1CB4F1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1CB4E1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift */; };
 		ACB69D5A1CC1E78C00FBAC24 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB69D591CC1E78C00FBAC24 /* CloudKit.framework */; };
+		ACFCCFEA1D2BB38400B67361 /* InitialLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFCCFE91D2BB38400B67361 /* InitialLoadingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -92,17 +94,19 @@
 		AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactTableViewController.swift; sourceTree = "<group>"; };
 		AC3CC8581CAF51B500507EBB /* MessagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingViewController.swift; sourceTree = "<group>"; };
 		AC3CC85A1CAF533400507EBB /* ProfileTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewController.swift; sourceTree = "<group>"; };
-		AC6891241CDEA0EA00D121F9 /* Conversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Conversation.swift; path = ../Conversation.swift; sourceTree = "<group>"; };
+		AC43C65D1D278C90008FCC25 /* Conversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Conversation.swift; path = ../Conversation.swift; sourceTree = "<group>"; };
 		AC7008931CD41EAF008E22E8 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		AC78153E1CF0222800F1D04C /* AddPhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddPhotoViewController.swift; sourceTree = "<group>"; };
 		AC7815401CF1934600F1D04C /* CloudkitCKAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudkitCKAsset.swift; sourceTree = "<group>"; };
 		AC8079DF1CE2572F004809EF /* ConversationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationController.swift; sourceTree = "<group>"; };
 		AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGroupViewController.swift; sourceTree = "<group>"; };
 		AC9E1D391D1A56580074926C /* Relationship.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Relationship.swift; sourceTree = "<group>"; };
+		AC9E1D3B1D25B10A0074926C /* BigContactView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BigContactView.swift; sourceTree = "<group>"; };
 		ACB1CB4C1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemMessageTableViewCell.swift; sourceTree = "<group>"; };
 		ACB1CB4E1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeMessageTableViewCell.swift; sourceTree = "<group>"; };
 		ACB69D561CC1DEAB00FBAC24 /* Chat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Chat.entitlements; sourceTree = "<group>"; };
 		ACB69D591CC1E78C00FBAC24 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		ACFCCFE91D2BB38400B67361 /* InitialLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialLoadingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,10 +138,10 @@
 		AC2B92231CCAC9B100157FD7 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				AC9E1D391D1A56580074926C /* Relationship.swift */,
 				AC8079E31CE2575B004809EF /* Message */,
 				AC8079E21CE2574D004809EF /* User */,
 				AC8079E11CE25742004809EF /* Conversation */,
-				AC9E1D391D1A56580074926C /* Relationship.swift */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -168,9 +172,11 @@
 			children = (
 				ACB69D561CC1DEAB00FBAC24 /* Chat.entitlements */,
 				AC3CC8161CAB2BC800507EBB /* AppDelegate.swift */,
+				ACFCCFE91D2BB38400B67361 /* InitialLoadingView.swift */,
 				AC3CC8541CAE22C300507EBB /* Home View */,
 				AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */,
 				AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */,
+				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
 				AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */,
 				ACB1CB501CD00FD600AE25E0 /* Messaging */,
 				AC7815441CF5179400F1D04C /* Profile */,
@@ -235,7 +241,7 @@
 		AC8079E11CE25742004809EF /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
-				AC6891241CDEA0EA00D121F9 /* Conversation.swift */,
+				AC43C65D1D278C90008FCC25 /* Conversation.swift */,
 				AC8079DF1CE2572F004809EF /* ConversationController.swift */,
 			);
 			name = Conversation;
@@ -407,6 +413,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC43C65E1D278C90008FCC25 /* Conversation.swift in Sources */,
 				AC78153F1CF0222800F1D04C /* AddPhotoViewController.swift in Sources */,
 				AC3CC8511CAE1FCB00507EBB /* ContactTableViewCell.swift in Sources */,
 				ACB1CB4D1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift in Sources */,
@@ -415,6 +422,7 @@
 				AC3CC8571CAF3A2500507EBB /* AddContactTableViewController.swift in Sources */,
 				AC3CC8531CAE22B400507EBB /* ContactCollectionCell.swift in Sources */,
 				AC2B92221CCAC9A400157FD7 /* UserController.swift in Sources */,
+				AC9E1D3C1D25B10A0074926C /* BigContactView.swift in Sources */,
 				ACB1CB4F1CD00F3C00AE25E0 /* MeMessageTableViewCell.swift in Sources */,
 				AC8600E51CBDF2370082F1C4 /* CreateGroupViewController.swift in Sources */,
 				AC3CC8171CAB2BC800507EBB /* AppDelegate.swift in Sources */,
@@ -422,13 +430,13 @@
 				AC2B92201CC847D400157FD7 /* MessageController.swift in Sources */,
 				AC243C2A1CF8255D0048E36D /* NotificationCell.swift in Sources */,
 				AC243C2C1CF9238A0048E36D /* UserSearchTableViewCell.swift in Sources */,
-				AC6891251CDEA0EA00D121F9 /* Conversation.swift in Sources */,
 				AC2B921C1CC4AFDA00157FD7 /* Message.swift in Sources */,
 				AC7008941CD41EAF008E22E8 /* LoginViewController.swift in Sources */,
 				AC3CC85B1CAF533400507EBB /* ProfileTableViewController.swift in Sources */,
 				AC7815411CF1934700F1D04C /* CloudkitCKAsset.swift in Sources */,
 				AC3CC8471CAB353F00507EBB /* HomeMessageCell.swift in Sources */,
 				AC2B921E1CC845BE00157FD7 /* User.swift in Sources */,
+				ACFCCFEA1D2BB38400B67361 /* InitialLoadingView.swift in Sources */,
 				AC9E1D3A1D1A56580074926C /* Relationship.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

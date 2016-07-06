@@ -4,44 +4,41 @@
 //
 //  Created by Soren Nelson on 3/29/16.
 //  Copyright © 2016 SORN. All rights reserved.
-//
+//  
 
 import CloudKit
 import UIKit
 
 class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
-    
+
     @IBOutlet var contactView: UIView!
-    @IBOutlet weak var segmentedControl: UISegmentedControl!
+
+    @IBOutlet var segmentedControl: UISegmentedControl!
+    
     @IBOutlet weak var tableView: UITableView!
     let darkView = UIView()
+    var requests: [CKReference]?
+    var numberInSection:Int?
+    var namesOfRequesters:[String]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavBar()
-//        self.performSegueWithIdentifier("loginSegue", sender: self)
-        
-        dispatch_async(dispatch_get_main_queue()) {
-            UserController.sharedInstance.checkForUser { (success) in
-                if success {
-
-                } else {
-                    self.performSegueWithIdentifier("loginSegue", sender: self)
-                }
-            }
-        }
+        self.tableView.reloadData()
     }
+    
+    @IBAction func unwindToHome(segue: UIStoryboardSegue) {}
  
 // MARK: Segmented Control
     
     @IBAction func segmentedControlChanged(sender: AnyObject) {
-        tableView.reloadData()
+        self.tableView.reloadData()
     }
+
     
 // MARK: TableView
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        
         if segmentedControl.selectedSegmentIndex == 0 {
             return 100
             
@@ -49,22 +46,21 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if indexPath.row == 0 {
                 return 55
                 
-            } else if indexPath.row == 1 {
-                return 95
-                
-            } else if indexPath.row == 2 {
-                return 85
-            
-            } else {
-//                (120(cell height) * # of friends) + 10 
+            } else if indexPath.row == self.numberInSection {
+//                TODO:
+//                (120(cell height) * # of friends) + 10
                 let contactCellHeight = (self.view.bounds.height * 2)
                 return contactCellHeight
+                
+            } else {
+                return 95
             }
         }
     }
     
+    
+//  TODO: create sections. Set
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
         if segmentedControl.selectedSegmentIndex == 0 {
             let convoCell = tableView.dequeueReusableCellWithIdentifier("conversationCell", forIndexPath: indexPath) as! HomeMessageCell
             return convoCell
@@ -73,23 +69,27 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if indexPath.row == 0 {
                 let addContactCell = tableView.dequeueReusableCellWithIdentifier("addContact", forIndexPath: indexPath)
                 return addContactCell
-                
-//        Im going to have to set all notifications for current user in an array and use that count
-//               else if indexpath.row == 1...(notificationCount + 1)
             
-            } else if indexPath.row == 1 {
-                let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath)
-                return notificationCell
-            
-            } else if indexPath.row == 2 {
-                let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath) as! NotificationCell
-                notificationCell.inviteLabel.text = "Soren Nelson wants to add you as a contact"
-                notificationCell.memberLabel.hidden = true
-                return notificationCell
-                
-            } else {
+            } else if indexPath.row == self.numberInSection {
                 let contactCell = tableView.dequeueReusableCellWithIdentifier("contactCell", forIndexPath: indexPath) as! ContactTableViewCell
                 return contactCell
+            } else {
+                let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath) as! NotificationCell
+                notificationCell.acceptButton.tag = indexPath.row - 1
+                notificationCell.declineButton.tag = indexPath.row - 1
+                if let namesOfRequesters = self.namesOfRequesters {
+                    if namesOfRequesters.count != 0 {
+                        print(namesOfRequesters)
+                        let index = indexPath.row - 1
+                        let name = namesOfRequesters[index]
+                        notificationCell.inviteLabel.text = "\(name) sent you a friend Request"
+                    } else {
+                        print("No count")
+                    }
+                } else {
+                    print(namesOfRequesters)
+                }
+                return notificationCell
             }
         }
     }
@@ -99,17 +99,82 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if segmentedControl.selectedSegmentIndex == 0 {
             return 2
         } else {
-            return 4
+            if let requests = self.requests {
+                if requests.count == 0 {
+                    self.numberInSection = 1
+                    return 2
+                    
+                } else {
+                    let number = requests.count + 2
+                    self.numberInSection = number - 1
+                    return number
+                }
+            } else {
+                self.numberInSection = 1
+                return 2
+            }
         }
     }
-    
+
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if segmentedControl.selectedSegmentIndex == 0 {
             performSegueWithIdentifier("messageSegue", sender: self)
         }
         self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
+    
+// MARK: Friend Request actions
+    @IBAction func acceptButtonTapped(sender: AnyObject) {
+        let requester = self.requests?[sender.tag]
+        self.requests!.removeAtIndex(sender.tag)
+        UserController.sharedInstance.saveRecordArray(self.requests!, record: UserController.sharedInstance.myRelationshipRecord!, string: "FriendRequests") { (success) in
+            if success {
+                if UserController.sharedInstance.myRelationshipRecord!["Friends"] != nil {
+                    var friends = UserController.sharedInstance.myRelationshipRecord!["Friends"] as! [CKReference]
+                    friends += [requester!]
+                    UserController.sharedInstance.saveRecordArray(friends, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
+                        if success {
+                            dispatch_async(dispatch_get_main_queue(), {
+                                self.tableView.reloadData()
+                            })
+                        } else {
+                            
+                        }
+                    })
+                } else {
+                    var friends: [CKReference]
+                    friends = [requester!]
+                    UserController.sharedInstance.saveRecordArray(friends, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
+                        if success {
+                            dispatch_async(dispatch_get_main_queue(), { 
+                                self.tableView.reloadData()
+                            })
+                        } else {
+                            
+                        }
+                    })
+                    
+                }
+            } else {
+                
+            }
+        }
+        
+    }
  
+    @IBAction func declineButtonTapped(sender: AnyObject) {
+        self.requests?.removeAtIndex(sender.tag)
+        UserController.sharedInstance.saveRecordArray(self.requests!, record: UserController.sharedInstance.myRelationshipRecord!, string: "FriendRequests") { (success) in
+            if success {
+                dispatch_async(dispatch_get_main_queue(), { 
+                    self.tableView.reloadData()
+                })
+            }
+        }
+    }
+    
+    
+    
 // MARK: Collection View
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {

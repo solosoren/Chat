@@ -62,7 +62,7 @@ class LoginViewController: UIViewController {
                             if success {
                                 if let user = user {
                                     UserController.sharedInstance.currentUser = user
-                                    UserController.sharedInstance.createRelationship(user, completion: { (success) in
+                                    UserController.sharedInstance.createRelationship(user, completion: { (success, ref) in
                                         if success {
                                             completion(success: true, user: user)
                                         } else {
@@ -111,3 +111,8 @@ class LoginViewController: UIViewController {
     }
 
 }
+
+
+
+
+

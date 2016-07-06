@@ -7,11 +7,16 @@
 //
 
 import UIKit
+import CloudKit
 
 class NotificationCell: UITableViewCell {
      
+    @IBOutlet var profilePic: UIImageView!
     @IBOutlet weak var inviteLabel: UILabel!
-    @IBOutlet weak var memberLabel: UILabel!
     
+    @IBOutlet var acceptButton: UIButton!
+    
+    @IBOutlet var declineButton: UIButton!
+
     
 }

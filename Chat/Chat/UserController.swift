@@ -14,7 +14,8 @@ class UserController {
     static let sharedInstance = UserController()
     var defaultContainer: CKContainer?
     var currentUser:User?
-//    var allUsers = [User]()
+    var myRelationshipRecord:CKRecord?
+//    var requests: [CKReference]?
     
     init() {
         defaultContainer = CKContainer.defaultContainer()
@@ -64,7 +65,7 @@ class UserController {
                     references.append(reference)
                 }
                 user.friends = references
-                record.setValue(references, forKey: "Friends")
+                record.setObject(references, forKey: "Friends")
                 
                 self.defaultContainer?.privateCloudDatabase.saveRecord(record, completionHandler: { (record, error) in
                     if error == nil {
@@ -78,6 +79,61 @@ class UserController {
                 user.friends! = []
             }
         })
+    }
+    
+//    TODO: query to see if the friend is already a user
+    
+    func sendRequest(user:User, friend:User, completion:(success: Bool, record:CKRecord?) -> Void) {
+        self.queryForRelationshipByName(friend) { (success, relationshipRecord) in
+            if success {
+//                TODO: This might not work. Haven't tested out whether I need this or not
+                if relationshipRecord!["FriendRequests"] != nil {
+                    var priorRequests = relationshipRecord!["FriendRequests"] as! [CKReference]
+                    let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
+                    priorRequests.append(ref)
+                    relationshipRecord?.setObject(priorRequests, forKey: "FriendRequests")
+                    
+                    self.defaultContainer?.publicCloudDatabase.saveRecord(relationshipRecord!, completionHandler: { (record, error) in
+                        if error == nil {
+                            completion(success: true, record: record)
+                        } else {
+                            completion(success: false, record: nil)
+                        }
+                    })
+                } else {
+                    let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
+                    let requests = [ref]
+                    relationshipRecord?.setObject(requests, forKey: "FriendRequests")
+                    
+                    self.defaultContainer?.publicCloudDatabase.saveRecord(relationshipRecord!, completionHandler: { (record, error) in
+                        if error == nil {
+                            completion(success: true, record: record)
+                        } else {
+                            completion(success: false, record: nil)
+                            NSLog("ERROR: \(error)")
+                        }
+                    })
+                }
+                
+            } else {
+                completion(success: false, record: nil)
+            }
+        }
+    }
+    
+    func saveRecordArray(array:NSArray, record: CKRecord, string: String, completion:(success:Bool) -> Void) {
+        record.setObject(array, forKey: string)
+        self.defaultContainer?.publicCloudDatabase.saveRecord(record, completionHandler: { (record, error) in
+            if error == nil {
+                completion(success: true)
+            } else {
+                completion(success: false)
+            }
+        })
+    }
+    
+    func switchRequestToFriend(completion:(success:Bool) -> Void) {
+        
     }
     
     
@@ -103,6 +159,7 @@ class UserController {
         }
         
     }
+    
     
 //      does the same thing as ^^ but this sets name to icloud
     func fetchUserInfoAndSetUserName(user: User, completion:(success: Bool, user: User?) -> Void) {
@@ -201,57 +258,85 @@ class UserController {
         })
     }
     
-    func createRelationship(user: User, completion:(success: Bool) -> Void) {
+    func createRelationship(user: User, completion:(success: Bool, ref: CKReference?) -> Void) {
         let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
-        let relationship = Relationship.init(fullName: user.fullName!, userID: ref)
+        let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil)
         let record = CKRecord(recordType: "Relationship")
         
         record.setValuesForKeysWithDictionary(relationship.toAnyObject() as! [String: AnyObject])
         self.defaultContainer!.publicCloudDatabase.saveRecord(record) { (relationship, error) in
             if error == nil {
-                completion(success: true)
+                completion(success: true, ref: ref)
             } else {
                 NSLog("ERROR: \(error?.localizedDescription)")
-                completion(success: false)
+                completion(success: false, ref: nil)
             }
         }
-        
     }
+    
+    func queryForMyRelationship(completion:(success: Bool, relationshipRecord: CKRecord?) -> Void) {
+        let pred = NSPredicate(format: "FullName == %@", (UserController.sharedInstance.currentUser?.fullName)!)
+        let query = CKQuery(recordType: "Relationship", predicate: pred)
+        self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
+            if error == nil {
+                for relationship in records! {
+                    if relationship == records?.last {
+                        completion(success: true, relationshipRecord: relationship)
+                    } else {
+                        completion(success: false, relationshipRecord: nil)
+                    }
+                }
 
-    func setImage(completion:(success:Bool, image: UIImage?) -> Void) {
-        self.fetchRecord { (success, record) in
-            if success {
-                if let asset = record!["ImageKey"] as? CKAsset, image = asset.image {
-                    completion(success: success, image: image)
+            } else {
+                completion(success: false, relationshipRecord: nil)
+            }
+        })
+    }
+    
+    func queryForRelationshipByName(user:User, completion:(success:Bool, relationshipRecord: CKRecord?) -> Void) {
+        let pred = NSPredicate(format: "FullName == %@", user.fullName!)
+        let query = CKQuery(recordType: "Relationship", predicate: pred)
+        self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
+            if error == nil {
+                for relationship in records! {
+                    if relationship == records?.last {
+                        completion(success: true, relationshipRecord: relationship)
+                    } else {
+                        completion(success: false, relationshipRecord: nil)
+                    }
+                }
+                
+            } else {
+                completion(success: false, relationshipRecord: nil)
+            }
+        })
+    }
+    
+    func queryForRelationshipbyUID(userID: CKRecordID, completion:(success: Bool, relationshipRecord:CKRecord?) -> Void) {
+        let pred = NSPredicate(format: "UserIDRef = %@", userID)
+        let query = CKQuery(recordType: "Relationship", predicate: pred)
+        self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
+            if error == nil {
+                for relationship in records! {
+                    if relationship == records?.last {
+                        completion(success: true, relationshipRecord: relationship)
+                    } else {
+                        completion(success: false, relationshipRecord: nil)
+                    }
                 }
             } else {
-                completion(success: false, image: nil)
+                completion(success: false, relationshipRecord: nil)
             }
-        }
+        })
     }
 
-//    func getAllUsers(completion:(users:[User]) -> Void) {
-//        let predicate = NSPredicate(value: true)
-//        let query = CKQuery(recordType: "Relationship", predicate: predicate)
-//        self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
-//            if let records = records {
-//                for record in records {
-//                    let ref = record["UserIDRef"] as! CKReference
-//                    let ID = ref.recordID
-//                    self.
-//                }
-//            } else {
-//                
-//            }
-//        })
-//    }
     
     
     func searchAllUsers(searchTerm: String, completion:(success: Bool, users: [User]?) -> Void) {
         var tempUsers = [User]()
         let predicate = NSPredicate(format: "FullName BEGINSWITH %@", searchTerm)
         let query = CKQuery(recordType: "Relationship", predicate: predicate)
-        dispatch_async(dispatch_get_main_queue()) { 
+        dispatch_async(dispatch_get_main_queue()) {
             self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
                 if let records = records {
                     for record in records {
@@ -261,6 +346,7 @@ class UserController {
                             if error == nil {
                                 let UID = userRecord?.recordID
                                 let fullName = record["FullName"] as! String
+//                                let pic = userRecord["ImageKey"] 
                                 let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:nil)
                                 tempUsers.append(user)
                                 if record == records.last {
@@ -280,6 +366,21 @@ class UserController {
         }
     }
     
+    
+    func grabImage(user:User, completion:(success: Bool, image: UIImage?) -> Void) {
+        self.queryForRelationshipByName(user) { (success, relationshipRecord) in
+            if success {
+                if let asset = relationshipRecord!["ImageKey"] as? CKAsset {
+                    let image = asset.image
+                    completion(success: true, image: image)
+                } else {
+                    completion(success: false, image: nil)
+                }
+            } else {
+                completion(success: false, image: nil)
+            }
+        }
+    }
 }
 
 

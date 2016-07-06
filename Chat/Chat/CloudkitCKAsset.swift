@@ -40,6 +40,7 @@ extension CKAsset {
 }
 
 extension UIImage {
+    
     func saveToTempLocationWithFileType(fileType: ImageFileType) throws -> NSURL {
         let imageData: NSData?
         
@@ -59,4 +60,8 @@ extension UIImage {
         
         return url
     }
+    
+    
+    
+    
 }

@@ -16,9 +16,10 @@ struct Relationship {
     
     var fullName:String
     var userID: CKReference
+    var profilePic: CKAsset?
+    var requests: [CKReference]?
     
-    
-    init(fullName: String, userID:CKReference) {
+    init(fullName: String, userID:CKReference, requests: [CKReference]?) {
         self.fullName = fullName
         self.userID = userID
     }

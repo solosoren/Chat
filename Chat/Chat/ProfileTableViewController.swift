@@ -25,7 +25,7 @@ class ProfileTableViewController: UITableViewController {
             if let fullName = UserController.sharedInstance.currentUser?.fullName {
                 self.displayName.text = fullName
             }
-            UserController.sharedInstance.setImage { (success, image) in
+            UserController.sharedInstance.grabImage(UserController.sharedInstance.currentUser!) { (success, image) in
                 if success {
                     self.profilePic.image = image
                 }
