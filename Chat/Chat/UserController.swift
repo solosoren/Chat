@@ -15,7 +15,7 @@ class UserController {
     var defaultContainer: CKContainer?
     var currentUser:User?
     var myRelationshipRecord:CKRecord?
-//    var requests: [CKReference]?
+    var myRelationship:Relationship?
     
     init() {
         defaultContainer = CKContainer.defaultContainer()
@@ -260,7 +260,7 @@ class UserController {
     
     func createRelationship(user: User, completion:(success: Bool, ref: CKReference?) -> Void) {
         let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
-        let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil)
+        let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil, friends: nil)
         let record = CKRecord(recordType: "Relationship")
         
         record.setValuesForKeysWithDictionary(relationship.toAnyObject() as! [String: AnyObject])
