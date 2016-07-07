@@ -24,12 +24,13 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginButtonTapped(sender: AnyObject) {
-//        TODO: fix activity indicator
         
+//        TODO: fix activity indicator
         let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
         indicator.center = view.center
         view.addSubview(indicator)
         indicator.startAnimating()
+        
         self.iCloudLogin { (success, user) in
             if success {
                 dispatch_async(dispatch_get_main_queue()) { () -> Void in
