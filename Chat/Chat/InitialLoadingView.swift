@@ -13,10 +13,27 @@ import CloudKit
 class InitialLoadingView: UIViewController {
     
 //    TODO: clean up self's
-//    TODO: fix all else error
+//          fix all else errors
+//          fix nav bar bottom line
+//          Need to subscribe to friend requests
+//          Need to subscribe to conversation
+//          time for messages
+//          messaging image on cell
+//          check out if add contact vc photos work with a bunch of contacts
+//          check if accept request adds friend to tableview
+//          skip login
+//          logout
+//          leave convo
+//          see who's in the convo
+    //         info button type thing?
+//          create group add button switch
+    //         maybe switch to checkmark once selected
+    //         deselection
+//          create group save button tapped segue to messaging view
     
     var friends: [Relationship] = []
     var requests: [Relationship] = []
+    var conversations: [Conversation] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,19 +44,17 @@ class InitialLoadingView: UIViewController {
         indicator.center = view.center
         view.addSubview(indicator)
         indicator.startAnimating()
-        
-//      TODO: Clean the FUCK up
-        
+                
         UserController.sharedInstance.checkForUser { (success) in
             if success {
                 NSLog("SSSSSSSSSSSSS: 1")
-                if UserController.sharedInstance.currentUser != nil {
-                    UserController.sharedInstance.queryForMyRelationship({ (success, relationshipRecord) in
+                if let me = UserController.sharedInstance.currentUser {
+                    UserController.sharedInstance.queryForMyRelationship(me, completion: { (success, relationshipRecord) in
                         if success {
                             NSLog("SSSSSSSSSSSSS: 2")
                             if let relationshipRecord = relationshipRecord {
                                 UserController.sharedInstance.myRelationshipRecord = relationshipRecord
-                                let myRelationship = Relationship(fullName: relationshipRecord["FullName"] as! String, userID: relationshipRecord["UserIDRef"] as! CKReference, requests: relationshipRecord["FriendRequests"] as? [CKReference], friends: relationshipRecord["Friends"] as? [CKReference])
+                                let myRelationship = Relationship(fullName: relationshipRecord["FullName"] as! String, userID: relationshipRecord["UserIDRef"] as! CKReference, requests: relationshipRecord["FriendRequests"] as? [CKReference], friends: relationshipRecord["Friends"] as? [CKReference], profilePic: relationshipRecord["ImageKey"] as? CKAsset)
                                 UserController.sharedInstance.myRelationship = myRelationship
                                 self.initiallyGrabRequests(myRelationship, completion: { (success) in
                                     if success {
@@ -47,9 +62,16 @@ class InitialLoadingView: UIViewController {
                                         self.initiallyGrabFriends(myRelationship, completion: { (success) in
                                             if success {
                                                 NSLog("SSSSSSSSSSSSS: 4")
-                                                dispatch_async(dispatch_get_main_queue(), { 
-                                                    indicator.stopAnimating()
-                                                    self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                self.initiallyGrabConvos({ (success) in
+                                                    if success {
+                                                        print("Convos: \(self.conversations)")
+                                                        dispatch_async(dispatch_get_main_queue(), {
+                                                            indicator.stopAnimating()
+                                                            self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                        })
+                                                    } else {
+                                                        NSLog("Couldn't grab initial conversations")
+                                                    }
                                                 })
                                             } else {
                                                 NSLog("SSSSSSSSSSSSS: 5")
@@ -103,7 +125,7 @@ class InitialLoadingView: UIViewController {
                 UserController.sharedInstance.queryForRelationshipbyUID(request.recordID) { (success, relationshipRecord) in
                     if let relationshipRecord = relationshipRecord {
                         NSLog("SSSSSSSSSSSSS: 8")
-                        let requestRelationship = Relationship(fullName: relationshipRecord["FullName"] as! String, userID: relationshipRecord["UserIDRef"] as! CKReference, requests: relationshipRecord["FriendRequests"] as? [CKReference], friends: relationshipRecord["Friends"] as? [CKReference])
+                        let requestRelationship = Relationship(fullName: relationshipRecord["FullName"] as! String, userID: relationshipRecord["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: relationshipRecord["ImageKey"] as? CKAsset)
                         self.requests += [requestRelationship]
                         if request == relationship.requests!.last {
                             NSLog("SSSSSSSSSSSSS: 9")
@@ -131,7 +153,7 @@ class InitialLoadingView: UIViewController {
                 UserController.sharedInstance.queryForRelationshipbyUID(friend.recordID, completion: { (success, relationshipRecord) in
                     if success {
                         NSLog("SSSSSSSSSSSSS: 11")
-                        let friendRelationship = Relationship(fullName: relationshipRecord!["FullName"] as! String, userID: relationshipRecord!["UserIDRef"] as! CKReference, requests: relationshipRecord!["FriendRequests"] as? [CKReference], friends: relationshipRecord!["Friends"] as? [CKReference])
+                        let friendRelationship = Relationship(fullName: relationshipRecord!["FullName"] as! String, userID: relationshipRecord!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: relationshipRecord!["ImageKey"] as? CKAsset)
                         self.friends += [friendRelationship]
                         if friend == relationship.friends?.last {
                             completion(success: true)
@@ -151,6 +173,18 @@ class InitialLoadingView: UIViewController {
             self.friends = []
             completion(success: true)
             NSLog("SSSSSSSSSSSSS: 14")
+        }
+    }
+    
+    func initiallyGrabConvos(completion:(success: Bool) -> Void) {
+        ConversationController().grabUserConversations(UserController.sharedInstance.myRelationship!) { (success, conversations) in
+            if success {
+                self.conversations = conversations!
+                completion(success: true)
+            } else {
+                self.conversations = []
+                completion(success: false)
+            }
         }
     }
 

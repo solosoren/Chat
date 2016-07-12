@@ -13,6 +13,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var keyboardView: UIView!
     @IBOutlet weak var messageTextView: UITextView!
+    var conversation: Conversation?
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -19,12 +19,14 @@ struct Conversation {
     var users: [CKReference]
     var convoName: String?
     var messages: [CKReference]?
+    var lastMessage: Message?
     
     //    init(convoName:String?, users:[CKReference], messages: [CKReference]?) {
-    init(convoName:String?, users:[CKReference]) {
+    init(convoName:String?, users:[CKReference], messages: [CKReference]?) {
         self.convoName = convoName
         self.users = users
         self.ref = nil
+        self.messages = messages
     }
     
     init(record:CKRecord) {

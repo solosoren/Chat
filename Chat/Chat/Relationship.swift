@@ -20,11 +20,12 @@ struct Relationship {
     var requests: [CKReference]?
     var friends: [CKReference]?
     
-    init(fullName: String, userID:CKReference, requests: [CKReference]?, friends: [CKReference]?) {
+    init(fullName: String, userID:CKReference, requests: [CKReference]?, friends: [CKReference]?, profilePic: CKAsset?) {
         self.fullName = fullName
         self.userID = userID
         self.requests = requests
         self.friends = friends
+        self.profilePic = profilePic
     }
     
     func toAnyObject() -> AnyObject {

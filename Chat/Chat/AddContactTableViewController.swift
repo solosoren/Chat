@@ -28,7 +28,8 @@ class AddContactTableViewController: UITableViewController {
         let searchResultsCell = tableView.dequeueReusableCellWithIdentifier("searchResultsCell", forIndexPath: indexPath) as! UserSearchTableViewCell
         let user = searchedUsers[indexPath.row]
         searchResultsCell.usernameLabel.text = user.fullName
-            UserController.sharedInstance.grabImage(user) { (success, image) in
+        dispatch_async(dispatch_get_main_queue()) { 
+            UserController.sharedInstance.grabImage(user.fullName!) { (success, image) in
                 if success == true {
                     dispatch_async(dispatch_get_main_queue()) {
                         searchResultsCell.profilePic.image = image
@@ -37,6 +38,7 @@ class AddContactTableViewController: UITableViewController {
                     searchResultsCell.profilePic.image = nil
                 }
             }
+        }
         return searchResultsCell
     }
     
@@ -58,11 +60,12 @@ class AddContactTableViewController: UITableViewController {
         let user = searchedUsers[indexPath.row]
         bigContactView.user = user
         bigContactView.name.text = user.fullName
-
-        UserController.sharedInstance.grabImage(user) { (success, image) in
-            if success == true {
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.bigContactView.profilePic.image = image
+        dispatch_async(dispatch_get_main_queue()) { 
+            UserController.sharedInstance.grabImage(user.fullName!) { (success, image) in
+                if success == true {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.bigContactView.profilePic.image = image
+                    }
                 }
             }
         }
@@ -130,6 +133,21 @@ class AddContactTableViewController: UITableViewController {
     @IBAction func dismissButtonTapped(sender: AnyObject) {
         bigContactView.removeFromSuperview()
         darkView.removeFromSuperview()
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "addedContact" {
+            let destinationVC = segue.destinationViewController as! HomeViewController
+            UserController.sharedInstance.queryForRelationshipByName(bigContactView.user!.fullName!, completion: { (success, relationshipRecord) in
+                if success {
+                    let asset = relationshipRecord!["imageKey"] as! CKAsset
+                    let request = Relationship(fullName: relationshipRecord!["FullName"] as! String, userID: relationshipRecord!["userIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: asset)
+                    destinationVC.myRequests! += [request]
+                } else {
+                    NSLog("Couldn't pass on request relationship")
+                }
+            })
+        }
     }
 
 }

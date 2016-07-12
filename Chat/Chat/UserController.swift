@@ -84,7 +84,7 @@ class UserController {
 //    TODO: query to see if the friend is already a user
     
     func sendRequest(user:User, friend:User, completion:(success: Bool, record:CKRecord?) -> Void) {
-        self.queryForRelationshipByName(friend) { (success, relationshipRecord) in
+        self.queryForRelationshipByName(friend.fullName!) { (success, relationshipRecord) in
             if success {
 //                TODO: This might not work. Haven't tested out whether I need this or not
                 if relationshipRecord!["FriendRequests"] != nil {
@@ -121,7 +121,7 @@ class UserController {
         }
     }
     
-    func saveRecordArray(array:NSArray, record: CKRecord, string: String, completion:(success:Bool) -> Void) {
+    func saveRecordArray(array:[CKReference], record: CKRecord, string: String, completion:(success:Bool) -> Void) {
         record.setObject(array, forKey: string)
         self.defaultContainer?.publicCloudDatabase.saveRecord(record, completionHandler: { (record, error) in
             if error == nil {
@@ -130,10 +130,6 @@ class UserController {
                 completion(success: false)
             }
         })
-    }
-    
-    func switchRequestToFriend(completion:(success:Bool) -> Void) {
-        
     }
     
     
@@ -260,7 +256,7 @@ class UserController {
     
     func createRelationship(user: User, completion:(success: Bool, ref: CKReference?) -> Void) {
         let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
-        let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil, friends: nil)
+        let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil, friends: nil, profilePic: nil)
         let record = CKRecord(recordType: "Relationship")
         
         record.setValuesForKeysWithDictionary(relationship.toAnyObject() as! [String: AnyObject])
@@ -274,8 +270,8 @@ class UserController {
         }
     }
     
-    func queryForMyRelationship(completion:(success: Bool, relationshipRecord: CKRecord?) -> Void) {
-        let pred = NSPredicate(format: "FullName == %@", (UserController.sharedInstance.currentUser?.fullName)!)
+    func queryForMyRelationship(user: User, completion:(success: Bool, relationshipRecord: CKRecord?) -> Void) {
+        let pred = NSPredicate(format: "FullName == %@",  user.fullName!)
         let query = CKQuery(recordType: "Relationship", predicate: pred)
         self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
             if error == nil {
@@ -288,13 +284,14 @@ class UserController {
                 }
 
             } else {
+                NSLog("ERROR Querying for my relationship: \(error?.localizedDescription)")
                 completion(success: false, relationshipRecord: nil)
             }
         })
     }
     
-    func queryForRelationshipByName(user:User, completion:(success:Bool, relationshipRecord: CKRecord?) -> Void) {
-        let pred = NSPredicate(format: "FullName == %@", user.fullName!)
+    func queryForRelationshipByName(userName:String, completion:(success:Bool, relationshipRecord: CKRecord?) -> Void) {
+        let pred = NSPredicate(format: "FullName == %@", userName)
         let query = CKQuery(recordType: "Relationship", predicate: pred)
         self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
             if error == nil {
@@ -325,6 +322,7 @@ class UserController {
                     }
                 }
             } else {
+                NSLog("Querying for relationship by UID ERROR: \(error?.localizedDescription)")
                 completion(success: false, relationshipRecord: nil)
             }
         })
@@ -346,8 +344,8 @@ class UserController {
                             if error == nil {
                                 let UID = userRecord?.recordID
                                 let fullName = record["FullName"] as! String
-//                                let pic = userRecord["ImageKey"] 
-                                let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:nil)
+                                let pic = record["ImageKey"] as! CKAsset
+                                let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:pic)
                                 tempUsers.append(user)
                                 if record == records.last {
                                     completion(success: true, users: tempUsers)
@@ -367,8 +365,8 @@ class UserController {
     }
     
     
-    func grabImage(user:User, completion:(success: Bool, image: UIImage?) -> Void) {
-        self.queryForRelationshipByName(user) { (success, relationshipRecord) in
+    func grabImage(string: String, completion:(success: Bool, image: UIImage?) -> Void) {
+        self.queryForRelationshipByName(string) { (success, relationshipRecord) in
             if success {
                 if let asset = relationshipRecord!["ImageKey"] as? CKAsset {
                     let image = asset.image

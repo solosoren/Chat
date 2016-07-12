@@ -25,11 +25,11 @@ class ProfileTableViewController: UITableViewController {
             if let fullName = UserController.sharedInstance.currentUser?.fullName {
                 self.displayName.text = fullName
             }
-            UserController.sharedInstance.grabImage(UserController.sharedInstance.currentUser!) { (success, image) in
-                if success {
-                    self.profilePic.image = image
-                }
+//            TODO: fix by changing to my relationship so you arent constantly querying
+            if let asset = UserController.sharedInstance.myRelationship?.profilePic {
+                self.profilePic.image = asset.image
             }
+            
 
         }
         self.setNavBar()

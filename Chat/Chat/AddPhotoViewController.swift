@@ -136,7 +136,7 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     }
     
     func saveImage(completion:(success:Bool, record: CKRecord?) -> Void) {
-        UserController.sharedInstance.queryForMyRelationship { (success, record) in
+        UserController.sharedInstance.queryForMyRelationship(UserController.sharedInstance.currentUser!) { (success, record) in
             if success {
                 do {
                     let asset = try CKAsset(image: self.imageView.image!)

@@ -12,6 +12,7 @@ import CloudKit
 class CreateGroupViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UITextViewDelegate {
     
     @IBOutlet weak var groupTitle: UITextField!
+    var contacts:[Relationship]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +46,7 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
     
     @IBAction func saveButtonTapped(sender: AnyObject) {
         let currentUserRef = CKReference(recordID: UserController.sharedInstance.currentUser!.userID, action: CKReferenceAction.None)
-        let conversation = Conversation.init(convoName: groupTitle.text!, users: [currentUserRef])
+        let conversation = Conversation.init(convoName: groupTitle.text!, users: [currentUserRef], messages: nil)
         ConversationController.createConversation(conversation) { (success) in
             if success {
                 print("It Worked!")

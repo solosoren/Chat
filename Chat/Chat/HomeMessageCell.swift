@@ -13,6 +13,7 @@ class HomeMessageCell: UITableViewCell {
     @IBOutlet weak var userImage: UIImageView!
     @IBOutlet weak var messageText: UILabel!
     @IBOutlet weak var messageTime: UILabel!
+    @IBOutlet var userName: UILabel!
     
     
 }
