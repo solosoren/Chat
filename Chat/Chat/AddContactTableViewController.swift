@@ -137,16 +137,7 @@ class AddContactTableViewController: UITableViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "addedContact" {
-            let destinationVC = segue.destinationViewController as! HomeViewController
-            UserController.sharedInstance.queryForRelationshipByName(bigContactView.user!.fullName!, completion: { (success, relationshipRecord) in
-                if success {
-                    let asset = relationshipRecord!["imageKey"] as! CKAsset
-                    let request = Relationship(fullName: relationshipRecord!["FullName"] as! String, userID: relationshipRecord!["userIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: asset)
-                    destinationVC.myRequests! += [request]
-                } else {
-                    NSLog("Couldn't pass on request relationship")
-                }
-            })
+//          subscribe to request?
         }
     }
 

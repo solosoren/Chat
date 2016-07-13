@@ -23,6 +23,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //    var friends: [CKReference]?
     var myFriends: [Relationship]?
     var myConversations: [Conversation]?
+    var passOnConvo: Conversation?
     var contactRelationship: Relationship?
     var addContactIndex:Int?
     
@@ -74,9 +75,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         if segmentedControl.selectedSegmentIndex == 0 {
             let convoCell = tableView.dequeueReusableCellWithIdentifier("conversationCell", forIndexPath: indexPath) as! HomeMessageCell
-            let convo = myConversations![indexPath.row]
-            convoCell.messageText.text = convo.lastMessage?.messageText
-            convoCell.userName.text = convo.convoName
+            passOnConvo = myConversations![indexPath.row]
+            convoCell.messageText.text = passOnConvo!.lastMessage?.messageText
+            convoCell.userName.text = passOnConvo!.convoName
             return convoCell
             
         } else {
@@ -118,7 +119,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if segmentedControl.selectedSegmentIndex == 0 {
-            return (myConversations?.count)!
+            if myConversations?.count != 0 {
+                return (myConversations?.count)!
+            } else {
+                return 0
+            }
+            
         } else {
             if let requests = self.myRequests {
                 if requests.count == 0 {
@@ -140,9 +146,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if segmentedControl.selectedSegmentIndex == 0 {
             performSegueWithIdentifier("messageSegue", sender: self)
-            MessagingViewController().conversation = myConversations![indexPath.row]
         }
         self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "messageSegue" {
+            let destinationVC = segue.destinationViewController as! MessagingViewController
+            destinationVC.conversation = self.passOnConvo
+        }
     }
     
     
@@ -168,8 +180,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         if success {
                             let record = UserController.sharedInstance.myRelationshipRecord
                             let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
-                            self.myFriends! += [relationship]
                             dispatch_async(dispatch_get_main_queue(), {
+//                                TODO: see why not reloading into the tableview
+                                self.myFriends! += [relationship]
                                 self.tableView.reloadData()
                                 
                             })
@@ -302,7 +315,6 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 })
                 MessagingViewController().conversation = conversation
                 self.myConversations! += [conversation]
-                print("Convo: \(conversation.users)")
             } else {
                 print("Not this time")
             }

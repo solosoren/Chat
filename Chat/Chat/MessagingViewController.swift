@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CloudKit
 
 class MessagingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate {
     
@@ -48,15 +49,51 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     @IBAction func sendMessageTapped(sender: AnyObject) {
         if messageTextView.text.isEmpty == false {
-            messageTextView.resignFirstResponder()
-            let message = Message(senderUID: (UserController.sharedInstance.currentUser?.userID)!, messageText: messageTextView.text)
-            MessageController.postMessage(message) { (success) in
+            dispatch_async(dispatch_get_main_queue(), { 
+                self.messageTextView.resignFirstResponder()
+            })
+            let message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text)
+            MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
-                    print("It Worked!")
-                    print(message.senderUID)
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.messageTextView.text = ""
-                    })
+                    let record = CKRecord(recordType: "Conversation", recordID: self.conversation!.ref!)
+                    let ref = CKReference(record: messageRecord!, action: .DeleteSelf)
+                    if record["Messages"] != nil {
+                        var messages = record["Messages"] as! [CKReference]
+                        messages += [ref]
+                        record.setValue(messages, forKey: "Messages")
+                        let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+                        mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+                            if error == nil {
+                                print("It Worked!")
+                                print(message.senderUID)
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    self.messageTextView.text = ""
+                                })
+                            } else {
+                                print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
+                            }
+                        }
+                        CKContainer.defaultContainer().publicCloudDatabase.addOperation(mod)
+
+                    } else {
+                        let messages = [ref]
+                        record.setValue(messages, forKey: "Messages")
+                        let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+                        mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+                            if error == nil {
+                                print("It Worked!")
+                                print(message.senderUID)
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    self.messageTextView.text = ""
+                                })
+                            } else {
+                                
+                                print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
+                            }
+                        }
+                        CKContainer.defaultContainer().publicCloudDatabase.addOperation(mod)
+                    }
+                    
                 } else {
                     print("Not this time")
                 }

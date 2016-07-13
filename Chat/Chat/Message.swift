@@ -14,14 +14,14 @@ struct Message {
     private let textKey = "MessageText"
     private let userPicKey = "UserPic"
     
-    var senderUID: CKRecordID
+    var senderUID: CKReference
     var messageText: String
     let ref: CKReference?
 //    var time: NSDate?
 //    var userPic: CKAsset?
     
 
-    init(senderUID: CKRecordID, messageText:String) {
+    init(senderUID: CKReference, messageText:String) {
         self.senderUID = senderUID
         self.messageText = messageText
         self.ref = nil
@@ -30,7 +30,7 @@ struct Message {
     }
     
     init(record:CKRecord) {
-        self.senderUID = record.creatorUserRecordID!
+        self.senderUID = (UserController.sharedInstance.myRelationship?.userID)!
         self.messageText = record.objectForKey(textKey) as? String ?? ""
         self.ref = CKReference(record: record, action: CKReferenceAction.DeleteSelf)
 //        if record.creationDate != nil {
@@ -42,7 +42,8 @@ struct Message {
     }
     
     func toAnyObject() -> AnyObject {
-        return [textKey:messageText]
+        return [textKey:messageText,
+                "SenderUID":senderUID]
     }
     
 }

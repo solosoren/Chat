@@ -15,17 +15,15 @@ struct Conversation {
     private let usersKey = "Users"
     private let messagesKey = "Messages"
     
-    let ref: CKReference?
+    var ref: CKRecordID?
     var users: [CKReference]
     var convoName: String?
     var messages: [CKReference]?
     var lastMessage: Message?
     
-    //    init(convoName:String?, users:[CKReference], messages: [CKReference]?) {
     init(convoName:String?, users:[CKReference], messages: [CKReference]?) {
         self.convoName = convoName
         self.users = users
-        self.ref = nil
         self.messages = messages
     }
     
@@ -33,7 +31,6 @@ struct Conversation {
         self.convoName = record.objectForKey(groupNameKey) as? String ?? ""
         self.users = record.objectForKey(usersKey) as! [CKReference]
         self.messages = record.objectForKey(messagesKey) as? [CKReference] ?? []
-        self.ref = CKReference(record: record, action: CKReferenceAction.DeleteSelf)
     }
     
     func toAnyObject() -> AnyObject {
@@ -44,30 +41,7 @@ struct Conversation {
         } else {
             return [usersKey:users]
         }
-        
-        //        if let groupName = convoName {
-        //            if let messages = messages {
-        //                return [groupNameKey:groupName,
-        //                        usersKey:users,
-        //                        messagesKey:messages]
-        //            } else {
-        //                return [groupNameKey: groupName,
-        //                        usersKey: users,
-        //                        messagesKey: []]
-        //            }
-        //        } else {
-        //            if let messages = messages {
-        //                return [groupNameKey:"",
-        //                        usersKey:users,
-        //                        messagesKey:messages]
-        //            } else {
-        //                return [groupNameKey: "",
-        //                        usersKey:users,
-        //                        messagesKey: []]
-        //            }
-        //
-        //        }
-        //        
+             
     }
     
     

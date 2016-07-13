@@ -138,7 +138,6 @@
 		AC2B92231CCAC9B100157FD7 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
-				AC9E1D391D1A56580074926C /* Relationship.swift */,
 				AC8079E31CE2575B004809EF /* Message */,
 				AC8079E21CE2574D004809EF /* User */,
 				AC8079E11CE25742004809EF /* Conversation */,
@@ -175,7 +174,6 @@
 				ACFCCFE91D2BB38400B67361 /* InitialLoadingView.swift */,
 				AC3CC8541CAE22C300507EBB /* Home View */,
 				AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */,
-				AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */,
 				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
 				AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */,
 				ACB1CB501CD00FD600AE25E0 /* Messaging */,
@@ -224,6 +222,7 @@
 			children = (
 				AC3CC8501CAE1FCB00507EBB /* ContactTableViewCell.swift */,
 				AC3CC8521CAE22B400507EBB /* ContactCollectionCell.swift */,
+				AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */,
 			);
 			name = Contacts;
 			sourceTree = "<group>";
@@ -250,6 +249,7 @@
 		AC8079E21CE2574D004809EF /* User */ = {
 			isa = PBXGroup;
 			children = (
+				AC9E1D391D1A56580074926C /* Relationship.swift */,
 				AC2B921D1CC845BE00157FD7 /* User.swift */,
 				AC2B92211CCAC9A400157FD7 /* UserController.swift */,
 			);

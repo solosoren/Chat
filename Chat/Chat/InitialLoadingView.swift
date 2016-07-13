@@ -114,12 +114,16 @@ class InitialLoadingView: UIViewController {
             let destinationVC = segue.destinationViewController as! HomeViewController
             destinationVC.myRequests = self.requests
             destinationVC.myFriends = self.friends
+            destinationVC.myConversations = self.conversations
         }
     }
     
     func initiallyGrabRequests(relationship:Relationship, completion:(success: Bool) -> Void) {
         
-        if relationship.requests! != [] {
+        if relationship.requests == nil {
+            self.requests = []
+            completion(success: true)
+        } else if relationship.requests! != [] {
             NSLog("SSSSSSSSSSSSS: 7")
             for request in relationship.requests! {
                 UserController.sharedInstance.queryForRelationshipbyUID(request.recordID) { (success, relationshipRecord) in
@@ -147,7 +151,10 @@ class InitialLoadingView: UIViewController {
     
     func initiallyGrabFriends(relationship:Relationship, completion:(success: Bool) -> Void) {
         
-        if relationship.friends! != [] {
+        if relationship.friends == nil {
+            self.friends = []
+            completion(success: true)
+        } else if relationship.friends! != [] {
             NSLog("SSSSSSSSSSSSS: 10")
             for friend in relationship.friends! {
                 UserController.sharedInstance.queryForRelationshipbyUID(friend.recordID, completion: { (success, relationshipRecord) in
@@ -157,7 +164,6 @@ class InitialLoadingView: UIViewController {
                         self.friends += [friendRelationship]
                         if friend == relationship.friends?.last {
                             completion(success: true)
-                            NSLog("SSSSSSSSSSSSS: 12")
                         }
                     } else {
                         self.friends = []
