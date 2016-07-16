@@ -12,28 +12,35 @@ import CloudKit
 
 class InitialLoadingView: UIViewController {
     
-//    TODO: clean up self's
-//          fix all else errors
+
+//    TODO: fix all else errors
 //          fix nav bar bottom line
 //          Need to subscribe to friend requests
 //          Need to subscribe to conversation
 //          time for messages
 //          messaging image on cell
 //          check out if add contact vc photos work with a bunch of contacts
-//          check if accept request adds friend to tableview
+//          fix accept request adding friend to tableview
 //          skip login
 //          logout
-//          leave convo
-//          see who's in the convo
+//          conversation messages ordered by date
+//          set dates for messages
+    
+//          leave convo ||||||| maybe??
+//          see who's in the convo |||||||| maybe??
     //         info button type thing?
-//          create group add button switch
+    
+//          create group add button switch |||||||| maybe??
     //         maybe switch to checkmark once selected
     //         deselection
-//          create group save button tapped segue to messaging view
+//          create group save button tapped segue to messaging view ||||| maybe??
+    
+
     
     var friends: [Relationship] = []
     var requests: [Relationship] = []
     var conversations: [Conversation] = []
+    var convoRecords: [CKRecord] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,7 +71,7 @@ class InitialLoadingView: UIViewController {
                                                 NSLog("SSSSSSSSSSSSS: 4")
                                                 self.initiallyGrabConvos({ (success) in
                                                     if success {
-                                                        print("Convos: \(self.conversations)")
+//                                                        print("Convos: \(self.conversations)")
                                                         dispatch_async(dispatch_get_main_queue(), {
                                                             indicator.stopAnimating()
                                                             self.performSegueWithIdentifier("initialLoad", sender: self)
@@ -115,6 +122,7 @@ class InitialLoadingView: UIViewController {
             destinationVC.myRequests = self.requests
             destinationVC.myFriends = self.friends
             destinationVC.myConversations = self.conversations
+            destinationVC.convoRecords = self.convoRecords
         }
     }
     
@@ -183,13 +191,15 @@ class InitialLoadingView: UIViewController {
     }
     
     func initiallyGrabConvos(completion:(success: Bool) -> Void) {
-        ConversationController().grabUserConversations(UserController.sharedInstance.myRelationship!) { (success, conversations) in
+        ConversationController().grabUserConversations(UserController.sharedInstance.myRelationship!) { (success, conversations, convoRecords) in
             if success {
                 self.conversations = conversations!
+                self.convoRecords = convoRecords!
                 completion(success: true)
             } else {
                 self.conversations = []
-                completion(success: false)
+//                throw error
+                completion(success: true)
             }
         }
     }

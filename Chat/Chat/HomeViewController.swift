@@ -23,7 +23,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //    var friends: [CKReference]?
     var myFriends: [Relationship]?
     var myConversations: [Conversation]?
+    var convoRecords: [CKRecord]?
     var passOnConvo: Conversation?
+    var convoRecord: CKRecord?
     var contactRelationship: Relationship?
     var addContactIndex:Int?
     
@@ -46,7 +48,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if segmentedControl.selectedSegmentIndex == 0 {
-            return 100
+            return 80
             
         } else {
             if indexPath.row == 0 {
@@ -55,15 +57,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             } else if indexPath.row == numberInSection {
                 
                 if (myFriends?.count)! % 2 == 1 {
-                    let contactCellHeight = CGFloat(145 * ((myFriends!.count + 1)/2)) + 40
+                    let contactCellHeight = CGFloat(145 * ((myFriends!.count + 1)/2)) + 30
                     return contactCellHeight
                 } else {
-                    let contactCelHeight = CGFloat(145 * (myFriends!.count/2)) + 40
+                    let contactCelHeight = CGFloat(145 * (myFriends!.count/2)) + 30
                     return contactCelHeight
                 }
         
             } else {
-                return 80
+                return 87
             }
         }
     }
@@ -73,11 +75,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
+//        see if pass on convo works with multiple convo's
         if segmentedControl.selectedSegmentIndex == 0 {
             let convoCell = tableView.dequeueReusableCellWithIdentifier("conversationCell", forIndexPath: indexPath) as! HomeMessageCell
-            passOnConvo = myConversations![indexPath.row]
-            convoCell.messageText.text = passOnConvo!.lastMessage?.messageText
-            convoCell.userName.text = passOnConvo!.convoName
+            let convo = myConversations![indexPath.row]
+            convoCell.messageText.text = convo.lastMessage?.messageText
+            convoCell.userName.text = convo.convoName
+//            TODO: set images
             return convoCell
             
         } else {
@@ -153,8 +157,21 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "messageSegue" {
             let destinationVC = segue.destinationViewController as! MessagingViewController
+            let convoIndex = tableView.indexPathForSelectedRow?.row
+            destinationVC.conversation = self.myConversations![convoIndex!]
+            destinationVC.convoRecord = self.convoRecords![convoIndex!]
+        } else if segue.identifier == "newMessageSegue" {
+            let destinationVC = segue.destinationViewController as! MessagingViewController
             destinationVC.conversation = self.passOnConvo
+            destinationVC.convoRecord = self.convoRecord
+        } else if segue.identifier == "addToGroup" {
+            let navController = segue.destinationViewController as! UINavigationController
+            let destinationVC = navController.topViewController as! CreateGroupViewController
+            destinationVC.contacts = self.myFriends
+            destinationVC.initialContact = self.contactRelationship
         }
+        
+        
     }
     
     
@@ -291,30 +308,41 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         darkView.removeFromSuperview()
     }
     
-//    
-//    
-//    
-//  
-//        TODO: have contact already selected.
-//              selection: tag
     @IBAction func addToGroupButtonPressed(sender: AnyObject) {
-        self.performSegueWithIdentifier("addToGroup", sender: self)
-        CreateGroupViewController().contacts = self.myFriends
+        dispatch_async(dispatch_get_main_queue()) {
+            self.contactView.removeFromSuperview()
+            self.darkView.removeFromSuperview()
+            self.performSegueWithIdentifier("addToGroup", sender: self)
+            
+//            let destinationVC = CreateGroupViewController()
+//            destinationVC.contacts = self.myFriends
+//            destinationVC.initialContact = self.contactRelationship
+        }
     }
+    
+    
     
     @IBAction func sendMessageButtonTapped(sender: AnyObject) {
         let myRelationship = UserController.sharedInstance.myRelationship
 //        TODO: fix name of convo
-        let conversation = Conversation.init(convoName: contactRelationship!.fullName, users: [myRelationship!.userID, contactRelationship!.userID], messages: nil)
-        ConversationController.createConversation(conversation) { (success) in
+        let conversation = Conversation.init(convoName: contactRelationship!.fullName, users: [myRelationship!.userID, contactRelationship!.userID], messages: [])
+        ConversationController.createConversation(conversation) { (success, record) in
             if success {
+                self.convoRecord = record
+                self.passOnConvo = conversation
+                if self.myConversations?.count == 0 {
+                    self.myConversations = [conversation]
+                } else {
+                    self.myConversations! += [conversation]
+                }
+                
                 dispatch_async(dispatch_get_main_queue(), {
                     self.contactView.removeFromSuperview()
                     self.darkView.removeFromSuperview()
-                    self.performSegueWithIdentifier("messageSegue", sender: self)
+                    self.performSegueWithIdentifier("newMessageSegue", sender: self)
+
                 })
-                MessagingViewController().conversation = conversation
-                self.myConversations! += [conversation]
+                
             } else {
                 print("Not this time")
             }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC1FD98A1D39FE840095D4DF /* CreateGroupCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1FD9891D39FE830095D4DF /* CreateGroupCollectionViewCell.swift */; };
 		AC243C2A1CF8255D0048E36D /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC243C291CF8255D0048E36D /* NotificationCell.swift */; };
 		AC243C2C1CF9238A0048E36D /* UserSearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */; };
 		AC2B921C1CC4AFDA00157FD7 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B921B1CC4AFDA00157FD7 /* Message.swift */; };
@@ -69,6 +70,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AC1FD9891D39FE830095D4DF /* CreateGroupCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateGroupCollectionViewCell.swift; path = ../CreateGroupCollectionViewCell.swift; sourceTree = "<group>"; };
 		AC243C291CF8255D0048E36D /* NotificationCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSearchTableViewCell.swift; sourceTree = "<group>"; };
 		AC2B921B1CC4AFDA00157FD7 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -135,9 +137,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AC1FD98B1D39FEB60095D4DF /* CreateGroup */ = {
+			isa = PBXGroup;
+			children = (
+				AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */,
+				AC1FD9891D39FE830095D4DF /* CreateGroupCollectionViewCell.swift */,
+			);
+			name = CreateGroup;
+			sourceTree = "<group>";
+		};
+		AC1FD98C1D39FEE10095D4DF /* Send Friend Request */ = {
+			isa = PBXGroup;
+			children = (
+				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
+				AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */,
+			);
+			name = "Send Friend Request";
+			sourceTree = "<group>";
+		};
 		AC2B92231CCAC9B100157FD7 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				AC7815401CF1934600F1D04C /* CloudkitCKAsset.swift */,
 				AC8079E31CE2575B004809EF /* Message */,
 				AC8079E21CE2574D004809EF /* User */,
 				AC8079E11CE25742004809EF /* Conversation */,
@@ -173,12 +194,10 @@
 				AC3CC8161CAB2BC800507EBB /* AppDelegate.swift */,
 				ACFCCFE91D2BB38400B67361 /* InitialLoadingView.swift */,
 				AC3CC8541CAE22C300507EBB /* Home View */,
-				AC8600E41CBDF2360082F1C4 /* CreateGroupViewController.swift */,
-				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
-				AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */,
+				AC1FD98B1D39FEB60095D4DF /* CreateGroup */,
+				AC1FD98C1D39FEE10095D4DF /* Send Friend Request */,
 				ACB1CB501CD00FD600AE25E0 /* Messaging */,
 				AC7815441CF5179400F1D04C /* Profile */,
-				AC7815401CF1934600F1D04C /* CloudkitCKAsset.swift */,
 				AC2B92231CCAC9B100157FD7 /* Objects */,
 				AC3CC81A1CAB2BC800507EBB /* Main.storyboard */,
 				AC3CC81D1CAB2BC800507EBB /* Assets.xcassets */,
@@ -417,6 +436,7 @@
 				AC78153F1CF0222800F1D04C /* AddPhotoViewController.swift in Sources */,
 				AC3CC8511CAE1FCB00507EBB /* ContactTableViewCell.swift in Sources */,
 				ACB1CB4D1CD00E1D00AE25E0 /* ThemMessageTableViewCell.swift in Sources */,
+				AC1FD98A1D39FE840095D4DF /* CreateGroupCollectionViewCell.swift in Sources */,
 				AC3CC8451CAB2F1100507EBB /* HomeViewController.swift in Sources */,
 				AC3CC8591CAF51B500507EBB /* MessagingViewController.swift in Sources */,
 				AC3CC8571CAF3A2500507EBB /* AddContactTableViewController.swift in Sources */,

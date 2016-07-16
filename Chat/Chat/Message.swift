@@ -12,7 +12,6 @@ import CloudKit
 struct Message {
     
     private let textKey = "MessageText"
-    private let userPicKey = "UserPic"
     
     var senderUID: CKReference
     var messageText: String

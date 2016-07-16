@@ -15,6 +15,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet var keyboardView: UIView!
     @IBOutlet weak var messageTextView: UITextView!
     var conversation: Conversation?
+    var convoRecord: CKRecord?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,13 +56,13 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             let message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text)
             MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
-                    let record = CKRecord(recordType: "Conversation", recordID: self.conversation!.ref!)
+                    let record = self.convoRecord
                     let ref = CKReference(record: messageRecord!, action: .DeleteSelf)
-                    if record["Messages"] != nil {
-                        var messages = record["Messages"] as! [CKReference]
+                    if self.conversation!.messages! != [] {
+                        var messages = record!["Messages"] as! [CKReference]
                         messages += [ref]
-                        record.setValue(messages, forKey: "Messages")
-                        let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+                        record!.setValue(messages, forKey: "Messages")
+                        let mod = CKModifyRecordsOperation(recordsToSave: [record!], recordIDsToDelete: nil)
                         mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                             if error == nil {
                                 print("It Worked!")
@@ -77,8 +78,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
 
                     } else {
                         let messages = [ref]
-                        record.setValue(messages, forKey: "Messages")
-                        let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+                        record!.setValue(messages, forKey: "Messages")
+                        let mod = CKModifyRecordsOperation(recordsToSave: [record!], recordIDsToDelete: nil)
                         mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                             if error == nil {
                                 print("It Worked!")
