@@ -16,7 +16,6 @@ class InitialLoadingView: UIViewController {
 //    TODO: fix all else errors
 //          fix nav bar bottom line
 //          Need to subscribe to friend requests
-//          Need to subscribe to conversation
 //          time for messages
 //          messaging image on cell
 //          check out if add contact vc photos work with a bunch of contacts
@@ -30,10 +29,9 @@ class InitialLoadingView: UIViewController {
 //          see who's in the convo |||||||| maybe??
     //         info button type thing?
     
-//          create group add button switch |||||||| maybe??
-    //         maybe switch to checkmark once selected
-    //         deselection
-//          create group save button tapped segue to messaging view ||||| maybe??
+
+//-          message cell setup
+//-          create group save button tapped segue to messaging view
     
 
     

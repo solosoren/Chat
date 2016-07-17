@@ -146,15 +146,6 @@
 			name = CreateGroup;
 			sourceTree = "<group>";
 		};
-		AC1FD98C1D39FEE10095D4DF /* Send Friend Request */ = {
-			isa = PBXGroup;
-			children = (
-				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
-				AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */,
-			);
-			name = "Send Friend Request";
-			sourceTree = "<group>";
-		};
 		AC2B92231CCAC9B100157FD7 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
@@ -194,8 +185,8 @@
 				AC3CC8161CAB2BC800507EBB /* AppDelegate.swift */,
 				ACFCCFE91D2BB38400B67361 /* InitialLoadingView.swift */,
 				AC3CC8541CAE22C300507EBB /* Home View */,
+				AC3CC8551CAE22F000507EBB /* Contacts */,
 				AC1FD98B1D39FEB60095D4DF /* CreateGroup */,
-				AC1FD98C1D39FEE10095D4DF /* Send Friend Request */,
 				ACB1CB501CD00FD600AE25E0 /* Messaging */,
 				AC7815441CF5179400F1D04C /* Profile */,
 				AC2B92231CCAC9B100157FD7 /* Objects */,
@@ -231,7 +222,6 @@
 				AC3CC8441CAB2F1100507EBB /* HomeViewController.swift */,
 				AC3CC8461CAB353F00507EBB /* HomeMessageCell.swift */,
 				AC243C291CF8255D0048E36D /* NotificationCell.swift */,
-				AC3CC8551CAE22F000507EBB /* Contacts */,
 			);
 			name = "Home View";
 			sourceTree = "<group>";
@@ -239,9 +229,11 @@
 		AC3CC8551CAE22F000507EBB /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
+				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
 				AC3CC8501CAE1FCB00507EBB /* ContactTableViewCell.swift */,
 				AC3CC8521CAE22B400507EBB /* ContactCollectionCell.swift */,
 				AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */,
+				AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */,
 			);
 			name = Contacts;
 			sourceTree = "<group>";

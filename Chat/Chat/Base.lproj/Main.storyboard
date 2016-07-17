@@ -693,6 +693,7 @@
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                             <integer key="value" value="12"/>
                                                         </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="clipsToBounds" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Stevenson" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J9L-Ip-dgr">
@@ -754,7 +755,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="1Ps-Ju-YHs">
-                        <barButtonItem key="leftBarButtonItem" title="X" id="k5l-Lk-Wd5">
+                        <barButtonItem key="leftBarButtonItem" image="Delete-50" id="k5l-Lk-Wd5">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="dismissButtonTapped:" destination="a7B-p9-6Mo" id="GXc-YB-k7l"/>
@@ -764,7 +765,7 @@
                     <connections>
                         <outlet property="collectionView" destination="R1P-1g-j9i" id="zb1-mv-SIs"/>
                         <outlet property="groupTitle" destination="Mt0-Nm-d8k" id="9eC-LE-rE1"/>
-                        <segue destination="tBV-WS-59D" kind="presentation" identifier="groupCreated" id="2YL-v6-LdI"/>
+                        <segue destination="wDC-cc-L9m" kind="presentation" identifier="groupCreated" id="fly-gE-2EX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0JD-Yi-a6T" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1141,6 +1142,22 @@
             </objects>
             <point key="canvasLocation" x="1139" y="687"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Ymu-6b-rYP">
+            <objects>
+                <navigationController id="wDC-cc-L9m" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="e5a-sb-sRa">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="tBV-WS-59D" kind="relationship" relationship="rootViewController" id="f1I-1z-OCT"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rmz-jv-gBf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2433" y="618"/>
+        </scene>
         <!--Messaging View Controller-->
         <scene sceneID="XvR-ef-iwd">
             <objects>
@@ -1158,7 +1175,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="themMessageCell" rowHeight="80" id="c87-db-IMS" customClass="ThemMessageTableViewCell" customModule="Chat" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="600" height="80"/>
+                                        <rect key="frame" x="0.0" y="92" width="600" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="c87-db-IMS" id="rQK-4c-DQZ">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="79"/>
@@ -1213,7 +1230,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="meMessageCell" rowHeight="80" id="Y2H-mD-89C" customClass="MeMessageTableViewCell" customModule="Chat" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="108" width="600" height="80"/>
+                                        <rect key="frame" x="0.0" y="172" width="600" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Y2H-mD-89C" id="qio-lq-X1N">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="79"/>
@@ -1282,6 +1299,7 @@
                             <constraint firstAttribute="trailing" secondItem="Txf-wF-UcM" secondAttribute="trailing" id="vG7-af-V2j"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="X5t-Ec-5R7"/>
                     <connections>
                         <outlet property="keyboardView" destination="EWJ-Xz-aMM" id="src-fd-u8u"/>
                         <outlet property="messageTextView" destination="YjN-RD-NaE" id="yv3-zn-JhA"/>
@@ -1339,7 +1357,7 @@
                     </constraints>
                 </view>
             </objects>
-            <point key="canvasLocation" x="1819" y="693"/>
+            <point key="canvasLocation" x="1819" y="1345"/>
         </scene>
         <!--Initial Loading View-->
         <scene sceneID="ayA-J8-4tl">
@@ -1431,11 +1449,12 @@
         <image name="Chat Filled" width="25" height="25"/>
         <image name="Contact Card-50" width="25" height="25"/>
         <image name="Contacts" width="25" height="25"/>
+        <image name="Delete-50" width="25" height="25"/>
         <image name="Plus-50" width="50" height="50"/>
         <image name="White Icon" width="512" height="512"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="81D-mc-IgJ"/>
-        <segue reference="2YL-v6-LdI"/>
+        <segue reference="i1d-R3-GKv"/>
     </inferredMetricsTieBreakers>
 </document>

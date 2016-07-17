@@ -27,17 +27,30 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        let messages = convoRecord!["Messages"] as! [CKReference]
+        return messages.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
+        
+        let messagesRef = convoRecord!["Messages"] as! [CKReference]
+        let messageRef = messagesRef[indexPath.row]
+        let messageRecord = CKRecord(recordType: "Message", recordID: messageRef.recordID)
+        let sender = messageRecord["SenderUID"] as! CKReference
+        
+        if sender != UserController.sharedInstance.myRelationship?.userID {
             let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath) as! ThemMessageTableViewCell
+            themMessageCell.messageText.text = messageRecord["MessageText"] as? String
+//            image
             return themMessageCell
+
         } else {
             let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath) as! MeMessageTableViewCell
+            meMessageCell.messageText.text = messageRecord["MessageText"] as? String
+//            image
             return meMessageCell
         }
+        
     }
     
     override var inputAccessoryView: UIView {
@@ -69,6 +82,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                 print(message.senderUID)
                                 dispatch_async(dispatch_get_main_queue(), {
                                     self.messageTextView.text = ""
+                                    self.conversation?.messages! += messages
+                                    self.tableView.reloadData()
                                 })
                             } else {
                                 print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
@@ -86,6 +101,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                 print(message.senderUID)
                                 dispatch_async(dispatch_get_main_queue(), {
                                     self.messageTextView.text = ""
+                                    self.conversation?.messages! = messages
+                                    self.tableView.reloadData()
                                 })
                             } else {
                                 

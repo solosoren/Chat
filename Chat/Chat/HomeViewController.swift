@@ -13,6 +13,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     @IBOutlet var contactView: UIView!
     
+    @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var segmentedControl: UISegmentedControl!
     
     @IBOutlet weak var tableView: UITableView!
@@ -201,6 +202,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //                                TODO: see why not reloading into the tableview
                                 self.myFriends! += [relationship]
                                 self.tableView.reloadData()
+                                let cell = ContactTableViewCell()
+                                cell.collectionView.reloadData()
                                 
                             })
                         } else {
@@ -213,17 +216,23 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     friends = [ref]
                     UserController.sharedInstance.saveRecordArray(friends, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
                         if success {
-                            dispatch_async(dispatch_get_main_queue(), { 
+                            let record = UserController.sharedInstance.myRelationshipRecord
+                            let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
+                            dispatch_async(dispatch_get_main_queue(), {
+                                //                                TODO: see why not reloading into the tableview
+                                self.myFriends! += [relationship]
                                 self.tableView.reloadData()
+                                let cell = ContactTableViewCell()
+                                cell.collectionView.reloadData()
                             })
                         } else {
-                            
+//                            fix
                         }
                     })
                     
                 }
             } else {
-                
+//                fix
             }
         }
         

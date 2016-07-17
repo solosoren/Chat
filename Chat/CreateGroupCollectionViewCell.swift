@@ -13,5 +13,6 @@ class CreateGroupCollectionViewCell: UICollectionViewCell {
     @IBOutlet var addButton: UIButton!
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var profilePic: UIImageView!
+    var checked:Bool?
     
 }
