@@ -82,6 +82,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let convo = myConversations![indexPath.row]
             convoCell.messageText.text = convo.lastMessage?.messageText
             convoCell.userName.text = convo.convoName
+            convoCell.messageTime.text = (convo.lastMessage?.time)!
+            print(convo.lastMessage?.time)
 //            TODO: set images
             return convoCell
             

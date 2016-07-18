@@ -16,6 +16,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet weak var messageTextView: UITextView!
     var conversation: Conversation?
     var convoRecord: CKRecord?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,14 +28,22 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let messages = convoRecord!["Messages"] as! [CKReference]
-        return messages.count
+        if conversation?.messages != nil {
+            let messages = conversation?.messages
+            return messages!.count
+        } else {
+            return 0
+        }
+        
     }
     
+    
+//    fix message record
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let messagesRef = convoRecord!["Messages"] as! [CKReference]
         let messageRef = messagesRef[indexPath.row]
+//        this isnt working
         let messageRecord = CKRecord(recordType: "Message", recordID: messageRef.recordID)
         let sender = messageRecord["SenderUID"] as! CKReference
         
@@ -63,10 +72,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     @IBAction func sendMessageTapped(sender: AnyObject) {
         if messageTextView.text.isEmpty == false {
-            dispatch_async(dispatch_get_main_queue(), { 
-                self.messageTextView.resignFirstResponder()
-            })
-            let message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text)
+            let message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil)
             MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
                     let record = self.convoRecord

@@ -15,23 +15,28 @@ class InitialLoadingView: UIViewController {
 
 //    TODO: fix all else errors
 //          fix nav bar bottom line
-//          Need to subscribe to friend requests
-//          time for messages
-//          messaging image on cell
-//          check out if add contact vc photos work with a bunch of contacts
-//          fix accept request adding friend to tableview
-//          skip login
-//          logout
-//          conversation messages ordered by date
-//          set dates for messages
     
-//          leave convo ||||||| maybe??
-//          see who's in the convo |||||||| maybe??
+        // User
+//f          skip login
+//?          logout
+//e          subscribe to friend requests
+    
+        // Messaging
+//f          conversation messages ordered by date
+//e          messaging image on cell
+    
+//?          leave convo ||||||| maybe??
+//?          see who's in the convo |||||||| maybe??
     //         info button type thing?
-    
 
+        // Testing
+//-          accept request button tapped
 //-          message cell setup
 //-          create group save button tapped segue to messaging view
+//           check out if add contact vc photos work with a bunch of contacts
+    
+        // Tomorrow 
+//           Watch timeline for subscription work
     
 
     

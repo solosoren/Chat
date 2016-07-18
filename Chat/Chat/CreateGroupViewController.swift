@@ -29,6 +29,7 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let item = collectionView.dequeueReusableCellWithReuseIdentifier("addContact", forIndexPath: indexPath) as! CreateGroupCollectionViewCell
         item.nameLabel.text = contacts![indexPath.item].fullName
+        item.checked = false
         if let asset = contacts![indexPath.item].profilePic {
             item.profilePic.image = asset.image
         }
@@ -68,7 +69,7 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
     }
     
     @IBAction func addButtonTapped(sender: AnyObject) {
-        let item: CreateGroupCollectionViewCell
+        var item = CreateGroupCollectionViewCell()
         let indexPath = NSIndexPath(forItem: sender.tag, inSection: 0)
         item = collectionView.cellForItemAtIndexPath(indexPath) as! CreateGroupCollectionViewCell
         if item.checked == false {
@@ -111,8 +112,12 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
                 dispatch_async(dispatch_get_main_queue(), {
                     
 //                    TODO: need to fixxx!!!
-                    self.performSegueWithIdentifier("groupCreated", sender: self)
-                    self.dismissViewControllerAnimated(true, completion: nil)
+                    
+                    self.dismissViewControllerAnimated(true, completion: {
+//                        let homeView = HomeViewController()
+//                        homeView.performSegueWithIdentifier("messageSegue", sender: self)
+//                        homeView
+                    })
                     
                 })
             } else {

@@ -16,7 +16,7 @@ class MessageController: NSObject {
     static func postMessage(message: Message, completion:(success: Bool, messageRecord:CKRecord?) -> Void) {
         let record = CKRecord(recordType: "Message")
         record.setValuesForKeysWithDictionary(message.toAnyObject() as! [String : AnyObject])
-
+        
         let container = CKContainer.defaultContainer()
         container.publicCloudDatabase.saveRecord(record) { (message, error) in
             if error == nil {
@@ -36,3 +36,40 @@ class MessageController: NSObject {
     
     
 }
+
+class Timer {
+    
+    static let sharedInstance = Timer()
+    
+    func setMessageTime(record:CKRecord) -> String {
+        
+        let calendar = NSCalendar.currentCalendar()
+        
+        let calendarUnit: NSCalendarUnit = [.Day, .Hour, .Minute]
+        
+        let formatter = NSDateFormatter()
+        formatter.timeStyle = .ShortStyle
+        let current = NSDate()
+        let time = calendar.components(calendarUnit, fromDate: record.creationDate!, toDate: current, options: [])
+
+        if calendar.isDateInToday(record.creationDate!) {
+            if time.hour < 1 {
+                let dateTime = ("\(time.minute) Min Ago")
+                return dateTime
+            } else {
+                let dateTime = ("\(time.hour) Hours Ago")
+                return dateTime
+            }
+        } else {
+            if time.day > 1 {
+                let dateTime = ("\(time.day) Days Ago")
+                return dateTime
+            } else {
+                let dateTime = ("\(time.day) Day Ago")
+                return dateTime
+            }
+            
+        }
+    }
+}
+

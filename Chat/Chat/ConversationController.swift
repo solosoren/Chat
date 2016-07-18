@@ -48,7 +48,8 @@ class ConversationController: NSObject {
                                 if conversation.messages?.count != 0 {
                                     container.publicCloudDatabase.fetchRecordWithID((conversation.messages?.last?.recordID)!, completionHandler: { (lastRecord, error) in
                                         if error == nil {
-                                            let message = Message(senderUID: lastRecord!["SenderUID"] as! CKReference, messageText: lastRecord!["MessageText"] as! String)
+                                            let string = Timer.sharedInstance.setMessageTime(lastRecord!)
+                                            let message = Message(senderUID: lastRecord!["SenderUID"] as! CKReference, messageText: lastRecord!["MessageText"] as! String, time: string)
                                             conversation.lastMessage = message
                                             conversations += [conversation]
                                             if record == records?.last {
@@ -88,7 +89,7 @@ class ConversationController: NSObject {
         NSLog("MADE IT TO SUBSCRIPTION")
         let pred = NSPredicate(format: "Users CONTAINS %@", UserController.sharedInstance.myRelationship!.userID)
         NSLog("PRED")
-        let sub = CKSubscription(recordType: "Conversation", predicate: pred, subscriptionID: "\(conversationRecord.recordID)A", options: .FiresOnRecordUpdate)
+        let sub = CKSubscription(recordType: "Conversation", predicate: pred, subscriptionID: "\(conversationRecord.recordID)A", options: [.FiresOnRecordUpdate, .FiresOnRecordCreation])
         NSLog("SUB")
         let publicDatabase = CKContainer.defaultContainer().publicCloudDatabase
         publicDatabase.saveSubscription(sub) { (subscription, error) in
