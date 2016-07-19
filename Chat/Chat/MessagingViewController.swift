@@ -14,13 +14,13 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var keyboardView: UIView!
     @IBOutlet weak var messageTextView: UITextView!
+    var messages: [Message]?
     var conversation: Conversation?
     var convoRecord: CKRecord?
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.estimatedRowHeight = 70
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorColor = UIColor.whiteColor()
@@ -28,9 +28,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if conversation?.messages != nil {
-            let messages = conversation?.messages
-            return messages!.count
+        if let messages = messages {
+            return messages.count
         } else {
             return 0
         }
@@ -40,26 +39,19 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
 //    fix message record
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath) as! ThemMessageTableViewCell
+        let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath) as! MeMessageTableViewCell
+//        fix
+        let message = messages![indexPath.row]
         
-        let messagesRef = convoRecord!["Messages"] as! [CKReference]
-        let messageRef = messagesRef[indexPath.row]
-//        this isnt working
-        let messageRecord = CKRecord(recordType: "Message", recordID: messageRef.recordID)
-        let sender = messageRecord["SenderUID"] as! CKReference
-        
-        if sender != UserController.sharedInstance.myRelationship?.userID {
-            let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath) as! ThemMessageTableViewCell
-            themMessageCell.messageText.text = messageRecord["MessageText"] as? String
-//            image
-            return themMessageCell
-
-        } else {
-            let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath) as! MeMessageTableViewCell
-            meMessageCell.messageText.text = messageRecord["MessageText"] as? String
-//            image
+        if message.senderUID == UserController.sharedInstance.myRelationship?.userID {
+            meMessageCell.messageText.text = message.messageText
             return meMessageCell
+        } else {
+            themMessageCell.messageText.text = message.messageText
+            return themMessageCell
         }
-        
+//        image
     }
     
     override var inputAccessoryView: UIView {
@@ -84,12 +76,17 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                         let mod = CKModifyRecordsOperation(recordsToSave: [record!], recordIDsToDelete: nil)
                         mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                             if error == nil {
-                                print("It Worked!")
-                                print(message.senderUID)
                                 dispatch_async(dispatch_get_main_queue(), {
                                     self.messageTextView.text = ""
-                                    self.conversation?.messages! += messages
-                                    self.tableView.reloadData()
+                                    self.conversation?.theMessages += [message]
+                                    if self.messages != nil {
+                                        self.messages! += [message]
+                                        self.tableView.reloadData()
+                                    } else {
+                                        self.messages = [message]
+                                        self.tableView.reloadData()
+                                    }
+                                    
                                 })
                             } else {
                                 print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")

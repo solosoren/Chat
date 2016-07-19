@@ -18,43 +18,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-//        let notificationSettings = UIUserNotificationSettings(forTypes: UIUserNotificationType.Alert, categories: nil)
-//        application.registerUserNotificationSettings(notificationSettings)
-//        application.registerForRemoteNotifications()
+        let notificationSettings = UIUserNotificationSettings(forTypes: [.Alert, .Sound, .Badge], categories: nil)
+        application.registerUserNotificationSettings(notificationSettings)
+        application.registerForRemoteNotifications()
         
         return true
     }
     
-//    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
-//        let cloudKitNotification = CKNotification(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
-//        if cloudKitNotification.notificationType == .Query {
-//            let queryNotification = cloudKitNotification as! CKQueryNotification
-////            if queryNotification.queryNotificationReason == .RecordDeleted {
-////                // If the record has been deleted in CloudKit then delete the local copy here
-////            } else {
-//            
-//                // If the record has been created or changed, we fetch the data from CloudKit
-//                let database: CKDatabase
-//                if queryNotification.isPublicDatabase {
-//                    database = CKContainer.defaultContainer().publicCloudDatabase
-//                } else {
-//                    database = CKContainer.defaultContainer().privateCloudDatabase
-//                }
-//                database.fetchRecordWithID(queryNotification.recordID!, completionHandler: { (record: CKRecord?, error: NSError?) -> Void in
-//                    guard error == nil else {
-//                        // Handle the error here
-//                        return
-//                    }
-//                    
-//                    if queryNotification.queryNotificationReason == .RecordUpdated {
-//                        // Use the information in the record object to modify your local data
-//                    } else {
-//                        // Use the information in the record object to create a new local object
-//                    }
-//                })
-////            }
-//        }
-//    }
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler:(UIBackgroundFetchResult) -> Void) {
+        
+        guard let notificationInfo = userInfo as? [String: NSObject] else { return }
+        
+        let queryNotification = CKQueryNotification(fromRemoteNotificationDictionary: notificationInfo)
+        
+        guard let recordID = queryNotification.recordID else { print("No Record ID available from CKQueryNotification."); return }
+        
+        let userController = UserController()
+        
+        userController.fetchRecordWithID(recordID) { (record, error) in
+            
+            guard let record = record else { print("Unable to fetch CKRecord from Record ID"); return }
+            
+            switch record.recordType {
+                
+            case "Conversation":
+                let convo = Conversation(record: record)
+                ConversationController.sharedInstance.myConversations += [convo]
+            case "Relationship":
+                let relationship = Relationship(record: record)
+                userController.myRelationship = relationship
+            default:
+                return
+            }
+            
+        }
+        completionHandler(.NewData)
+    }
+
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AC1FD98A1D39FE840095D4DF /* CreateGroupCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1FD9891D39FE830095D4DF /* CreateGroupCollectionViewCell.swift */; };
+		AC1FD98E1D3E1DC20095D4DF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AC1FD98D1D3E1DC20095D4DF /* Default-568h@2x.png */; };
 		AC243C2A1CF8255D0048E36D /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC243C291CF8255D0048E36D /* NotificationCell.swift */; };
 		AC243C2C1CF9238A0048E36D /* UserSearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */; };
 		AC2B921C1CC4AFDA00157FD7 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B921B1CC4AFDA00157FD7 /* Message.swift */; };
@@ -71,6 +72,7 @@
 
 /* Begin PBXFileReference section */
 		AC1FD9891D39FE830095D4DF /* CreateGroupCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateGroupCollectionViewCell.swift; path = ../CreateGroupCollectionViewCell.swift; sourceTree = "<group>"; };
+		AC1FD98D1D3E1DC20095D4DF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		AC243C291CF8255D0048E36D /* NotificationCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSearchTableViewCell.swift; sourceTree = "<group>"; };
 		AC2B921B1CC4AFDA00157FD7 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 		AC3CC80A1CAB2BC800507EBB = {
 			isa = PBXGroup;
 			children = (
+				AC1FD98D1D3E1DC20095D4DF /* Default-568h@2x.png */,
 				ACB69D591CC1E78C00FBAC24 /* CloudKit.framework */,
 				AC3CC8151CAB2BC800507EBB /* Chat */,
 				AC3CC82A1CAB2BC800507EBB /* ChatTests */,
@@ -398,6 +401,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC3CC8211CAB2BC800507EBB /* LaunchScreen.storyboard in Resources */,
+				AC1FD98E1D3E1DC20095D4DF /* Default-568h@2x.png in Resources */,
 				AC3CC81E1CAB2BC800507EBB /* Assets.xcassets in Resources */,
 				AC3CC81C1CAB2BC800507EBB /* Main.storyboard in Resources */,
 			);

@@ -32,7 +32,6 @@ struct Message {
         self.senderUID = (UserController.sharedInstance.myRelationship?.userID)!
         self.messageText = record.objectForKey(textKey) as? String ?? ""
         self.ref = CKReference(record: record, action: CKReferenceAction.DeleteSelf)
-        
 //        self.userPic = (record.objectForKey(userPicKey) as? CKAsset)!
     }
     

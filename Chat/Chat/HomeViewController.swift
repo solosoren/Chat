@@ -163,6 +163,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let convoIndex = tableView.indexPathForSelectedRow?.row
             destinationVC.conversation = self.myConversations![convoIndex!]
             destinationVC.convoRecord = self.convoRecords![convoIndex!]
+            destinationVC.messages = self.myConversations![convoIndex!].theMessages
         } else if segue.identifier == "newMessageSegue" {
             let destinationVC = segue.destinationViewController as! MessagingViewController
             destinationVC.conversation = self.passOnConvo

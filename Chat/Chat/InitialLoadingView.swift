@@ -19,7 +19,8 @@ class InitialLoadingView: UIViewController {
         // User
 //f          skip login
 //?          logout
-//e          subscribe to friend requests
+    
+//Doing         subscribe to friend requests
     
         // Messaging
 //f          conversation messages ordered by date
@@ -37,6 +38,9 @@ class InitialLoadingView: UIViewController {
     
         // Tomorrow 
 //           Watch timeline for subscription work
+    
+    
+//    fix friend request and conversation to just check if subscribed?
     
 
     
@@ -64,12 +68,12 @@ class InitialLoadingView: UIViewController {
                             NSLog("SSSSSSSSSSSSS: 2")
                             if let relationshipRecord = relationshipRecord {
                                 UserController.sharedInstance.myRelationshipRecord = relationshipRecord
-                                let myRelationship = Relationship(fullName: relationshipRecord["FullName"] as! String, userID: relationshipRecord["UserIDRef"] as! CKReference, requests: relationshipRecord["FriendRequests"] as? [CKReference], friends: relationshipRecord["Friends"] as? [CKReference], profilePic: relationshipRecord["ImageKey"] as? CKAsset)
+                                let myRelationship = Relationship(record: relationshipRecord)
                                 UserController.sharedInstance.myRelationship = myRelationship
-                                self.initiallyGrabRequests(myRelationship, completion: { (success) in
+                                self.initiallyGrabRequests(myRelationship!, completion: { (success) in
                                     if success {
                                         NSLog("SSSSSSSSSSSSS: 3")
-                                        self.initiallyGrabFriends(myRelationship, completion: { (success) in
+                                        self.initiallyGrabFriends(myRelationship!, completion: { (success) in
                                             if success {
                                                 NSLog("SSSSSSSSSSSSS: 4")
                                                 self.initiallyGrabConvos({ (success) in

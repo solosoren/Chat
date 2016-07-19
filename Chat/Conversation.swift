@@ -20,6 +20,7 @@ struct Conversation {
     var convoName: String?
     var messages: [CKReference]?
     var lastMessage: Message?
+    var theMessages: [Message] = []
     
     init(convoName:String?, users:[CKReference], messages: [CKReference]?) {
         self.convoName = convoName

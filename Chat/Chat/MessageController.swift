@@ -51,7 +51,7 @@ class Timer {
         formatter.timeStyle = .ShortStyle
         let current = NSDate()
         let time = calendar.components(calendarUnit, fromDate: record.creationDate!, toDate: current, options: [])
-
+        
         if calendar.isDateInToday(record.creationDate!) {
             if time.hour < 1 {
                 let dateTime = ("\(time.minute) Min Ago")
@@ -65,7 +65,7 @@ class Timer {
                 let dateTime = ("\(time.day) Days Ago")
                 return dateTime
             } else {
-                let dateTime = ("\(time.day) Day Ago")
+                let dateTime = ("Yesterday")
                 return dateTime
             }
             

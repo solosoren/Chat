@@ -169,34 +169,6 @@ class UserController {
                             let fullName = "\(firstName) \(lastName)"
                             user.fullName = fullName
                             completion(success: true, user: user)
-//                            record?.setObject(fullName, forKey: "FullName")
-//                            if let record = record {
-//                                self.defaultContainer?.privateCloudDatabase.saveRecord(record, completionHandler: { (record, error) in
-//                                    if error == nil {
-//                                        completion(success: true, user: user)
-//                                    } else {
-//                                        NSLog("ERROR: \(error?.localizedDescription)")
-//                                        completion(success: false, user: nil)
-//                                    }
-//                                })
-//                            }
-
-                            
-//                            if let record = record {
-//                                let savedRecordsOp = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
-//                                savedRecordsOp.savePolicy = .IfServerRecordUnchanged
-//                                savedRecordsOp.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
-//                                    
-//                                    if error != nil {
-//                                        NSLog("ERROR: \(error?.localizedDescription)")
-//                                        completion(success: false, user: nil)
-//                                    } else {
-//                                        completion(success: true, user: user)
-//                                    }
-//                                }
-//                                self.defaultContainer?.privateCloudDatabase.addOperation(savedRecordsOp)
-//                            }
-
                         }
                     } else {
                         NSLog("COULDN'T FETCH USER INFO")
@@ -235,6 +207,16 @@ class UserController {
             }
         })
         
+    }
+    
+    func fetchRecordWithID(recordID: CKRecordID, completion: ((record: CKRecord?, error: NSError?) -> Void)?) {
+        let publicDatabase = CKContainer.defaultContainer().publicCloudDatabase
+        publicDatabase.fetchRecordWithID(recordID) { (record, error) in
+            
+            if let completion = completion {
+                completion(record: record, error: error)
+            }
+        }
     }
     
 //    fetch record by user id
@@ -379,7 +361,22 @@ class UserController {
             }
         }
     }
+    
+//    pass in friend when you request so they subscribe to the request
+    func subscribeToFriendRequests(relationship:Relationship, alertBody: String?, completion:((success:Bool, error: NSError?) -> Void)?) {
+        let recordID = relationship.userID
+        let predicate = NSPredicate(format: "Relationship == %@", argumentArray: [recordID])
+        ConversationController.sharedInstance.subscribe("FriendRequest", predicate: predicate, subscriptionID: ("\(relationship.userID)A"), contentAvailable: true, alertBody: "You have a new friend request", desiredKeys: ["Relationship, FriendRequest"], options: .FiresOnRecordUpdate) { (subscription, error) in
+            if let completion = completion {
+                let success = subscription != nil
+                completion(success: success, error: error)
+            }
+        }
+    }
+    
+    
 }
+
 
 
 

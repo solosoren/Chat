@@ -28,6 +28,15 @@ struct Relationship {
         self.profilePic = profilePic
     }
     
+    init?(record:CKRecord) {
+        fullName = record.objectForKey(nameKey) as? String ?? ""
+        userID = (record.objectForKey(userIDKey) as? CKReference)!
+        requests = record.objectForKey("FriendRequests") as? [CKReference] ?? []
+        friends = record.objectForKey("Friends") as? [CKReference] ?? []
+        guard let profilePic = record.objectForKey("ImageKey") as? CKAsset else { return nil }
+        self.profilePic = profilePic
+    }
+    
     func toAnyObject() -> AnyObject {
         return [nameKey:fullName,
                 userIDKey: userID]
