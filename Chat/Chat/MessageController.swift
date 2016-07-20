@@ -45,7 +45,7 @@ class Timer {
         
         let calendar = NSCalendar.currentCalendar()
         
-        let calendarUnit: NSCalendarUnit = [.Day, .Hour, .Minute]
+        let calendarUnit: NSCalendarUnit = [.Day, .Hour, .Minute, .Second]
         
         let formatter = NSDateFormatter()
         formatter.timeStyle = .ShortStyle
@@ -54,7 +54,15 @@ class Timer {
         
         if calendar.isDateInToday(record.creationDate!) {
             if time.hour < 1 {
-                let dateTime = ("\(time.minute) Min Ago")
+                if time.minute < 1 {
+                    let dateTime = ("\(time.second) Sec Ago")
+                    return dateTime
+                } else {
+                    let dateTime = ("\(time.minute) Min Ago")
+                    return dateTime
+                }
+            } else if time.hour == 1 {
+                let dateTime = ("\(time.hour) Hour Ago")
                 return dateTime
             } else {
                 let dateTime = ("\(time.hour) Hours Ago")

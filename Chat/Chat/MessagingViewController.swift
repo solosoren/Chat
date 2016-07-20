@@ -14,26 +14,28 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var keyboardView: UIView!
     @IBOutlet weak var messageTextView: UITextView!
-    var messages: [Message]?
+    @IBOutlet var constraint: NSLayoutConstraint!
     var conversation: Conversation?
     var convoRecord: CKRecord?
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.estimatedRowHeight = 70
-        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorColor = UIColor.whiteColor()
         self.setNavBar()
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let messages = messages {
-            return messages.count
-        } else {
-            return 0
-        }
+        return conversation!.theMessages.count
         
+    }
+    
+    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 70
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
     
     
@@ -42,19 +44,24 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath) as! ThemMessageTableViewCell
         let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath) as! MeMessageTableViewCell
 //        fix
-        let message = messages![indexPath.row]
+        let message = conversation!.theMessages[indexPath.row]
         
         if message.senderUID == UserController.sharedInstance.myRelationship?.userID {
             meMessageCell.messageText.text = message.messageText
+            meMessageCell.userIcon.image = message.userPic
             return meMessageCell
         } else {
             themMessageCell.messageText.text = message.messageText
+            themMessageCell.userIcon.image = message.userPic
             return themMessageCell
         }
 //        image
     }
     
     override var inputAccessoryView: UIView {
+        let newConstraint = NSLayoutConstraint(item: tableView, attribute: .Bottom, relatedBy: .Equal, toItem: keyboardView, attribute: .Top, multiplier: 1.0, constant: 0)
+        constraint.active = false
+        newConstraint.active = true
         return keyboardView
     }
     
@@ -64,7 +71,9 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     @IBAction func sendMessageTapped(sender: AnyObject) {
         if messageTextView.text.isEmpty == false {
-            let message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil)
+            var message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil)
+//            Have to figure out time
+            message.userPic = UserController.sharedInstance.myRelationship?.profilePic?.image
             MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
                     let record = self.convoRecord
@@ -79,13 +88,10 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                 dispatch_async(dispatch_get_main_queue(), {
                                     self.messageTextView.text = ""
                                     self.conversation?.theMessages += [message]
-                                    if self.messages != nil {
-                                        self.messages! += [message]
-                                        self.tableView.reloadData()
-                                    } else {
-                                        self.messages = [message]
-                                        self.tableView.reloadData()
-                                    }
+                                    self.conversation?.lastMessage = message
+                                    self.conversation!.theMessages += [message]
+                                    self.tableView.reloadData()
+                                    
                                     
                                 })
                             } else {
@@ -123,4 +129,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
 }
+
+
+
 

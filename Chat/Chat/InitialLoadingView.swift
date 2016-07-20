@@ -78,7 +78,7 @@ class InitialLoadingView: UIViewController {
                                                 NSLog("SSSSSSSSSSSSS: 4")
                                                 self.initiallyGrabConvos({ (success) in
                                                     if success {
-//                                                        print("Convos: \(self.conversations)")
+                                                        print("Convos: \(self.conversations)")
                                                         dispatch_async(dispatch_get_main_queue(), {
                                                             indicator.stopAnimating()
                                                             self.performSegueWithIdentifier("initialLoad", sender: self)

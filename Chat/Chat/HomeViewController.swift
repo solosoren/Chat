@@ -61,8 +61,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     let contactCellHeight = CGFloat(145 * ((myFriends!.count + 1)/2)) + 30
                     return contactCellHeight
                 } else {
-                    let contactCelHeight = CGFloat(145 * (myFriends!.count/2)) + 30
-                    return contactCelHeight
+                    let contactCellHeight = CGFloat(145 * (myFriends!.count/2)) + 30
+                    return contactCellHeight
                 }
         
             } else {
@@ -82,8 +82,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let convo = myConversations![indexPath.row]
             convoCell.messageText.text = convo.lastMessage?.messageText
             convoCell.userName.text = convo.convoName
-            convoCell.messageTime.text = (convo.lastMessage?.time)!
-            print(convo.lastMessage?.time)
+            if let time = convo.lastMessage?.time {
+                convoCell.messageTime.text = time
+            }
 //            TODO: set images
             return convoCell
             
@@ -160,10 +161,25 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "messageSegue" {
             let destinationVC = segue.destinationViewController as! MessagingViewController
-            let convoIndex = tableView.indexPathForSelectedRow?.row
-            destinationVC.conversation = self.myConversations![convoIndex!]
-            destinationVC.convoRecord = self.convoRecords![convoIndex!]
-            destinationVC.messages = self.myConversations![convoIndex!].theMessages
+            if let convoIndex = tableView.indexPathForSelectedRow?.row {
+                destinationVC.convoRecord = self.convoRecords![convoIndex]
+                if let myConversation = myConversations?[convoIndex] {
+                    ConversationController.sharedInstance.grabMessages(myConversation, completion: { (success, conversation, messages) in
+                        if success {
+                            destinationVC.conversation = conversation
+                            destinationVC.conversation?.theMessages = messages!
+                        } else {
+                            destinationVC.conversation = conversation
+                            destinationVC.conversation?.messages = []
+                        }
+                    })
+                } else {
+                    print("Not today zerg")
+                }
+            } else {
+                print("Theres a snake in my boot")
+            }
+            
         } else if segue.identifier == "newMessageSegue" {
             let destinationVC = segue.destinationViewController as! MessagingViewController
             destinationVC.conversation = self.passOnConvo

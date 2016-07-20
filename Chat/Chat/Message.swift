@@ -17,7 +17,8 @@ struct Message {
     var messageText: String
     let ref: CKReference?
     var time: String?
-//    var userPic: CKAsset?
+    var relationship: Relationship?
+    var userPic: UIImage?
     
 
     init(senderUID: CKReference, messageText:String, time: String?) {

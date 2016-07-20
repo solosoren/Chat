@@ -299,8 +299,6 @@ class UserController {
                 for relationship in records! {
                     if relationship == records?.last {
                         completion(success: true, relationshipRecord: relationship)
-                    } else {
-                        completion(success: false, relationshipRecord: nil)
                     }
                 }
             } else {
@@ -359,6 +357,22 @@ class UserController {
             } else {
                 completion(success: false, image: nil)
             }
+        }
+    }
+    
+    func grabImageByUID(recordID: CKRecordID, completion:(success: Bool, image:UIImage?) -> Void) {
+        queryForRelationshipbyUID(recordID) { (success, relationshipRecord) in
+            if success {
+                if let asset = relationshipRecord!["ImageKey"] as? CKAsset {
+                    let image = asset.image
+                    completion(success: true, image: image)
+                } else {
+                    completion(success: true, image: nil)
+                }
+            } else {
+                completion(success: false, image: nil)
+            }
+            
         }
     }
     

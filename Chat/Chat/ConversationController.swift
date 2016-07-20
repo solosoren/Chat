@@ -7,6 +7,7 @@
 //
 
 import CloudKit
+import UIKit
 
 class ConversationController: NSObject {
     
@@ -32,62 +33,140 @@ class ConversationController: NSObject {
     }
     
     func grabUserConversations(relationship:Relationship, completion:(success:Bool, conversations:[Conversation]?, convoRecords:[CKRecord]?) -> Void) {
+        
         var conversations: [Conversation] = []
         let container = CKContainer.defaultContainer()
         let pred = NSPredicate(format: "Users CONTAINS %@", relationship.userID)
         let query = CKQuery(recordType: "Conversation", predicate: pred)
+        query.sortDescriptors = [NSSortDescriptor(key: "modificationDate", ascending: false)]
+
         container.publicCloudDatabase.performQuery(query, inZoneWithID: nil) { (records, error) in
             if error == nil {
                 if records?.count != 0 {
+                    
                     for record in records! {
+                        print("query")
+                        
 //                        fix alert body
                         self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
                             if success {
+                                print("subscribed")
                                 var conversation = Conversation(record: record)
                                 conversation.ref = record.recordID
 
                                 if conversation.messages?.count != 0 {
-                                    for thing in conversation.messages! {
-                                        container.publicCloudDatabase.fetchRecordWithID((thing.recordID), completionHandler: { (messageRecord, error) in
-                                            if error == nil {
-                                                let string = Timer.sharedInstance.setMessageTime(messageRecord!)
-                                                var message = Message(record: messageRecord!)
-                                                message.time = string
-                                                conversation.theMessages += [message]
-                                                if thing == conversation.messages?.last {
-                                                    conversation.lastMessage = message
-                                                    conversations += [conversation]
-                                                    if record == records?.last {
-                                                        completion(success: true, conversations: conversations, convoRecords: records)
-                                                    }
-                                                }
-                                            } else {
-                                                completion(success: false, conversations: conversations, convoRecords: nil)
+                                    print("conversation messages")
+                                    let ref = conversation.messages?.last
+                                    container.publicCloudDatabase.fetchRecordWithID((ref?.recordID)!, completionHandler: { (lastMessageRecord, error) in
+                                        if error == nil {
+                                            conversation.lastMessage = Message(record: lastMessageRecord!)
+                                            conversation.lastMessage?.time = Timer.sharedInstance.setMessageTime(lastMessageRecord!)
+                                            conversations += [conversation]
+                                            if record == records?.last {
+                                                print("DONE")
+                                                completion(success: true, conversations: conversations, convoRecords: records)
                                             }
-                                        })
-                                    }
+
+                                        } else {
+                                            completion(success: false, conversations: conversations, convoRecords: records)
+                                        }
+                                    })
                                 } else {
                                     conversations += [conversation]
-                                    if record == records?.last {
-                                        completion(success: true, conversations: conversations, convoRecords: records)
-                                    }
+                                    completion(success: true, conversations: conversations, convoRecords: records)
                                 }
                             } else {
-                                completion(success: false, conversations: conversations, convoRecords: [])
+                                completion(success: false, conversations: nil, convoRecords: nil)
                             }
                         })
                     }
                 } else {
-//                    getting to this
-                    completion(success: true, conversations: conversations, convoRecords: [])
+                    completion(success: false, conversations: nil, convoRecords: nil)
                 }
                 
                 
             } else {
                 print("ERROR: \(error?.localizedDescription)")
-                completion(success: true, conversations: conversations, convoRecords: [])
+                completion(success: false, conversations: nil, convoRecords: nil)
             }
         }
+    }
+    
+    func grabMessages(conversation:Conversation, completion:(success:Bool, conversation: Conversation?, messages:[Message]?) -> Void) {
+        let container = CKContainer.defaultContainer()
+        var messages: [Message] = []
+        if let messageRefs: [CKReference] = conversation.messages {
+            if conversation.messages?.count != 0 {
+                
+                    let pred = NSPredicate(format: "recordID == %@", argumentArray: messageRefs)
+                    let query = CKQuery(recordType: "Message", predicate: pred)
+                    container.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (messageRecords, error) in
+                        print(messageRecords)
+                        if error == nil {
+                            for messageRecord in messageRecords! {
+                                let time = Timer.sharedInstance.setMessageTime(messageRecord)
+                                var message = Message(record: messageRecord)
+                                message.time = time
+                                
+                                UserController.sharedInstance.grabImageByUID(message.senderUID.recordID, completion: { (success, image) in
+                                    if success {
+                                        if image != nil {
+                                            message.userPic = image
+                                            if messages.count == 0 {
+                                                messages = [message]
+                                                if messageRecord == messageRecords!.last {
+                                                    completion(success: true, conversation: conversation, messages: messages)
+                                                }
+                                            } else {
+                                                messages += [message]
+                                                if messageRecord == messageRecords!.last {
+                                                    completion(success: true, conversation: conversation, messages: messages)
+                                                }
+                                            }
+                                            
+                                            
+                                        } else {
+                                            if messages.count == 0 {
+                                                messages = [message]
+                                                if messageRecord == messageRecords!.last {
+                                                    completion(success: true, conversation: conversation, messages: messages)
+                                                }
+                                            } else {
+                                                messages += [message]
+                                                if messageRecord == messageRecords!.last {
+                                                    completion(success: true, conversation: conversation, messages: messages)
+                                                }
+                                            }
+                                        }
+                                        
+                                    } else {
+                                        if messages.count == 0 {
+                                            messages = [message]
+                                            if messageRecord == messageRecords!.last {
+                                                completion(success: true, conversation: conversation, messages: messages)
+                                            }
+                                        } else {
+                                            messages += [message]
+                                            if messageRecord == messageRecords!.last {
+                                                completion(success: true, conversation: conversation, messages: messages)
+                                            }
+                                        }
+                                    }
+                                    
+                                })
+                            }
+                        } else {
+                            print("Error")
+                        }
+                    })
+                
+            } else {
+                completion(success: true, conversation: conversation, messages: [])
+            }
+        } else {
+            completion(success: true, conversation: conversation, messages: [])
+        }
+        
     }
     
     func subscribeToConversations(conversationRecord:CKRecord, contentAvailable:Bool, alertBody:String? = nil, completion:(success:Bool) -> Void) {
