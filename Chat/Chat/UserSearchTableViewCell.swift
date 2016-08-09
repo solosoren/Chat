@@ -12,6 +12,8 @@ class UserSearchTableViewCell: UITableViewCell {
     
 
     @IBOutlet weak var usernameLabel: UILabel!
+    var relationship: Relationship?
         
+    @IBOutlet var sendRequestButton: UIButton!
     @IBOutlet var profilePic: UIImageView!
 }

@@ -11,8 +11,13 @@ import CloudKit
 
 class AddContactTableViewController: UITableViewController {
     
+//    get another picture to switch to when sent instead of alert
+//    cant search for people who are alread friends
+    
+    
+    @IBOutlet var cellButton: UIButton!
     @IBOutlet var bigContactView: BigContactView!
-    var searchedUsers: [User] = []
+    var searchedUsers: [Relationship] = []
     let darkView = UIView()
     var names: [String] = []
     var requests: [CKReference]?
@@ -20,16 +25,20 @@ class AddContactTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setNavBar()
+        setNavBar()
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let searchResultsCell = tableView.dequeueReusableCellWithIdentifier("searchResultsCell", forIndexPath: indexPath) as! UserSearchTableViewCell
-        let user = searchedUsers[indexPath.row]
-        searchResultsCell.usernameLabel.text = user.fullName
-        dispatch_async(dispatch_get_main_queue()) { 
-            UserController.sharedInstance.grabImage(user.fullName!) { (success, image) in
+        searchResultsCell.relationship = searchedUsers[indexPath.row]
+        searchResultsCell.usernameLabel.text = searchResultsCell.relationship!.fullName
+        
+        searchResultsCell.sendRequestButton.tag = indexPath.row
+//        see if this works
+        
+        dispatch_async(dispatch_get_main_queue()) {
+            UserController.sharedInstance.grabImage(searchResultsCell.relationship!.fullName) { (success, image) in
                 if success == true {
                     dispatch_async(dispatch_get_main_queue()) {
                         searchResultsCell.profilePic.image = image
@@ -39,6 +48,7 @@ class AddContactTableViewController: UITableViewController {
                 }
             }
         }
+
         return searchResultsCell
     }
     
@@ -53,30 +63,31 @@ class AddContactTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         bigContactView.center.x = view.center.x
         bigContactView.center.y = view.center.y - 40
+        
+        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height + 200)
-        darkView.backgroundColor = UIColor.blackColor()
-        darkView.alpha = 0.5
+        
+        let button = UIButton(frame: CGRectMake(20, 40, 30, 36))
+        button.titleLabel?.text = "X"
+        button.tintColor = UIColor.whiteColor()
+        button.titleLabel?.font.fontWithSize(20.0)
+        button.addTarget(self, action: #selector(dismissButtonTapped), forControlEvents: UIControlEvents.TouchUpInside)
+        
         
         let user = searchedUsers[indexPath.row]
-        bigContactView.user = user
-        bigContactView.name.text = user.fullName
-        dispatch_async(dispatch_get_main_queue()) { 
-            UserController.sharedInstance.grabImage(user.fullName!) { (success, image) in
-                if success == true {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.bigContactView.profilePic.image = image
-                    }
-                }
-            }
+        bigContactView.relationship = user
+        let cell = tableView.cellForRowAtIndexPath(indexPath) as! UserSearchTableViewCell
+        dispatch_async(dispatch_get_main_queue()) {
+            self.bigContactView.profilePic.image = cell.profilePic.image
+            self.navigationController?.navigationBarHidden = true
         }
         
-        self.view.addSubview(darkView)
-        self.view.addSubview(bigContactView)
-        self.searchBar.resignFirstResponder()
-        
-        
-        
-        
+        tableView.scrollEnabled = false
+        view.addSubview(darkView)
+        view.addSubview(bigContactView)
+        view.addSubview(button)
+
+        searchBar.resignFirstResponder()
     }
     
     func getIndexOfUserWithUserId(user: User, userArray: [User]) -> Int {
@@ -95,15 +106,13 @@ class AddContactTableViewController: UITableViewController {
     
     @IBAction func addContactButtonTapped(sender: AnyObject) {
         let user = UserController.sharedInstance.currentUser
-        let friend = bigContactView.user
+        let friend = searchedUsers[sender.tag]
 //        if user?.userID != friend?.userID {
-            if let user = user, friend = friend {
-                NSLog("Friend: \(friend.fullName!)")
+            if let user = user {
+                NSLog("Friend: \(friend.fullName)")
                 UserController.sharedInstance.sendRequest(user, friend: friend) { (success, record) in
                     if success {
                         dispatch_async(dispatch_get_main_queue(), {
-                            self.bigContactView.removeFromSuperview()
-                            self.darkView.removeFromSuperview()
                             let name = record!["FullName"]
                             let alert = UIAlertController(title: nil, message: "A friend request has been sent to \(name!)", preferredStyle: .Alert)
                             let action = UIAlertAction(title: "Okay", style: .Default, handler: { (action) in
@@ -137,7 +146,7 @@ class AddContactTableViewController: UITableViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "addedContact" {
-//          subscribe to request?
+//            fix
         }
     }
 
@@ -149,10 +158,12 @@ extension AddContactTableViewController: UISearchBarDelegate {
         dispatch_async(dispatch_get_main_queue()) {
             UserController.sharedInstance.searchAllUsers(searchText) { (success, users) in
                 if success {
-                    self.searchedUsers = users!
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.tableView.reloadData()
-                    })
+                    if let users = users {
+                        self.searchedUsers = users
+                        dispatch_async(dispatch_get_main_queue(), {
+                            self.tableView.reloadData()
+                        })
+                    }
                 } else {
                     print("Not working")
                 }
@@ -165,11 +176,13 @@ extension AddContactTableViewController: UISearchBarDelegate {
             dispatch_async(dispatch_get_main_queue()) {
                 UserController.sharedInstance.searchAllUsers(searchBar.text!, completion: { (success, users) in
                     if success {
-                        self.searchedUsers = users!
-                        dispatch_async(dispatch_get_main_queue(), {
-                            searchBar.resignFirstResponder()
-                            self.tableView.reloadData()
-                        })
+                        if let users = users {
+                            self.searchedUsers = users
+                            dispatch_async(dispatch_get_main_queue(), {
+                                searchBar.resignFirstResponder()
+                                self.tableView.reloadData()
+                            })
+                        }                       
                     } else {
                         print("Not working")
                     }

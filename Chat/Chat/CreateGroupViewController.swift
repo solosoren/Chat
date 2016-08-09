@@ -55,7 +55,7 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
-        let size = CGSize(width:(self.view.bounds.width / 2) - 5, height:130)
+        let size = CGSize(width:(self.view.bounds.width / 3) - 20, height:130)
         return size
     }
     

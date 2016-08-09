@@ -13,8 +13,9 @@ import CloudKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    var alert: String?
+    var alerts: [String?] = []
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
@@ -30,6 +31,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let notificationInfo = userInfo as? [String: NSObject] else { return }
         
         let queryNotification = CKQueryNotification(fromRemoteNotificationDictionary: notificationInfo)
+        
+        alert = queryNotification.alertBody
+        alerts += [alert]
+        
+//        figure out what to do with these alertsds
         
         guard let recordID = queryNotification.recordID else { print("No Record ID available from CKQueryNotification."); return }
         

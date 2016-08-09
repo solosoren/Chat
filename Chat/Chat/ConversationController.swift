@@ -34,6 +34,7 @@ class ConversationController: NSObject {
     
     func grabUserConversations(relationship:Relationship, completion:(success:Bool, conversations:[Conversation]?, convoRecords:[CKRecord]?) -> Void) {
         
+        var convoNumber = 0
         var conversations: [Conversation] = []
         let container = CKContainer.defaultContainer()
         let pred = NSPredicate(format: "Users CONTAINS %@", relationship.userID)
@@ -59,10 +60,11 @@ class ConversationController: NSObject {
                                     let ref = conversation.messages?.last
                                     container.publicCloudDatabase.fetchRecordWithID((ref?.recordID)!, completionHandler: { (lastMessageRecord, error) in
                                         if error == nil {
+                                            convoNumber = convoNumber + 1
                                             conversation.lastMessage = Message(record: lastMessageRecord!)
                                             conversation.lastMessage?.time = Timer.sharedInstance.setMessageTime(lastMessageRecord!)
                                             conversations += [conversation]
-                                            if record == records?.last {
+                                            if convoNumber == records?.count {
                                                 print("DONE")
                                                 completion(success: true, conversations: conversations, convoRecords: records)
                                             }
@@ -92,82 +94,88 @@ class ConversationController: NSObject {
         }
     }
     
-    func grabMessages(conversation:Conversation, completion:(success:Bool, conversation: Conversation?, messages:[Message]?) -> Void) {
+    func grabMessages(conversation:Conversation, completion:((error: NSError?, conversation: Conversation?, messages:[Message]?) -> Void)?) {
+        
+        var refNumber = 0
         let container = CKContainer.defaultContainer()
         var messages: [Message] = []
         if let messageRefs: [CKReference] = conversation.messages {
-            if conversation.messages?.count != 0 {
-                
-                    let pred = NSPredicate(format: "recordID == %@", argumentArray: messageRefs)
-                    let query = CKQuery(recordType: "Message", predicate: pred)
-                    container.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (messageRecords, error) in
-                        print(messageRecords)
-                        if error == nil {
-                            for messageRecord in messageRecords! {
-                                let time = Timer.sharedInstance.setMessageTime(messageRecord)
-                                var message = Message(record: messageRecord)
+            if messageRefs.count != 0 {
+                print("CONVERSATION HAS \(conversation.messages!.count) MESSAGES")
+                    for ref in messageRefs {
+                        print("MESSAGE REF: \(ref) being fetched")
+                            container.publicCloudDatabase.fetchRecordWithID(ref.recordID, completionHandler: { (record, error) in
+                                
+                                guard let record = record else {
+                                    if let error = error {
+                                        print(error)
+                                    }
+                                    return
+                                }
+                                
+                                //                        if let record = record {
+                                let time = Timer.sharedInstance.setMessageTime(record)
+                                var message = Message(record: record)
                                 message.time = time
                                 
                                 UserController.sharedInstance.grabImageByUID(message.senderUID.recordID, completion: { (success, image) in
                                     if success {
+                                        refNumber = refNumber + 1
+                                        print("REF NUMBER: \(refNumber)")
                                         if image != nil {
                                             message.userPic = image
                                             if messages.count == 0 {
                                                 messages = [message]
-                                                if messageRecord == messageRecords!.last {
-                                                    completion(success: true, conversation: conversation, messages: messages)
-                                                }
                                             } else {
                                                 messages += [message]
-                                                if messageRecord == messageRecords!.last {
-                                                    completion(success: true, conversation: conversation, messages: messages)
-                                                }
                                             }
-                                            
-                                            
                                         } else {
+                                            message.userPic = nil
                                             if messages.count == 0 {
                                                 messages = [message]
-                                                if messageRecord == messageRecords!.last {
-                                                    completion(success: true, conversation: conversation, messages: messages)
-                                                }
                                             } else {
                                                 messages += [message]
-                                                if messageRecord == messageRecords!.last {
-                                                    completion(success: true, conversation: conversation, messages: messages)
-                                                }
                                             }
                                         }
-                                        
+                                        if refNumber == messageRefs.count {
+                                            if let completion = completion {
+                                                completion(error: error, conversation: conversation, messages: messages)
+                                            }
+                                        }
                                     } else {
+                                        refNumber = refNumber + 1
+                                        print("REF NUMBER: \(refNumber)")
+                                        message.userPic = nil
                                         if messages.count == 0 {
                                             messages = [message]
-                                            if messageRecord == messageRecords!.last {
-                                                completion(success: true, conversation: conversation, messages: messages)
-                                            }
                                         } else {
                                             messages += [message]
-                                            if messageRecord == messageRecords!.last {
-                                                completion(success: true, conversation: conversation, messages: messages)
+                                        }
+                                        if refNumber == messageRefs.count {
+                                            if let completion = completion {
+                                                completion(error: error, conversation: conversation, messages: messages)
                                             }
                                         }
                                     }
-                                    
                                 })
-                            }
-                        } else {
-                            print("Error")
-                        }
-                    })
-                
+//                        }
+                            
+                        })
+                    }
+                } else {
+                    
+                    if let completion = completion {
+                        completion(error: nil, conversation: conversation, messages: [])
+                    }
+                }
             } else {
-                completion(success: true, conversation: conversation, messages: [])
+            if let completion = completion {
+                completion(error: nil, conversation: conversation, messages: [])
             }
-        } else {
-            completion(success: true, conversation: conversation, messages: [])
         }
-        
     }
+    
+ 
     
     func subscribeToConversations(conversationRecord:CKRecord, contentAvailable:Bool, alertBody:String? = nil, completion:(success:Bool) -> Void) {
         

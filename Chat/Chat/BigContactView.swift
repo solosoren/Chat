@@ -10,8 +10,7 @@ import UIKit
 
 class BigContactView: UIView {
     
-    @IBOutlet weak var name: UILabel!
     @IBOutlet weak var profilePic: UIImageView!
-    var user: User?
+    var relationship: Relationship?
     
 }

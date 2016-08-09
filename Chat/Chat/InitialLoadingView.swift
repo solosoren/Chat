@@ -11,14 +11,11 @@ import CloudKit
 
 
 class InitialLoadingView: UIViewController {
-    
 
-//    TODO: fix all else errors
-//          fix nav bar bottom line
+//    TODO: clean up code
     
         // User
 //f          skip login
-//?          logout
     
 //Doing         subscribe to friend requests
     
@@ -35,14 +32,12 @@ class InitialLoadingView: UIViewController {
 //-          message cell setup
 //-          create group save button tapped segue to messaging view
 //           check out if add contact vc photos work with a bunch of contacts
-    
-        // Tomorrow 
-//           Watch timeline for subscription work
-    
+
+//    switch contact views to just picture
     
 //    fix friend request and conversation to just check if subscribed?
     
-
+    
     
     var friends: [Relationship] = []
     var requests: [Relationship] = []
@@ -51,7 +46,8 @@ class InitialLoadingView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setInitialNavBar()
+        navigationController?.navigationBarHidden = true
+        
         //        self.performSegueWithIdentifier("loginSegue", sender: self)
         
         let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
@@ -177,9 +173,11 @@ class InitialLoadingView: UIViewController {
                         NSLog("SSSSSSSSSSSSS: 11")
                         let friendRelationship = Relationship(fullName: relationshipRecord!["FullName"] as! String, userID: relationshipRecord!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: relationshipRecord!["ImageKey"] as? CKAsset)
                         self.friends += [friendRelationship]
+                        
                         if friend == relationship.friends?.last {
                             completion(success: true)
                         }
+                        
                     } else {
                         self.friends = []
                         if friend == relationship.friends?.last {

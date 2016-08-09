@@ -232,9 +232,9 @@
 		AC3CC8551CAE22F000507EBB /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
-				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
 				AC3CC8501CAE1FCB00507EBB /* ContactTableViewCell.swift */,
 				AC3CC8521CAE22B400507EBB /* ContactCollectionCell.swift */,
+				AC9E1D3B1D25B10A0074926C /* BigContactView.swift */,
 				AC3CC8561CAF3A2400507EBB /* AddContactTableViewController.swift */,
 				AC243C2B1CF923890048E36D /* UserSearchTableViewCell.swift */,
 			);

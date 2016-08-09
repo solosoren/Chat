@@ -83,8 +83,8 @@ class UserController {
     
 //    TODO: query to see if the friend is already a user
     
-    func sendRequest(user:User, friend:User, completion:(success: Bool, record:CKRecord?) -> Void) {
-        self.queryForRelationshipByName(friend.fullName!) { (success, relationshipRecord) in
+    func sendRequest(user:User, friend:Relationship, completion:(success: Bool, record:CKRecord?) -> Void) {
+        self.queryForRelationshipByName(friend.fullName) { (success, relationshipRecord) in
             if success {
 //                TODO: This might not work. Haven't tested out whether I need this or not
                 if relationshipRecord!["FriendRequests"] != nil {
@@ -310,31 +310,42 @@ class UserController {
 
     
     
-    func searchAllUsers(searchTerm: String, completion:(success: Bool, users: [User]?) -> Void) {
-        var tempUsers = [User]()
+    func searchAllUsers(searchTerm: String, completion:(success: Bool, users: [Relationship]?) -> Void) {
+        var tempUsers = [Relationship]()
         let predicate = NSPredicate(format: "FullName BEGINSWITH %@", searchTerm)
         let query = CKQuery(recordType: "Relationship", predicate: predicate)
         dispatch_async(dispatch_get_main_queue()) {
             self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
                 if let records = records {
                     for record in records {
-                        let ref = record["UserIDRef"] as! CKReference
-                        let ID = ref.recordID
-                        self.defaultContainer?.publicCloudDatabase.fetchRecordWithID(ID, completionHandler: { (userRecord, error) in
-                            if error == nil {
-                                let UID = userRecord?.recordID
+                        if record["UserIDRef"] != nil && record["FullName"] != nil && record["ImageKey"] != nil {
+                                let uid = record["UserIDRef"] as! CKReference
                                 let fullName = record["FullName"] as! String
                                 let pic = record["ImageKey"] as! CKAsset
-                                let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:pic)
-                                tempUsers.append(user)
-                                if record == records.last {
-                                    completion(success: true, users: tempUsers)
-                                }
-                            } else {
-                                completion(success: false, users: nil)
-                                print("error searching users \(error?.localizedDescription)")
-                            }
-                        })
+                                let relationship = Relationship(fullName: fullName, userID: uid, requests: nil, friends: nil, profilePic: pic)
+                                tempUsers.append(relationship)
+                        }
+                        if record == records.last {
+                            completion(success: true, users: tempUsers)
+                        }
+                        
+//                        self.defaultContainer?.publicCloudDatabase.fetchRecordWithID(ID, completionHandler: { (userRecord, error) in
+//                            if error == nil {
+//                                let UID = userRecord?.recordID
+//                                let fullName = record["FullName"] as! String
+//                                let pic = record["ImageKey"] as! CKAsset
+//                                let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:pic)
+//                                tempUsers.append(user)
+//                                if record == records.last {
+//                                    completion(success: true, users: tempUsers)
+//                                }
+//                            } else {
+//                                if record == records.last {
+//                                    completion(success: false, users: nil)
+//                                }
+//                                print("error searching users \(error?.localizedDescription)")
+//                            }
+//                        })
                     }
                 } else {
                     completion(success: false, users: nil)
