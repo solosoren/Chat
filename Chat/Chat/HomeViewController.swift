@@ -231,7 +231,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         friends? += [ref]
                         UserController.sharedInstance.saveRecordArray(friends!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
                             if success {
-                                UserController.sharedInstance.sendRequest(UserController.sharedInstance.currentUser!, friend: requester!, completion: { (success, record) in
+                                UserController.sharedInstance.acceptRequest(UserController.sharedInstance.currentUser!, friend: requester!, completion: { (success, record) in
                                     if success {
                                         let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
                                         dispatch_async(dispatch_get_main_queue(), {

@@ -81,6 +81,44 @@ class UserController {
         })
     }
     
+    func acceptRequest(user:User, friend:Relationship, completion:(success: Bool, record:CKRecord?) -> Void) {
+        self.queryForRelationshipByName(friend.fullName) { (success, relationshipRecord) in
+            if success {
+                if relationshipRecord!["Friends"] != nil {
+                    var priorFriends = relationshipRecord!["Friends"] as! [CKReference]
+                    let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
+                    priorFriends.append(ref)
+                    relationshipRecord?.setObject(priorFriends, forKey: "Friends")
+                    
+                    self.defaultContainer?.publicCloudDatabase.saveRecord(relationshipRecord!, completionHandler: { (record, error) in
+                        if error == nil {
+                            completion(success: true, record: record)
+                        } else {
+                            completion(success: false, record: nil)
+                        }
+                    })
+                } else {
+                    let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
+                    let requests = [ref]
+                    relationshipRecord?.setObject(requests, forKey: "Friends")
+                    
+                    self.defaultContainer?.publicCloudDatabase.saveRecord(relationshipRecord!, completionHandler: { (record, error) in
+                        if error == nil {
+                            completion(success: true, record: record)
+                        } else {
+                            completion(success: false, record: nil)
+                            NSLog("ERROR: \(error)")
+                        }
+                    })
+                }
+                
+            } else {
+                completion(success: false, record: nil)
+            }
+        }
+    }
+    
+    
 //    TODO: query to see if the friend is already a user
     
     func sendRequest(user:User, friend:Relationship, completion:(success: Bool, record:CKRecord?) -> Void) {
