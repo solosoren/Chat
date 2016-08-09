@@ -57,24 +57,19 @@ class InitialLoadingView: UIViewController {
                 
         UserController.sharedInstance.checkForUser { (success) in
             if success {
-                NSLog("SSSSSSSSSSSSS: 1")
                 if let me = UserController.sharedInstance.currentUser {
                     UserController.sharedInstance.queryForMyRelationship(me, completion: { (success, relationshipRecord) in
                         if success {
-                            NSLog("SSSSSSSSSSSSS: 2")
                             if let relationshipRecord = relationshipRecord {
                                 UserController.sharedInstance.myRelationshipRecord = relationshipRecord
                                 let myRelationship = Relationship(record: relationshipRecord)
                                 UserController.sharedInstance.myRelationship = myRelationship
                                 self.initiallyGrabRequests(myRelationship!, completion: { (success) in
                                     if success {
-                                        NSLog("SSSSSSSSSSSSS: 3")
                                         self.initiallyGrabFriends(myRelationship!, completion: { (success) in
                                             if success {
-                                                NSLog("SSSSSSSSSSSSS: 4")
                                                 self.initiallyGrabConvos({ (success) in
                                                     if success {
-                                                        print("Convos: \(self.conversations)")
                                                         dispatch_async(dispatch_get_main_queue(), {
                                                             indicator.stopAnimating()
                                                             self.performSegueWithIdentifier("initialLoad", sender: self)
@@ -84,11 +79,9 @@ class InitialLoadingView: UIViewController {
                                                     }
                                                 })
                                             } else {
-                                                NSLog("SSSSSSSSSSSSS: 5")
                                             }
                                         })
                                     } else {
-                                        NSLog("SSSSSSSSSSSSS: 6")
                                     }
                                 })
                                 } else {
@@ -135,15 +128,12 @@ class InitialLoadingView: UIViewController {
             self.requests = []
             completion(success: true)
         } else if relationship.requests! != [] {
-            NSLog("SSSSSSSSSSSSS: 7")
             for request in relationship.requests! {
                 UserController.sharedInstance.queryForRelationshipbyUID(request.recordID) { (success, relationshipRecord) in
                     if let relationshipRecord = relationshipRecord {
-                        NSLog("SSSSSSSSSSSSS: 8")
                         let requestRelationship = Relationship(fullName: relationshipRecord["FullName"] as! String, userID: relationshipRecord["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: relationshipRecord["ImageKey"] as? CKAsset)
                         self.requests += [requestRelationship]
                         if request == relationship.requests!.last {
-                            NSLog("SSSSSSSSSSSSS: 9")
                             completion(success: true)
                         }
                     } else {
@@ -166,11 +156,9 @@ class InitialLoadingView: UIViewController {
             self.friends = []
             completion(success: true)
         } else if relationship.friends! != [] {
-            NSLog("SSSSSSSSSSSSS: 10")
             for friend in relationship.friends! {
                 UserController.sharedInstance.queryForRelationshipbyUID(friend.recordID, completion: { (success, relationshipRecord) in
                     if success {
-                        NSLog("SSSSSSSSSSSSS: 11")
                         let friendRelationship = Relationship(fullName: relationshipRecord!["FullName"] as! String, userID: relationshipRecord!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: relationshipRecord!["ImageKey"] as? CKAsset)
                         self.friends += [friendRelationship]
                         
@@ -182,7 +170,6 @@ class InitialLoadingView: UIViewController {
                         self.friends = []
                         if friend == relationship.friends?.last {
                             completion(success: true)
-                            NSLog("SSSSSSSSSSSSS: 13")
 
                         }
                     }
@@ -191,7 +178,6 @@ class InitialLoadingView: UIViewController {
         } else {
             self.friends = []
             completion(success: true)
-            NSLog("SSSSSSSSSSSSS: 14")
         }
     }
     

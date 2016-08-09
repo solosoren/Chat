@@ -213,7 +213,10 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if myRequests != nil {
             let requester = myRequests?[sender.tag]
             myRequests!.removeAtIndex(sender.tag)
-            for request in self.myRequests! {
+            guard let myRequests = myRequests else {
+                return
+            }
+            for request in myRequests {
                 let ref = CKReference(recordID: request.userID.recordID, action: .DeleteSelf)
                 requests? += [ref]
             }
@@ -228,44 +231,72 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         friends? += [ref]
                         UserController.sharedInstance.saveRecordArray(friends!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
                             if success {
-                                let record = UserController.sharedInstance.myRelationshipRecord
+                                UserController.sharedInstance.sendRequest(UserController.sharedInstance.currentUser!, friend: requester!, completion: { (success, record) in
+                                    if success {
+                                        let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
+                                        dispatch_async(dispatch_get_main_queue(), {
+                                            self.myFriends! += [relationship]
+                                            self.tableView.reloadData()
+                                            let indexPath = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
+                                            let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
+                                            cell.collectionView.reloadData()
+                                        })
+                                    } else {
+                                        dispatch_async(dispatch_get_main_queue(), { 
+                                            let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .Alert)
+                                            let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                                                return
+                                            })
+                                            alert.addAction(action)
+                                            self.presentViewController(alert, animated: true, completion: nil)
+                                        })
+                                    }
+                                })
+                            } else {
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .Alert)
+                                    let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                                        return
+                                    })
+                                    alert.addAction(action)
+                                    self.presentViewController(alert, animated: true, completion: nil)
+                                })
+                            }
+                        })
+                    } else {
+                        UserController.sharedInstance.sendRequest(UserController.sharedInstance.currentUser!, friend: requester!, completion: { (success, record) in
+                            if success {
                                 let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
                                 dispatch_async(dispatch_get_main_queue(), {
-                                    //                                TODO: see why not reloading into the tableview
+                                    
                                     self.myFriends! += [relationship]
                                     self.tableView.reloadData()
                                     let indexPath = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
                                     let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
                                     cell.collectionView.reloadData()
-                                    
                                 })
                             } else {
-                                
-                            }
-                        })
-                    } else {
-                        var friends: [CKReference]
-                        let ref = CKReference(recordID: requester!.userID.recordID, action: .DeleteSelf)
-                        friends = [ref]
-                        UserController.sharedInstance.saveRecordArray(friends, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
-                            if success {
-                                let record = UserController.sharedInstance.myRelationshipRecord
-                                let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
                                 dispatch_async(dispatch_get_main_queue(), {
-                                    //                                TODO: see why not reloading into the tableview
-                                    self.myFriends! += [relationship]
-                                    self.tableView.reloadData()
-                                    let cell = ContactTableViewCell()
-                                    cell.collectionView.reloadData()
+                                    let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .Alert)
+                                    let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                                        return
+                                    })
+                                    alert.addAction(action)
+                                    self.presentViewController(alert, animated: true, completion: nil)
                                 })
-                            } else {
-                                //                            fix
                             }
                         })
                         
                     }
                 } else {
-                    //                fix
+                    dispatch_async(dispatch_get_main_queue(), {
+                        let alert = UIAlertController(title: "Error", message: "Couldn't remove requests", preferredStyle: .Alert)
+                        let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                            return
+                        })
+                        alert.addAction(action)
+                        self.presentViewController(alert, animated: true, completion: nil)
+                    })
                 }
             }
         }
