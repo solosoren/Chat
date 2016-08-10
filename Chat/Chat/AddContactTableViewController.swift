@@ -17,10 +17,13 @@ class AddContactTableViewController: UITableViewController {
     
     @IBOutlet var cellButton: UIButton!
     @IBOutlet var bigContactView: BigContactView!
+    let panRec = UIPanGestureRecognizer()
+
     var searchedUsers: [Relationship] = []
     let darkView = UIView()
     var names: [String] = []
     var requests: [CKReference]?
+    
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
@@ -63,31 +66,30 @@ class AddContactTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         bigContactView.center.x = view.center.x
         bigContactView.center.y = view.center.y - 40
-        
-        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
-        darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height + 200)
-        
-        let button = UIButton(frame: CGRectMake(20, 40, 30, 36))
-        button.titleLabel?.text = "X"
-        button.tintColor = UIColor.whiteColor()
-        button.titleLabel?.font.fontWithSize(20.0)
-        button.addTarget(self, action: #selector(dismissButtonTapped), forControlEvents: UIControlEvents.TouchUpInside)
-        
-        
         let user = searchedUsers[indexPath.row]
         bigContactView.relationship = user
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! UserSearchTableViewCell
         dispatch_async(dispatch_get_main_queue()) {
             self.bigContactView.profilePic.image = cell.profilePic.image
-            self.navigationController?.navigationBarHidden = true
         }
+        
+        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
+        darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height + 200)
         
         tableView.scrollEnabled = false
         view.addSubview(darkView)
         view.addSubview(bigContactView)
-        view.addSubview(button)
+        panRec.addTarget(self, action: #selector(AddContactTableViewController.swipedView))
+        bigContactView.addGestureRecognizer(panRec)
+        bigContactView.userInteractionEnabled = true
 
         searchBar.resignFirstResponder()
+    }
+    
+    func swipedView(sender:UIPanGestureRecognizer) {
+        bigContactView.removeFromSuperview()
+        darkView.removeFromSuperview()
+        tableView.scrollEnabled = true
     }
     
     func getIndexOfUserWithUserId(user: User, userArray: [User]) -> Int {
@@ -138,15 +140,9 @@ class AddContactTableViewController: UITableViewController {
 //        }
     }
     
-    
-    @IBAction func dismissButtonTapped(sender: AnyObject) {
-        bigContactView.removeFromSuperview()
-        darkView.removeFromSuperview()
-    }
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "addedContact" {
-//            fix
+
         }
     }
 

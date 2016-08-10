@@ -14,14 +14,19 @@ class InitialLoadingView: UIViewController {
 
 //    TODO: clean up code
     
-        // User
-//f          skip login
+        // NOT WORKING -------
+//    all convos not loading
+//    accept button crashing
+//    accept request not saving friends friends
     
-//Doing         subscribe to friend requests
+    
+        // User
+//TODO:          skip login
+    
+//TODO:      subscribe to friend requests
     
         // Messaging
 //f          conversation messages ordered by date
-//e          messaging image on cell
     
 //?          leave convo ||||||| maybe??
 //?          see who's in the convo |||||||| maybe??
@@ -29,11 +34,8 @@ class InitialLoadingView: UIViewController {
 
         // Testing
 //-          accept request button tapped
-//-          message cell setup
 //-          create group save button tapped segue to messaging view
 //           check out if add contact vc photos work with a bunch of contacts
-
-//    switch contact views to just picture
     
 //    fix friend request and conversation to just check if subscribed?
     
@@ -123,6 +125,14 @@ class InitialLoadingView: UIViewController {
     }
     
     func initiallyGrabRequests(relationship:Relationship, completion:(success: Bool) -> Void) {
+        
+        UserController.sharedInstance.subscribeToFriendRequests(relationship) { (success, error) in
+            if success {
+                print("it worked")
+            } else {
+                print("ERROR \(error)")
+            }
+        }
         
         if relationship.requests == nil {
             self.requests = []

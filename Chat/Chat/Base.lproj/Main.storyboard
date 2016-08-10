@@ -537,10 +537,9 @@
                     <rect key="frame" x="0.0" y="0.0" width="300" height="290"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6w-wB-RKb">
-                            <rect key="frame" x="7" y="6" width="30" height="36"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                            <state key="normal" title="X">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6w-wB-RKb">
+                            <rect key="frame" x="9" y="11" width="25" height="25"/>
+                            <state key="normal" image="Blue-Delete">
                                 <color key="titleColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
                             <connections>
@@ -609,8 +608,8 @@
                         <constraint firstItem="UOD-RS-3mc" firstAttribute="centerY" secondItem="xh0-hl-FjB" secondAttribute="centerY" id="Key-Dp-bml"/>
                         <constraint firstAttribute="trailing" secondItem="jU6-MV-Rfj" secondAttribute="trailing" id="MqD-Ok-5ef"/>
                         <constraint firstItem="qhE-Dg-JoS" firstAttribute="leading" secondItem="RWx-bg-Ni9" secondAttribute="leading" constant="41" id="NKA-65-y5g"/>
-                        <constraint firstItem="b6w-wB-RKb" firstAttribute="top" secondItem="RWx-bg-Ni9" secondAttribute="top" constant="6" id="PGM-Wp-SsA"/>
-                        <constraint firstItem="b6w-wB-RKb" firstAttribute="leading" secondItem="RWx-bg-Ni9" secondAttribute="leading" constant="7" id="a3r-AV-bs2"/>
+                        <constraint firstItem="b6w-wB-RKb" firstAttribute="top" secondItem="RWx-bg-Ni9" secondAttribute="top" constant="11" id="PGM-Wp-SsA"/>
+                        <constraint firstItem="b6w-wB-RKb" firstAttribute="leading" secondItem="RWx-bg-Ni9" secondAttribute="leading" constant="9" id="a3r-AV-bs2"/>
                         <constraint firstItem="DTS-EM-LsX" firstAttribute="centerX" secondItem="RWx-bg-Ni9" secondAttribute="centerX" id="ate-P4-wdU"/>
                         <constraint firstItem="qhE-Dg-JoS" firstAttribute="centerX" secondItem="DTS-EM-LsX" secondAttribute="centerX" id="c1B-ti-Qw5"/>
                         <constraint firstAttribute="trailing" secondItem="qhE-Dg-JoS" secondAttribute="trailing" constant="40" id="iZI-vY-K2t"/>
@@ -750,7 +749,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="1Ps-Ju-YHs">
-                        <barButtonItem key="leftBarButtonItem" image="Delete-50" id="k5l-Lk-Wd5">
+                        <barButtonItem key="leftBarButtonItem" image="White-Delete" id="k5l-Lk-Wd5">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="dismissButtonTapped:" destination="a7B-p9-6Mo" id="GXc-YB-k7l"/>
@@ -1156,7 +1155,7 @@
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                            <integer key="value" value="12"/>
+                                                            <integer key="value" value="20"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="clipsToBounds" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
@@ -1221,7 +1220,7 @@
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                            <integer key="value" value="12"/>
+                                                            <integer key="value" value="20"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="clipsToBounds" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
@@ -1416,13 +1415,14 @@
     <resources>
         <image name="Add Camera-96" width="96" height="96"/>
         <image name="Add User Male Filled-50" width="50" height="50"/>
+        <image name="Blue-Delete" width="25" height="25"/>
         <image name="Chat Filled" width="25" height="25"/>
         <image name="Contact Card-50" width="25" height="25"/>
-        <image name="Delete-50" width="25" height="25"/>
         <image name="Plus-50" width="25" height="25"/>
         <image name="Settings-50" width="25" height="25"/>
         <image name="White Icon" width="512" height="512"/>
         <image name="White User" width="25" height="25"/>
+        <image name="White-Delete" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="81D-mc-IgJ"/>

@@ -148,11 +148,10 @@ class UserController {
                             completion(success: true, record: record)
                         } else {
                             completion(success: false, record: nil)
-                            NSLog("ERROR: \(error)")
+//                            NSLog("ERROR: \(error)")
                         }
                     })
                 }
-                
             } else {
                 completion(success: false, record: nil)
             }
@@ -426,13 +425,13 @@ class UserController {
     }
     
 //    pass in friend when you request so they subscribe to the request
-    func subscribeToFriendRequests(relationship:Relationship, alertBody: String?, completion:((success:Bool, error: NSError?) -> Void)?) {
+    func subscribeToFriendRequests(relationship:Relationship, completion:((success:Bool, error: NSError?) -> Void)?) {
         let recordID = relationship.userID
-        let predicate = NSPredicate(format: "Relationship == %@", argumentArray: [recordID])
-        ConversationController.sharedInstance.subscribe("FriendRequest", predicate: predicate, subscriptionID: ("\(relationship.userID)A"), contentAvailable: true, alertBody: "You have a new friend request", desiredKeys: ["Relationship, FriendRequest"], options: .FiresOnRecordUpdate) { (subscription, error) in
+        let predicate = NSPredicate(format: "recordID == %@", recordID)
+        ConversationController.sharedInstance.subscribe("Relationship", predicate: predicate, subscriptionID: ("\(relationship.userID)A"), contentAvailable: true, alertBody: "You have a new friend request", desiredKeys: ["FriendRequests"], options: .FiresOnRecordUpdate) { (subscription, error) in
             if let completion = completion {
                 let success = subscription != nil
-                completion(success: success, error: error)
+                completion(success:success, error:error)
             }
         }
     }

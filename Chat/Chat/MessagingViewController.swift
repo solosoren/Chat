@@ -23,7 +23,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         super.viewDidLoad()
         tableView.separatorColor = UIColor.whiteColor()
         setNavBar()
-
+        
     }
 
     override func viewDidLayoutSubviews() {
@@ -64,11 +64,10 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             themMessageCell.userIcon.image = message.userPic
             return themMessageCell
         }
-//        image
     }
     
     override var inputAccessoryView: UIView {
-        constraint.constant = 216
+//        constraint.constant = 216
         return keyboardView
     }
     
@@ -85,7 +84,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                 if success {
                     if let record = self.convoRecord, conversation = self.conversation {
                         let ref = CKReference(record: messageRecord!, action: .DeleteSelf)
-                        if conversation.messages! != [] {
+                        if conversation.messages != nil {
                             var messages = record["Messages"] as! [CKReference]
                             messages += [ref]
                             record.setValue(messages, forKey: "Messages")

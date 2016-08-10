@@ -10,7 +10,7 @@ import CloudKit
 import UIKit
 
 class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
-
+    
     @IBOutlet var contactView: UIView!
     
     @IBOutlet var collectionView: UICollectionView!
@@ -19,6 +19,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     let darkView = UIView()
     
+    var changedConvo: Conversation?
+    var convoImage: CKAsset?
     var requests: [CKReference]?
     var myRequests: [Relationship]?
     var numberInSection:Int?
@@ -54,8 +56,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             
         } else {
             if indexPath.row == numberInSection {
-                
-//                fixxxxx
+                //                fixxxxx
                 if (myFriends?.count)! % 3 == 1 {
                     let contactCellHeight = CGFloat(145 * ((myFriends!.count + 2)/3)) + 30
                     return contactCellHeight
@@ -66,14 +67,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     let contactCellHeight = CGFloat(145 * (myFriends!.count/3)) + 30
                     return contactCellHeight
                 }
-        
+                
             } else {
                 return 87
             }
         }
     }
-    
-    
+
+
+
 //  TODO: create sections ??
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -82,6 +84,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if segmentedControl.selectedSegmentIndex == 0 {
             let convoCell = tableView.dequeueReusableCellWithIdentifier("conversationCell", forIndexPath: indexPath) as! HomeMessageCell
             let convo = myConversations![indexPath.row]
+            
             convoCell.messageText.text = convo.lastMessage?.messageText
             convoCell.userName.text = convo.convoName
             if let time = convo.lastMessage?.time {
@@ -120,6 +123,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return notificationCell
             }
         }
+    }
+    
+    func returnLastMessage(conversation: Conversation, profilePic: CKAsset?) {
+        changedConvo = conversation
+        convoImage = profilePic
+        
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -409,7 +418,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBAction func sendMessageButtonTapped(sender: AnyObject) {
         let myRelationship = UserController.sharedInstance.myRelationship
 //        TODO: fix name of convo
-        let conversation = Conversation.init(convoName: contactRelationship!.fullName, users: [myRelationship!.userID, contactRelationship!.userID], messages: [])
+        let conversation = Conversation.init(convoName: "\((myRelationship?.fullName)!), \((contactRelationship?.fullName)!)", users: [myRelationship!.userID, contactRelationship!.userID], messages: [])
         ConversationController.createConversation(conversation) { (success, record) in
             if success {
                 self.convoRecord = record

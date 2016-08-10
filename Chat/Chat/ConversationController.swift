@@ -46,7 +46,6 @@ class ConversationController: NSObject {
                 if records?.count != 0 {
                     
                     for record in records! {
-                        print("query")
                         
 //                        fix alert body
                         self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
@@ -54,7 +53,39 @@ class ConversationController: NSObject {
                                 print("subscribed")
                                 var conversation = Conversation(record: record)
                                 conversation.ref = record.recordID
-
+                                var groupName = record["GroupName"] as! String?
+                                if let myName = UserController.sharedInstance.myRelationship?.fullName {
+                                    if let range = groupName?.rangeOfString("\(myName), ") {
+                                        groupName?.removeRange(range)
+                                        
+                                    }
+                                    if let range = groupName?.rangeOfString(", \(myName)") {
+                                        groupName?.removeRange(range)
+                                    }
+                                }
+                                conversation.convoName = groupName!
+//                                var name: String = ""
+//                                if groupName == nil {
+//                                    var arrayOfNames: [CKReference] = []
+//                                    for user in conversation.users {
+//                                        if user != CKReference(record: UserController.sharedInstance.myRelationshipRecord!, action: .DeleteSelf) {
+//                                            print(user.recordID.recordName)
+//                                            arrayOfNames += [user]
+//                                            container.publicCloudDatabase.fetchRecordWithID(user.recordID, completionHandler: { (record, error) in
+//                                                if error == nil {
+//                                                    let fullName = record!["FullName"] as! String
+//                                                    print(fullName)
+//                                                    name += "\(fullName) "
+//                                                } else {
+//                                                    print("ERRROR")
+//                                                }
+//                                            })
+//                                            
+//                                        }
+//                                    }
+//                                    print("NAME: \(name)")
+//                                }
+                                
                                 if conversation.messages?.count != 0 {
                                     print("conversation messages")
                                     let ref = conversation.messages?.last
