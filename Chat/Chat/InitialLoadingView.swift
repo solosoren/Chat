@@ -126,13 +126,13 @@ class InitialLoadingView: UIViewController {
     
     func initiallyGrabRequests(relationship:Relationship, completion:(success: Bool) -> Void) {
         
-        UserController.sharedInstance.subscribeToFriendRequests(relationship) { (success, error) in
-            if success {
-                print("it worked")
-            } else {
-                print("ERROR \(error)")
-            }
-        }
+//        UserController.sharedInstance.subscribeToFriendRequests(relationship) { (success, error) in
+//            if success {
+//                print("it worked")
+//            } else {
+//                print("ERROR \(error)")
+//            }
+//        }
         
         if relationship.requests == nil {
             self.requests = []

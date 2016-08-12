@@ -21,12 +21,12 @@ struct Message {
     var userPic: UIImage?
     
 
-    init(senderUID: CKReference, messageText:String, time: String?) {
+    init(senderUID: CKReference, messageText:String, time: String?, userPic: UIImage?) {
         self.senderUID = senderUID
         self.messageText = messageText
         self.ref = nil
         self.time = time
-//        self.userPic = userPic
+        self.userPic = userPic
     }
     
     init(record:CKRecord) {

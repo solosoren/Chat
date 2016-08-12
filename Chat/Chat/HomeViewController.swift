@@ -90,7 +90,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if let time = convo.lastMessage?.time {
                 convoCell.messageTime.text = time
             }
-//            TODO: set images
+            if let userPic = convo.lastMessage?.userPic {
+                convoCell.userImage.image = userPic
+            }
             return convoCell
             
         } else {
@@ -101,8 +103,6 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 
             } else {
                 let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath) as! NotificationCell
-                
-//                why???? - 1
                 
                 notificationCell.acceptButton.tag = indexPath.row
                 notificationCell.declineButton.tag = indexPath.row
@@ -369,7 +369,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return size
     }
     
-//    
+  
 //    
 //    
 //    

@@ -77,9 +77,9 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     @IBAction func sendMessageTapped(sender: AnyObject) {
         if messageTextView.text.isEmpty == false {
-            var message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil)
-//            Have to figure out time
-            message.userPic = UserController.sharedInstance.myRelationship?.profilePic?.image
+            var message: Message
+            let userpic = UserController.sharedInstance.myRelationship?.profilePic?.image
+            message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil, userPic: userpic)
             MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
                     if let record = self.convoRecord, conversation = self.conversation {

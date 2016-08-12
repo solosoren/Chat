@@ -1,4 +1,4 @@
-//
+ //
 //  ConversationController.swift
 //  Chat
 //
@@ -46,78 +46,71 @@ class ConversationController: NSObject {
                 if records?.count != 0 {
                     
                     for record in records! {
-                        
-//                        fix alert body
-                        self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
-                            if success {
-                                print("subscribed")
-                                var conversation = Conversation(record: record)
-                                conversation.ref = record.recordID
-                                var groupName = record["GroupName"] as! String?
-                                if let myName = UserController.sharedInstance.myRelationship?.fullName {
-                                    if let range = groupName?.rangeOfString("\(myName), ") {
-                                        groupName?.removeRange(range)
-                                        
-                                    }
-                                    if let range = groupName?.rangeOfString(", \(myName)") {
-                                        groupName?.removeRange(range)
-                                    }
-                                }
-                                conversation.convoName = groupName!
-//                                var name: String = ""
-//                                if groupName == nil {
-//                                    var arrayOfNames: [CKReference] = []
-//                                    for user in conversation.users {
-//                                        if user != CKReference(record: UserController.sharedInstance.myRelationshipRecord!, action: .DeleteSelf) {
-//                                            print(user.recordID.recordName)
-//                                            arrayOfNames += [user]
-//                                            container.publicCloudDatabase.fetchRecordWithID(user.recordID, completionHandler: { (record, error) in
-//                                                if error == nil {
-//                                                    let fullName = record!["FullName"] as! String
-//                                                    print(fullName)
-//                                                    name += "\(fullName) "
-//                                                } else {
-//                                                    print("ERRROR")
-//                                                }
-//                                            })
-//                                            
-//                                        }
-//                                    }
-//                                    print("NAME: \(name)")
-//                                }
+                        var conversation = Conversation(record: record)
+                        conversation.ref = record.recordID
+                        var groupName = record["GroupName"] as! String?
+                        if let myName = UserController.sharedInstance.myRelationship?.fullName {
+                            if let range = groupName?.rangeOfString("\(myName), ") {
+                                groupName?.removeRange(range)
                                 
+                            }
+                            if let range = groupName?.rangeOfString(", \(myName)") {
+                                groupName?.removeRange(range)
+                            }
+                        }
+                        conversation.convoName = groupName!
+                        self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
+                            if success {                                
                                 if conversation.messages?.count != 0 {
-                                    print("conversation messages")
                                     let ref = conversation.messages?.last
                                     container.publicCloudDatabase.fetchRecordWithID((ref?.recordID)!, completionHandler: { (lastMessageRecord, error) in
                                         if error == nil {
-                                            convoNumber = convoNumber + 1
                                             conversation.lastMessage = Message(record: lastMessageRecord!)
-                                            conversation.lastMessage?.time = Timer.sharedInstance.setMessageTime(lastMessageRecord!)
+                                            UserController.sharedInstance.grabImageByUID((conversation.lastMessage?.senderUID.recordID)!, completion: { (success, image) in
+                                                if success {
+                                                    convoNumber = convoNumber + 1
+                                                    conversation.lastMessage?.userPic = image
+                                                    conversation.lastMessage?.time = Timer.sharedInstance.setMessageTime(lastMessageRecord!)
+                                                    conversations += [conversation]
+                                                    if convoNumber == records?.count {
+                                                        completion(success: true, conversations: conversations, convoRecords: records)
+                                                    }
+                                                } else {
+                                                    print(error)
+                                                    convoNumber = convoNumber + 1
+                                                    conversation.lastMessage?.time = Timer.sharedInstance.setMessageTime(lastMessageRecord!)
+                                                    conversations += [conversation]
+                                                    if convoNumber == records?.count {
+                                                        completion(success: true, conversations: conversations, convoRecords: records)
+                                                    }
+                                                }
+                                            })
+                                        } else {
+                                            print(error)
+                                            convoNumber = convoNumber + 1
                                             conversations += [conversation]
                                             if convoNumber == records?.count {
-                                                print("DONE")
                                                 completion(success: true, conversations: conversations, convoRecords: records)
                                             }
-
-                                        } else {
-                                            completion(success: false, conversations: conversations, convoRecords: records)
                                         }
                                     })
                                 } else {
+                                    convoNumber = convoNumber + 1
                                     conversations += [conversation]
                                     completion(success: true, conversations: conversations, convoRecords: records)
                                 }
                             } else {
-                                completion(success: false, conversations: nil, convoRecords: nil)
+                                convoNumber = convoNumber + 1
+                                conversations += [conversation]
+                                if convoNumber == records?.count {
+                                    completion(success: true, conversations: conversations, convoRecords: records)
+                                }
                             }
                         })
                     }
                 } else {
                     completion(success: false, conversations: nil, convoRecords: nil)
                 }
-                
-                
             } else {
                 print("ERROR: \(error?.localizedDescription)")
                 completion(success: false, conversations: nil, convoRecords: nil)
@@ -144,7 +137,6 @@ class ConversationController: NSObject {
                                     return
                                 }
                                 
-                                //                        if let record = record {
                                 let time = Timer.sharedInstance.setMessageTime(record)
                                 var message = Message(record: record)
                                 message.time = time
@@ -189,8 +181,6 @@ class ConversationController: NSObject {
                                         }
                                     }
                                 })
-//                        }
-                            
                         })
                     }
                 } else {

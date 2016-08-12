@@ -31,16 +31,15 @@
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="h3a-Cr-Qai">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="h3a-Cr-Qai">
                                                     <rect key="frame" x="503" y="12" width="81" height="80"/>
-                                                    <color key="backgroundColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="81" id="PdS-Zb-qUc"/>
                                                         <constraint firstAttribute="height" constant="80" id="iYx-Jk-n5u"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                            <integer key="value" value="12"/>
+                                                            <integer key="value" value="40"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="clipsToBounds" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
@@ -222,9 +221,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="79"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bw9-xz-81B">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="bw9-xz-81B">
                                                     <rect key="frame" x="12" y="10" width="58" height="58"/>
-                                                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="58" id="CRK-ej-pQe"/>
                                                         <constraint firstAttribute="width" constant="58" id="fvq-Ha-CMK"/>
@@ -295,9 +293,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="91"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Xnj-cz-emA">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="Xnj-cz-emA">
                                                     <rect key="frame" x="13" y="8" width="40" height="40"/>
-                                                    <color key="backgroundColor" red="0.0" green="0.21960784310000001" blue="0.39607843139999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="40" id="9X7-We-Gc8"/>
                                                         <constraint firstAttribute="width" constant="40" id="PJu-n7-ojc"/>
@@ -404,9 +401,8 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="134" height="150"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
-                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ube-oy-vbW">
+                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="Ube-oy-vbW">
                                                                         <rect key="frame" x="22" y="15" width="90" height="90"/>
-                                                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="90" id="Hp5-ph-Q7V"/>
                                                                             <constraint firstAttribute="height" constant="90" id="sbB-Qq-YKz"/>
@@ -537,8 +533,9 @@
                     <rect key="frame" x="0.0" y="0.0" width="300" height="290"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6w-wB-RKb">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6w-wB-RKb">
                             <rect key="frame" x="9" y="11" width="25" height="25"/>
+                            <color key="tintColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                             <state key="normal" image="Blue-Delete">
                                 <color key="titleColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
@@ -546,9 +543,8 @@
                                 <action selector="contactDismissButtonTapped:" destination="3X4-0i-Jhy" eventType="touchUpInside" id="GRw-ZG-MHc"/>
                             </connections>
                         </button>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-EM-LsX">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-EM-LsX">
                             <rect key="frame" x="75" y="21" width="150" height="150"/>
-                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="150" id="rcd-sz-TN8"/>
                                 <constraint firstAttribute="height" constant="150" id="srx-rG-Tcx"/>
@@ -674,9 +670,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="185" height="130"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hlM-uY-CAp">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="hlM-uY-CAp">
                                                     <rect key="frame" x="66" y="6" width="85" height="85"/>
-                                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="85" id="D6o-of-URe"/>
                                                         <constraint firstAttribute="width" constant="85" id="Ylq-Uq-zuR"/>
@@ -791,9 +786,8 @@
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="51"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g9N-cE-XLT">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="g9N-cE-XLT">
                                             <rect key="frame" x="13" y="5" width="41" height="41"/>
-                                            <color key="backgroundColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="41" id="Yxz-5m-CcC"/>
                                                 <constraint firstAttribute="height" constant="41" id="cAk-Gd-Pdz"/>
@@ -1146,9 +1140,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="79"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="SVN-Bh-Iem">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="SVN-Bh-Iem">
                                                     <rect key="frame" x="14" y="29" width="40" height="40"/>
-                                                    <color key="backgroundColor" red="0.0" green="0.21960784310000001" blue="0.39607843139999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="40" id="8wX-a0-anS"/>
                                                         <constraint firstAttribute="width" constant="40" id="LAk-ec-c5g"/>
@@ -1211,9 +1204,8 @@
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ws0-qC-nyo">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="Ws0-qC-nyo">
                                                     <rect key="frame" x="546" y="29" width="40" height="40"/>
-                                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="40" id="fNc-eM-mCm"/>
                                                         <constraint firstAttribute="width" constant="40" id="pWi-bC-ZPO"/>
@@ -1417,6 +1409,7 @@
         <image name="Add User Male Filled-50" width="50" height="50"/>
         <image name="Blue-Delete" width="25" height="25"/>
         <image name="Chat Filled" width="25" height="25"/>
+        <image name="Contact" width="100" height="100"/>
         <image name="Contact Card-50" width="25" height="25"/>
         <image name="Plus-50" width="25" height="25"/>
         <image name="Settings-50" width="25" height="25"/>

@@ -102,31 +102,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Chat/MessagingViewController.swift"
-            timestampString = "492452003.298684"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "131"
-            endingLineNumber = "131"
-            landmarkName = "sendMessageTapped(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/ConversationController.swift"
-            timestampString = "492487320.827293"
+            timestampString = "492681522.527131"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "173"
-            endingLineNumber = "173"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
             landmarkName = "grabMessages(_:completion:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -138,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/ConversationController.swift"
-            timestampString = "492487320.827293"
+            timestampString = "492681522.527131"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "187"
-            endingLineNumber = "187"
+            startingLineNumber = "179"
+            endingLineNumber = "179"
             landmarkName = "grabMessages(_:completion:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -169,54 +153,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Chat/HomeViewController.swift"
-            timestampString = "492485486.463773"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "190"
-            endingLineNumber = "190"
-            landmarkName = "prepareForSegue(_:sender:)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Chat.HomeViewController.(prepareForSegue (__ObjC.UIStoryboardSegue, sender : Swift.Optional&lt;Swift.AnyObject&gt;) -&gt; ()).(closure #1)"
-                  moduleName = "Chat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/HomeViewController.swift"
-                  timestampString = "492417592.404875"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "181"
-                  endingLineNumber = "181"
-                  offsetFromSymbolStart = "7048">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Chat.HomeViewController.(prepareForSegue (__ObjC.UIStoryboardSegue, sender : Swift.Optional&lt;Swift.AnyObject&gt;) -&gt; ()).(closure #1).(closure #1)"
-                  moduleName = "Chat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/HomeViewController.swift"
-                  timestampString = "492417592.405058"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "182"
-                  endingLineNumber = "182"
-                  offsetFromSymbolStart = "24">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "Chat/MessagingViewController.swift"
             timestampString = "492452003.298684"
             startingColumnNumber = "9223372036854775807"
@@ -234,59 +170,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/ConversationController.swift"
-            timestampString = "492476673.101998"
+            timestampString = "492681522.527131"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
-            landmarkName = "grabUserConversations(_:completion:)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Chat.ConversationController.(grabUserConversations (Chat.Relationship, completion : (success : Swift.Bool, conversations : Swift.Optional&lt;Swift.Array&lt;Chat.Conversation&gt;&gt;, convoRecords : Swift.Optional&lt;Swift.Array&lt;__ObjC.CKRecord&gt;&gt;) -&gt; ()) -&gt; ()).(closure #1).(closure #1)"
-                  moduleName = "Chat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/ConversationController.swift"
-                  timestampString = "492487390.037006"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58"
-                  offsetFromSymbolStart = "1952">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Chat.ConversationController.(grabUserConversations (Chat.Relationship, completion : (success : Swift.Bool, conversations : Swift.Optional&lt;Swift.Array&lt;Chat.Conversation&gt;&gt;, convoRecords : Swift.Optional&lt;Swift.Array&lt;__ObjC.CKRecord&gt;&gt;) -&gt; ()) -&gt; ()).(closure #1).(closure #1)"
-                  moduleName = "Chat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/ConversationController.swift"
-                  timestampString = "492487390.037132"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58"
-                  offsetFromSymbolStart = "2828">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Chat/ConversationController.swift"
-            timestampString = "492487320.827293"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "152"
-            endingLineNumber = "152"
+            startingLineNumber = "144"
+            endingLineNumber = "144"
             landmarkName = "grabMessages(_:completion:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -298,11 +186,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/ConversationController.swift"
-            timestampString = "492487320.827293"
+            timestampString = "492681522.527131"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "156"
-            endingLineNumber = "156"
+            startingLineNumber = "148"
+            endingLineNumber = "148"
             landmarkName = "grabMessages(_:completion:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -314,28 +202,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/ConversationController.swift"
-            timestampString = "492487320.827293"
+            timestampString = "492681522.527131"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
+            startingLineNumber = "155"
+            endingLineNumber = "155"
             landmarkName = "grabMessages(_:completion:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Chat/AddContactTableViewController.swift"
-            timestampString = "492474693.44015"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
-            landmarkName = "swipedView(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -454,49 +326,57 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Chat/MessagingViewController.swift"
+            timestampString = "492659663.357309"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "82"
+            endingLineNumber = "82"
+            landmarkName = "sendMessageTapped(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/ConversationController.swift"
-            timestampString = "492487386.003668"
+            timestampString = "492681322.93675"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
             landmarkName = "grabUserConversations(_:completion:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Chat.ConversationController.(grabUserConversations (Chat.Relationship, completion : (success : Swift.Bool, conversations : Swift.Optional&lt;Swift.Array&lt;Chat.Conversation&gt;&gt;, convoRecords : Swift.Optional&lt;Swift.Array&lt;__ObjC.CKRecord&gt;&gt;) -&gt; ()) -&gt; ()).(closure #1).(closure #1)"
-                  moduleName = "Chat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/ConversationController.swift"
-                  timestampString = "492487390.045473"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "62"
-                  endingLineNumber = "62"
-                  offsetFromSymbolStart = "3208">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Chat.ConversationController.(grabUserConversations (Chat.Relationship, completion : (success : Swift.Bool, conversations : Swift.Optional&lt;Swift.Array&lt;Chat.Conversation&gt;&gt;, convoRecords : Swift.Optional&lt;Swift.Array&lt;__ObjC.CKRecord&gt;&gt;) -&gt; ()) -&gt; ()).(closure #1).(closure #1)"
-                  moduleName = "Chat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/ConversationController.swift"
-                  timestampString = "492487390.045619"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "62"
-                  endingLineNumber = "62"
-                  offsetFromSymbolStart = "4072">
-               </Location>
-            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "Yes"
+            filePath = "Chat/ConversationController.swift"
+            timestampString = "492681467.464174"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
+            landmarkName = "grabUserConversations(_:completion:)"
+            landmarkType = "5">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.DebuggerCommand">
+                  <ActionContent
+                     consoleCommand = "po records?.count">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

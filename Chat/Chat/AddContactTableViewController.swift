@@ -18,6 +18,8 @@ class AddContactTableViewController: UITableViewController {
     @IBOutlet var cellButton: UIButton!
     @IBOutlet var bigContactView: BigContactView!
     let panRec = UIPanGestureRecognizer()
+    var statusBarIsVisible = true
+
 
     var searchedUsers: [Relationship] = []
     let darkView = UIView()
@@ -73,12 +75,21 @@ class AddContactTableViewController: UITableViewController {
             self.bigContactView.profilePic.image = cell.profilePic.image
         }
         
-        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
+        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.8)
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height + 200)
         
         tableView.scrollEnabled = false
-        view.addSubview(darkView)
-        view.addSubview(bigContactView)
+        
+        
+        dispatch_async(dispatch_get_main_queue()) {
+            self.navigationController?.navigationBarHidden = true
+            self.navigationController?.prefersStatusBarHidden()
+            self.statusBarIsVisible = false
+            self.preferredStatusBarStyle()
+            self.setNeedsStatusBarAppearanceUpdate()
+            self.view.addSubview(self.darkView)
+            self.view.addSubview(self.bigContactView)
+        }
         panRec.addTarget(self, action: #selector(AddContactTableViewController.swipedView))
         bigContactView.addGestureRecognizer(panRec)
         bigContactView.userInteractionEnabled = true
@@ -86,10 +97,26 @@ class AddContactTableViewController: UITableViewController {
         searchBar.resignFirstResponder()
     }
     
+    override func prefersStatusBarHidden() -> Bool {
+        if statusBarIsVisible {
+            return false
+        } else {
+            return true
+        }
+    }
+    
     func swipedView(sender:UIPanGestureRecognizer) {
-        bigContactView.removeFromSuperview()
-        darkView.removeFromSuperview()
-        tableView.scrollEnabled = true
+        dispatch_async(dispatch_get_main_queue()) { 
+            self.bigContactView.removeFromSuperview()
+            self.darkView.removeFromSuperview()
+            
+            self.navigationController?.navigationBarHidden = false
+            self.statusBarIsVisible = true
+            self.prefersStatusBarHidden()
+            self.setNeedsStatusBarAppearanceUpdate()
+            
+            self.tableView.scrollEnabled = true
+        }
     }
     
     func getIndexOfUserWithUserId(user: User, userArray: [User]) -> Int {
