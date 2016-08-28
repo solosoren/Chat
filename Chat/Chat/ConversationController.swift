@@ -48,17 +48,16 @@ class ConversationController: NSObject {
                     for record in records! {
                         var conversation = Conversation(record: record)
                         conversation.ref = record.recordID
-                        var groupName = record["GroupName"] as! String?
-                        if let myName = UserController.sharedInstance.myRelationship?.fullName {
-                            if let range = groupName?.rangeOfString("\(myName), ") {
-                                groupName?.removeRange(range)
-                                
-                            }
-                            if let range = groupName?.rangeOfString(", \(myName)") {
-                                groupName?.removeRange(range)
-                            }
-                        }
-                        conversation.convoName = groupName!
+//                        if let myName = UserController.sharedInstance.myRelationship?.fullName {
+//                            if let range = groupName?.rangeOfString("\(myName), ") {
+//                                groupName?.removeRange(range)
+//                                
+//                            }
+//                            if let range = groupName?.rangeOfString(", \(myName)") {
+//                                groupName?.removeRange(range)
+//                            }
+//                        }
+                        conversation.convoName = record["GroupName"] as! String?
                         self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
                             if success {                                
                                 if conversation.messages?.count != 0 {

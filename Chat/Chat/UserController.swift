@@ -293,13 +293,15 @@ class UserController {
         let pred = NSPredicate(format: "FullName == %@",  user.fullName!)
         let query = CKQuery(recordType: "Relationship", predicate: pred)
         self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
-            if error == nil {
-                for relationship in records! {
-                    if relationship == records?.last {
-                        completion(success: true, relationshipRecord: relationship)
-                    } else {
-                        completion(success: false, relationshipRecord: nil)
+            if let records = records {
+                if records.count != 0 {
+                    for relationship in records {
+                        if relationship == records.last {
+                            completion(success: true, relationshipRecord: relationship)
+                        }
                     }
+                } else {
+                    completion(success: false, relationshipRecord: nil)
                 }
 
             } else {
@@ -436,6 +438,30 @@ class UserController {
         }
     }
     
+    func removeFriend(friend:Relationship, currentRel: Relationship, completion:(success: Bool) -> Void) {
+        queryForRelationshipByName(friend.fullName) { (success, relationshipRecord) in
+            if success {
+                if relationshipRecord!["Friends"] != nil {
+                    var friends = relationshipRecord!["Friends"] as! [CKReference]
+                    let index = 0
+                    for friend in friends {
+                        index + 1
+                        if friend == currentRel.userID {
+                            friends.removeAtIndex(index)
+                        }
+                    }
+                    self.saveRecordArray(friends, record: relationshipRecord!, string: "Friends", completion: { (success) in
+                        if success {
+                            completion(success: true)
+                        } else {
+                            completion(success: false)
+                        }
+                    })
+                }
+            }
+        }
+        
+    }
     
 }
 

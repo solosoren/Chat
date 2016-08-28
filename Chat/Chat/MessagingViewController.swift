@@ -22,8 +22,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.separatorColor = UIColor.whiteColor()
+        messageTextView.delegate = self
         setNavBar()
-        
     }
 
     override func viewDidLayoutSubviews() {
@@ -57,22 +57,49 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         
         if message.senderUID == UserController.sharedInstance.myRelationship?.userID {
             meMessageCell.messageText.text = message.messageText
-            meMessageCell.userIcon.image = message.userPic
+            if let image = message.userPic {
+                meMessageCell.userIcon.image = image
+            } else {
+                meMessageCell.userIcon?.image = UIImage(named: "Contact")
+            }
             return meMessageCell
         } else {
             themMessageCell.messageText.text = message.messageText
-            themMessageCell.userIcon.image = message.userPic
+            if let image = message.userPic {
+                meMessageCell.userIcon.image = image
+            } else {
+                meMessageCell.userIcon?.image = UIImage(named: "Contact")
+            }
             return themMessageCell
         }
+
     }
     
     override var inputAccessoryView: UIView {
 //        constraint.constant = 216
+        keyboardView.frame.size.height = messageTextView.contentSize.height + 18
+        keyboardView.autoresizingMask = .FlexibleHeight
         return keyboardView
     }
     
     override func canBecomeFirstResponder() -> Bool {
         return true
+    }
+    
+    let minKeyboardViewHeight = CGFloat(36)
+    let maxKeyboardViewHeight = CGFloat(144)
+    
+    func textViewDidChange(textView: UITextView) {
+        let height = ceil(messageTextView.contentSize.height + 4)
+        if height > maxKeyboardViewHeight {
+            messageTextView.frame.size.height = maxKeyboardViewHeight
+            keyboardView.frame.size.height = maxKeyboardViewHeight + 14
+        }
+        if height != messageTextView.frame.size.height {
+            messageTextView.frame.size.height = height
+            keyboardView.frame.size.height = height + 14
+        }
+        self.reloadInputViews()
     }
     
     @IBAction func sendMessageTapped(sender: AnyObject) {
@@ -91,6 +118,13 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                             let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
                             mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                                 if error == nil {
+                                    if conversation.theMessages.isEmpty == true {
+                                        ConversationController.sharedInstance.subscribeToConversations(self.convoRecord!, contentAvailable: true, completion: { (success) in
+//                                            
+//                                            
+//                                            
+                                        })
+                                    }
                                     dispatch_async(dispatch_get_main_queue(), {
                                         self.messageTextView.text = ""
                                         self.conversation?.theMessages += [message]

@@ -22,15 +22,10 @@ class InitialLoadingView: UIViewController {
     
         // User
 //TODO:          skip login
-    
 //TODO:      subscribe to friend requests
     
         // Messaging
-//f          conversation messages ordered by date
-    
-//?          leave convo ||||||| maybe??
-//?          see who's in the convo |||||||| maybe??
-    //         info button type thing?
+//          conversation messages ordered by date!!!!!!
 
         // Testing
 //-          accept request button tapped
@@ -66,6 +61,7 @@ class InitialLoadingView: UIViewController {
                                 UserController.sharedInstance.myRelationshipRecord = relationshipRecord
                                 let myRelationship = Relationship(record: relationshipRecord)
                                 UserController.sharedInstance.myRelationship = myRelationship
+                                
                                 self.initiallyGrabRequests(myRelationship!, completion: { (success) in
                                     if success {
                                         self.initiallyGrabFriends(myRelationship!, completion: { (success) in
@@ -81,9 +77,13 @@ class InitialLoadingView: UIViewController {
                                                     }
                                                 })
                                             } else {
+                                                
+//                                                figure out
                                             }
                                         })
                                     } else {
+                                        
+//                                        figure out
                                     }
                                 })
                                 } else {

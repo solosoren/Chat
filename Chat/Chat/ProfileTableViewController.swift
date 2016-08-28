@@ -11,7 +11,7 @@ import CloudKit
 
 class ProfileTableViewController: UITableViewController {
     
-    @IBOutlet weak var displayName: UITextField!
+    @IBOutlet weak var displayName: UILabel!
     
     @IBOutlet weak var profilePic: UIImageView!
     
@@ -25,12 +25,9 @@ class ProfileTableViewController: UITableViewController {
             if let fullName = UserController.sharedInstance.currentUser?.fullName {
                 self.displayName.text = fullName
             }
-//            TODO: fix by changing to my relationship so you arent constantly querying
             if let asset = UserController.sharedInstance.myRelationship?.profilePic {
                 self.profilePic.image = asset.image
             }
-            
-
         }
         self.setNavBar()
     }
