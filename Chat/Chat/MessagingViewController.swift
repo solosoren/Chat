@@ -31,11 +31,10 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if conversation?.theMessages.count == nil {
-            return 0
+        if let conversation = conversation {
+            return conversation.theMessages.count
         } else {
-            print(conversation?.theMessages.count)
-            return conversation!.theMessages.count
+            return 1
         }
     }
     
@@ -52,27 +51,31 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath) as! ThemMessageTableViewCell
         let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath) as! MeMessageTableViewCell
-//        fix
-        let message = conversation!.theMessages[indexPath.row]
         
-        if message.senderUID == UserController.sharedInstance.myRelationship?.userID {
-            meMessageCell.messageText.text = message.messageText
-            if let image = message.userPic {
-                meMessageCell.userIcon.image = image
+//        fix
+        if let conversation = conversation {
+            let message = conversation.theMessages[indexPath.row]
+            
+            if message.senderUID == UserController.sharedInstance.myRelationship?.userID {
+                meMessageCell.messageText.text = message.messageText
+                if let image = message.userPic {
+                    meMessageCell.userIcon.image = image
+                } else {
+                    meMessageCell.userIcon?.image = UIImage(named: "Contact")
+                }
+                return meMessageCell
             } else {
-                meMessageCell.userIcon?.image = UIImage(named: "Contact")
+                themMessageCell.messageText.text = message.messageText
+                if let image = message.userPic {
+                    meMessageCell.userIcon.image = image
+                } else {
+                    meMessageCell.userIcon?.image = UIImage(named: "Contact")
+                }
+                return themMessageCell
             }
-            return meMessageCell
         } else {
-            themMessageCell.messageText.text = message.messageText
-            if let image = message.userPic {
-                meMessageCell.userIcon.image = image
-            } else {
-                meMessageCell.userIcon?.image = UIImage(named: "Contact")
-            }
             return themMessageCell
         }
-
     }
     
     override var inputAccessoryView: UIView {
@@ -82,8 +85,15 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         return keyboardView
     }
     
+    @IBOutlet var sendButton: UIButton!
     override func canBecomeFirstResponder() -> Bool {
-        return true
+        if conversation != nil {
+            return true
+        } else {
+            messageTextView.editable = false
+            sendButton.enabled = false
+            return true
+        }
     }
     
     let minKeyboardViewHeight = CGFloat(36)
@@ -103,13 +113,13 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     @IBAction func sendMessageTapped(sender: AnyObject) {
+        var message: Message
         if messageTextView.text.isEmpty == false {
-            var message: Message
             let userpic = UserController.sharedInstance.myRelationship?.profilePic?.image
             message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil, userPic: userpic)
             MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
-                    if let record = self.convoRecord, conversation = self.conversation {
+                    if let record = self.convoRecord, let conversation = self.conversation {
                         let ref = CKReference(record: messageRecord!, action: .DeleteSelf)
                         if conversation.messages != nil {
                             var messages = record["Messages"] as! [CKReference]
@@ -120,9 +130,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                 if error == nil {
                                     if conversation.theMessages.isEmpty == true {
                                         ConversationController.sharedInstance.subscribeToConversations(self.convoRecord!, contentAvailable: true, completion: { (success) in
-//                                            
-//                                            
-//                                            
                                         })
                                     }
                                     dispatch_async(dispatch_get_main_queue(), {
@@ -159,7 +166,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                             }
                             CKContainer.defaultContainer().publicCloudDatabase.addOperation(mod)
                         }
-
+                        
                     }
                 } else {
                     print("Not this time")
@@ -167,7 +174,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             }
         }
     }
-    
 }
 
 

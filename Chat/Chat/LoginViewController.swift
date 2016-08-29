@@ -20,7 +20,9 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func cancelButtonTapped(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        dispatch_async(dispatch_get_main_queue()) { 
+            self.performSegueWithIdentifier("skip", sender: self)
+        }
     }
     
     @IBAction func loginButtonTapped(sender: AnyObject) {

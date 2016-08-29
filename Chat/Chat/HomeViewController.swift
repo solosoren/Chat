@@ -56,15 +56,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             
         } else {
             if indexPath.row == numberInSection {
-                if let myFriends = myFriends {
-                    if myFriends.count % 3 == 1 {
-                        let contactCellHeight = CGFloat(145 * ((myFriends.count + 2)/3)) + 30
+                if myFriends?.count != 0 {
+                    if myFriends!.count % 3 == 1 {
+                        let contactCellHeight = CGFloat(145 * ((myFriends!.count + 2)/3)) + 30
                         return contactCellHeight
-                    } else if myFriends.count % 3 == 2 {
-                        let contactCellHeight = CGFloat(145 * ((myFriends.count + 1)/3)) + 30
+                    } else if myFriends!.count % 3 == 2 {
+                        let contactCellHeight = CGFloat(145 * ((myFriends!.count + 1)/3)) + 30
                         return contactCellHeight
                     } else {
-                        let contactCellHeight = CGFloat(145 * (myFriends.count/3)) + 30
+                        let contactCellHeight = CGFloat(145 * (myFriends!.count/3)) + 30
                         return contactCellHeight
                     }
                 } else {
@@ -87,29 +87,33 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //        see if pass on convo works with multiple convo's
         if segmentedControl.selectedSegmentIndex == 0 {
             let convoCell = tableView.dequeueReusableCellWithIdentifier("conversationCell", forIndexPath: indexPath) as! HomeMessageCell
-            let convo = myConversations![indexPath.row]
             
-            convoCell.messageText.text = convo.lastMessage?.messageText
-            var groupName = convo.convoName
-            if let myName = UserController.sharedInstance.myRelationship?.fullName {
-                if let range = groupName?.rangeOfString("\(myName), ") {
-                    groupName?.removeRange(range)
-                    convoCell.userName.text = groupName
+            if myConversations?.count != 0 {
+                let convo = myConversations![indexPath.row]
+                convoCell.messageText.text = convo.lastMessage?.messageText
+                var groupName = convo.convoName
+                if let myName = UserController.sharedInstance.myRelationship?.fullName {
+                    if let range = groupName?.rangeOfString("\(myName), ") {
+                        groupName?.removeRange(range)
+                        convoCell.userName.text = groupName
+                    }
+                    if let range = groupName?.rangeOfString(", \(myName)") {
+                        groupName?.removeRange(range)
+                        convoCell.userName.text = groupName
+                    }
+                } else {
+                    convoCell.userName.text = "..."
                 }
-                if let range = groupName?.rangeOfString(", \(myName)") {
-                    groupName?.removeRange(range)
-                    convoCell.userName.text = groupName
+                if let time = convo.lastMessage?.time {
+                    convoCell.messageTime.text = time
                 }
-            } else {
-                convoCell.userName.text = "..."
-            }
-            if let time = convo.lastMessage?.time {
-                convoCell.messageTime.text = time
-            }
-            if let userPic = convo.lastMessage?.userPic {
-                convoCell.userImage.image = userPic
+                if let userPic = convo.lastMessage?.userPic {
+                    convoCell.userImage.image = userPic
+                }
             }
             return convoCell
+            
+            
             
         } else {
             
@@ -157,7 +161,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     return 0
                 }
             } else {
-                return 0
+                return 1
             }
             
         } else {
@@ -189,38 +193,39 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "messageSegue" {
-            let destinationVC = segue.destinationViewController as! MessagingViewController
-            if let convoIndex = tableView.indexPathForSelectedRow?.row {
-                destinationVC.convoRecord = self.convoRecords![convoIndex]
-                if let myConversation = myConversations?[convoIndex] {
-                    ConversationController.sharedInstance.grabMessages(myConversation, completion: { (error, conversation, theMessages) in
-                        if let error = error {
-                            destinationVC.conversation = conversation
-                            destinationVC.conversation?.messages = []
-                            destinationVC.conversation?.theMessages = []
-                            print("ERROR: \(error)")
-                        } else {
-                            if let messages = myConversation.messages,
-                                let theMessages = theMessages {
-                                var passOnConversation = Conversation(convoName: conversation?.convoName, users: (conversation?.users)!, messages: messages)
-                                passOnConversation.theMessages = theMessages
-                                destinationVC.conversation?.theMessages = theMessages
-                                destinationVC.conversation?.messages = messages
-                                destinationVC.conversation = passOnConversation
-                                dispatch_async(dispatch_get_main_queue(), { 
-                                    destinationVC.tableView.reloadData()
-
-                                })
+            if myConversations?.count != 0 {
+                let destinationVC = segue.destinationViewController as! MessagingViewController
+                if let convoIndex = tableView.indexPathForSelectedRow?.row {
+                    destinationVC.convoRecord = self.convoRecords![convoIndex]
+                    if let myConversation = myConversations?[convoIndex] {
+                        ConversationController.sharedInstance.grabMessages(myConversation, completion: { (error, conversation, theMessages) in
+                            if let error = error {
+                                destinationVC.conversation = conversation
+                                destinationVC.conversation?.messages = []
+                                destinationVC.conversation?.theMessages = []
+                                print("ERROR: \(error)")
+                            } else {
+                                if let messages = myConversation.messages,
+                                    let theMessages = theMessages {
+                                    var passOnConversation = Conversation(convoName: conversation?.convoName, users: (conversation?.users)!, messages: messages)
+                                    passOnConversation.theMessages = theMessages
+                                    destinationVC.conversation?.theMessages = theMessages
+                                    destinationVC.conversation?.messages = messages
+                                    destinationVC.conversation = passOnConversation
+                                    dispatch_async(dispatch_get_main_queue(), {
+                                        destinationVC.tableView.reloadData()
+                                        
+                                    })
+                                }
                             }
-                        }
-                    })
+                        })
+                    } else {
+                        print("ERROR")
+                    }
                 } else {
                     print("ERROR")
                 }
-            } else {
-                print("ERROR")
             }
-            
         } else if segue.identifier == "newMessageSegue" {
             let destinationVC = segue.destinationViewController as! MessagingViewController
             destinationVC.conversation = self.passOnConvo
@@ -369,21 +374,23 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let item = collectionView.dequeueReusableCellWithReuseIdentifier("contactItem", forIndexPath: indexPath) as! ContactCollectionCell
-        let index = indexPath.item
-        item.contactName.text = myFriends![index].fullName
-        if let asset = myFriends![index].profilePic {
-            item.contactImage.image = asset.image
-        } else {
-            item.contactImage.image = UIImage.init(named: "Contact")
+        if myFriends?.count != 0 {
+            let index = indexPath.item
+            item.contactName.text = myFriends![index].fullName
+            if let asset = myFriends![index].profilePic {
+                item.contactImage.image = asset.image
+            } else {
+                item.contactImage.image = UIImage.init(named: "Contact")
+            }
         }
         return item
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let myFriends = myFriends {
-            return myFriends.count
+        if myFriends?.count != 0 {
+            return myFriends!.count
         } else {
-            return 0
+            return 1
         }
         
     }
@@ -406,17 +413,19 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         contactView.center.x = view.center.x
         contactView.center.y = view.center.y - 40
-        bigName.text = myFriends![indexPath.item].fullName
-        contactRelationship = myFriends![indexPath.item]
-        index = indexPath.item
-        
-        if let asset = myFriends![indexPath.item].profilePic {
-            bigProfilePic.image = asset.image
-        }
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)
         darkView.backgroundColor = UIColor.blackColor()
         darkView.alpha = 0.5
-        
+        if myFriends?.count != 0 {
+            bigName.text = myFriends![indexPath.item].fullName
+            contactRelationship = myFriends![indexPath.item]
+            index = indexPath.item
+            
+            if let asset = myFriends![indexPath.item].profilePic {
+                bigProfilePic.image = asset.image
+            }
+            
+        }
         view.addSubview(darkView)
         view.addSubview(contactView)
         
@@ -430,91 +439,104 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     @IBAction func addToGroupButtonPressed(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.contactView.removeFromSuperview()
-            self.darkView.removeFromSuperview()
-            self.performSegueWithIdentifier("addToGroup", sender: self)
-            
-//            was commented out??
-            
-            let destinationVC = CreateGroupViewController()
-            destinationVC.contacts = self.myFriends
-            destinationVC.initialContact = self.contactRelationship
+        if self.myFriends?.count != 0 {
+            dispatch_async(dispatch_get_main_queue()) {
+                self.contactView.removeFromSuperview()
+                self.darkView.removeFromSuperview()
+                self.performSegueWithIdentifier("addToGroup", sender: self)
+                
+                //            was commented out??
+                
+                let destinationVC = CreateGroupViewController()
+                destinationVC.contacts = self.myFriends
+                destinationVC.initialContact = self.contactRelationship
+            }
         }
     }
     
     @IBAction func removeFriendButtonPressed(sender: AnyObject) {
-        myFriends?.removeAtIndex(index!)
-        UserController.sharedInstance.myRelationship?.friends? = []
-        for friend in myFriends! {
-            let ref = CKReference(recordID: friend.userID.recordID, action: .DeleteSelf)
-            UserController.sharedInstance.myRelationship?.friends? += [ref]
-        }
-        UserController.sharedInstance.saveRecordArray((UserController.sharedInstance.myRelationship?.friends)!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends") { (success) in
-            if success {
-                UserController.sharedInstance.removeFriend(self.contactRelationship!, currentRel: UserController.sharedInstance.myRelationship!, completion: { (success) in
-                    if success {
-                        if self.myFriends?.count != 0 {
-                            dispatch_async(dispatch_get_main_queue(), {
-                                let indexPath = NSIndexPath(index: self.numberInSection!)
-                                let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
-                                self.contactView.removeFromSuperview()
-                                self.darkView.removeFromSuperview()
-                                cell.collectionView.reloadData()
-                            })
+        if myFriends?.count != 0 {
+            myFriends?.removeAtIndex(index!)
+            UserController.sharedInstance.myRelationship?.friends? = []
+            for friend in myFriends! {
+                let ref = CKReference(recordID: friend.userID.recordID, action: .DeleteSelf)
+                UserController.sharedInstance.myRelationship?.friends? += [ref]
+            }
+            UserController.sharedInstance.saveRecordArray((UserController.sharedInstance.myRelationship?.friends)!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends") { (success) in
+                if success {
+                    UserController.sharedInstance.removeFriend(self.contactRelationship!, currentRel: UserController.sharedInstance.myRelationship!, completion: { (success) in
+                        if success {
+                            if self.myFriends?.count != 0 {
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    let indexPath = NSIndexPath(index: self.numberInSection!)
+                                    let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
+                                    self.contactView.removeFromSuperview()
+                                    self.darkView.removeFromSuperview()
+                                    cell.collectionView.reloadData()
+                                })
+                            } else {
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    self.contactView.removeFromSuperview()
+                                    self.darkView.removeFromSuperview()
+                                })
+                            }
                         } else {
-                            dispatch_async(dispatch_get_main_queue(), { 
-                                self.contactView.removeFromSuperview()
-                                self.darkView.removeFromSuperview()
+                            let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .Alert)
+                            let action = UIAlertAction(title: "Okay", style: .Cancel, handler: nil)
+                            alertController.addAction(action)
+                            dispatch_async(dispatch_get_main_queue(), {
+                                self.presentViewController(alertController, animated: true, completion: nil)
                             })
                         }
-                    } else {
-                        let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .Alert)
-                        let action = UIAlertAction(title: "Okay", style: .Cancel, handler: nil)
-                        alertController.addAction(action)
-                        dispatch_async(dispatch_get_main_queue(), {
-                            self.presentViewController(alertController, animated: true, completion: nil)
-                        })
-                    }
-                })
-                
-            } else {
-                let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .Alert)
-                let action = UIAlertAction(title: "Okay", style: .Cancel, handler: nil)
-                alertController.addAction(action)
-                dispatch_async(dispatch_get_main_queue(), { 
-                    self.presentViewController(alertController, animated: true, completion: nil)
-                })
+                    })
+                    
+                } else {
+                    let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .Alert)
+                    let action = UIAlertAction(title: "Okay", style: .Cancel, handler: nil)
+                    alertController.addAction(action)
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.presentViewController(alertController, animated: true, completion: nil)
+                    })
+                }
             }
         }
     }
     
     
     @IBAction func sendMessageButtonTapped(sender: AnyObject) {
-        let myRelationship = UserController.sharedInstance.myRelationship
-//        TODO: fix name of convo
-        let conversation = Conversation.init(convoName: "\((myRelationship?.fullName)!), \((contactRelationship?.fullName)!)", users: [myRelationship!.userID, contactRelationship!.userID], messages: [])
-        ConversationController.createConversation(conversation) { (success, record) in
-            if success {
-                self.convoRecord = record
-                self.passOnConvo = conversation
-                if self.myConversations?.count == 0 {
-                    self.myConversations = [conversation]
+        if myFriends?.count != 0 {
+            let myRelationship = UserController.sharedInstance.myRelationship
+            //        TODO: fix name of convo
+            let conversation = Conversation.init(convoName: "\((myRelationship?.fullName)!), \((contactRelationship?.fullName)!)", users: [myRelationship!.userID, contactRelationship!.userID], messages: [])
+            ConversationController.createConversation(conversation) { (success, record) in
+                if success {
+                    self.convoRecord = record
+                    self.passOnConvo = conversation
+                    if self.myConversations?.count == 0 {
+                        self.myConversations = [conversation]
+                    } else {
+                        self.myConversations! += [conversation]
+                    }
+                    
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.contactView.removeFromSuperview()
+                        self.darkView.removeFromSuperview()
+                        self.performSegueWithIdentifier("newMessageSegue", sender: self)
+                        
+                    })
+                    
                 } else {
-                    self.myConversations! += [conversation]
+                    print("Not this time")
                 }
                 
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.contactView.removeFromSuperview()
-                    self.darkView.removeFromSuperview()
-                    self.performSegueWithIdentifier("newMessageSegue", sender: self)
-
-                })
-                
-            } else {
-                print("Not this time")
             }
-            
+        } else {
+            dispatch_async(dispatch_get_main_queue(), {
+                self.contactView.removeFromSuperview()
+                self.darkView.removeFromSuperview()
+                self.performSegueWithIdentifier("newMessageSegue", sender: self)
+                
+            })
         }
     }
 }
