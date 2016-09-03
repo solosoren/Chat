@@ -11,8 +11,11 @@ import CloudKit
 
 class LoginViewController: UIViewController {
             
+    @IBOutlet var allowButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
+        allowButton.layer.borderWidth = 2
+        allowButton.layer.borderColor = UIColor.whiteColor().CGColor
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {

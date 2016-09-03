@@ -13,6 +13,7 @@ class MeMessageTableViewCell: UITableViewCell {
     @IBOutlet weak var messageText: UILabel!
     @IBOutlet weak var userIcon: UIImageView!
     
+    @IBOutlet var meMessageView: UIView!
     
     
 }

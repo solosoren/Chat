@@ -17,15 +17,13 @@ class InitialLoadingView: UIViewController {
         // NOT WORKING -------
 //    all convos not loading
 //    accept button crashing
-//    accept request not saving friends friends
     
     
         // User
-//TODO:          skip login
 //TODO:      subscribe to friend requests
     
         // Messaging
-//          conversation messages ordered by date!!!!!!
+//          conversation messages ordered by date!
 
         // Testing
 //-          accept request button tapped
@@ -51,7 +49,7 @@ class InitialLoadingView: UIViewController {
         indicator.center = view.center
         view.addSubview(indicator)
         indicator.startAnimating()
-                
+        
         UserController.sharedInstance.checkForUser { (success) in
             if success {
                 if let me = UserController.sharedInstance.currentUser {
@@ -59,38 +57,71 @@ class InitialLoadingView: UIViewController {
                         if success {
                             if let relationshipRecord = relationshipRecord {
                                 UserController.sharedInstance.myRelationshipRecord = relationshipRecord
-                                let myRelationship = Relationship(record: relationshipRecord)
-                                UserController.sharedInstance.myRelationship = myRelationship
-                                
-                                self.initiallyGrabRequests(myRelationship!, completion: { (success) in
-                                    if success {
-                                        self.initiallyGrabFriends(myRelationship!, completion: { (success) in
-                                            if success {
-                                                self.initiallyGrabConvos({ (success) in
-                                                    if success {
-                                                        dispatch_async(dispatch_get_main_queue(), {
-                                                            indicator.stopAnimating()
-                                                            self.performSegueWithIdentifier("initialLoad", sender: self)
-                                                        })
-                                                    } else {
-                                                        NSLog("Couldn't grab initial conversations")
-                                                    }
-                                                })
-                                            } else {
-                                                
+                                if let myRelationship = Relationship(record: relationshipRecord) {
+                                    UserController.sharedInstance.myRelationship = myRelationship
+                                    
+                                    self.initiallyGrabRequests(myRelationship, completion: { (success) in
+                                        if success {
+                                            self.initiallyGrabFriends(myRelationship, completion: { (success) in
+                                                if success {
+                                                    self.initiallyGrabConvos({ (success) in
+                                                        if success {
+                                                            dispatch_async(dispatch_get_main_queue(), {
+                                                                indicator.stopAnimating()
+                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                            })
+                                                        } else {
+                                                            NSLog("Couldn't grab initial conversations")
+                                                            dispatch_async(dispatch_get_main_queue(), {
+                                                                indicator.stopAnimating()
+                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                            })
+                                                        }
+                                                    })
+                                                } else {
 //                                                figure out
-                                            }
-                                        })
-                                    } else {
-                                        
-//                                        figure out
-                                    }
-                                })
+                                                    self.initiallyGrabConvos({ (success) in
+                                                        if success {
+                                                            dispatch_async(dispatch_get_main_queue(), {
+                                                                indicator.stopAnimating()
+                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                            })
+                                                        } else {
+                                                            NSLog("Couldn't grab initial conversations")
+                                                            dispatch_async(dispatch_get_main_queue(), {
+                                                                indicator.stopAnimating()
+                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                            })
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        } else {
+                                            //                                        figure out
+                                            self.initiallyGrabConvos({ (success) in
+                                                if success {
+                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                        indicator.stopAnimating()
+                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                    })
+                                                } else {
+                                                    NSLog("Couldn't grab initial conversations")
+                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                        indicator.stopAnimating()
+                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    })
                                 } else {
-                                dispatch_async(dispatch_get_main_queue(), {
-                                    indicator.stopAnimating()
-                                    self.performSegueWithIdentifier("loginSegue", sender: self)
-                                })
+                                    dispatch_async(dispatch_get_main_queue(), {
+                                        indicator.stopAnimating()
+                                        self.performSegueWithIdentifier("loginSegue", sender: self)
+                                    })
+                                }
+                            } else {
+                                print("right hur")
                             }
                         } else {
                             dispatch_async(dispatch_get_main_queue(), {
@@ -117,22 +148,16 @@ class InitialLoadingView: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "initialLoad" {
             let destinationVC = segue.destinationViewController as! HomeViewController
-            destinationVC.myRequests = self.requests
-            destinationVC.myFriends = self.friends
-            destinationVC.myConversations = self.conversations
-            destinationVC.convoRecords = self.convoRecords
+            destinationVC.myRequests = requests
+            let sortedFriends = friends.sort { $0.fullName < $1.fullName }
+            destinationVC.myFriends = sortedFriends
+            let sortedConvos = conversations.sort { $0.lastMessage!.time < $1.lastMessage!.time }
+            destinationVC.myConversations = sortedConvos
+            destinationVC.convoRecords = convoRecords
         }
     }
     
     func initiallyGrabRequests(relationship:Relationship, completion:(success: Bool) -> Void) {
-        
-//        UserController.sharedInstance.subscribeToFriendRequests(relationship) { (success, error) in
-//            if success {
-//                print("it worked")
-//            } else {
-//                print("ERROR \(error)")
-//            }
-//        }
         
         if relationship.requests == nil {
             self.requests = []
@@ -141,8 +166,8 @@ class InitialLoadingView: UIViewController {
             for request in relationship.requests! {
                 UserController.sharedInstance.queryForRelationshipbyUID(request.recordID) { (success, relationshipRecord) in
                     if let relationshipRecord = relationshipRecord {
-                        let requestRelationship = Relationship(fullName: relationshipRecord["FullName"] as! String, userID: relationshipRecord["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: relationshipRecord["ImageKey"] as? CKAsset)
-                        self.requests += [requestRelationship]
+                        let requestRelationship = Relationship(record:relationshipRecord)
+                        self.requests += [requestRelationship!]
                         if request == relationship.requests!.last {
                             completion(success: true)
                         }
@@ -169,8 +194,8 @@ class InitialLoadingView: UIViewController {
             for friend in relationship.friends! {
                 UserController.sharedInstance.queryForRelationshipbyUID(friend.recordID, completion: { (success, relationshipRecord) in
                     if success {
-                        let friendRelationship = Relationship(fullName: relationshipRecord!["FullName"] as! String, userID: relationshipRecord!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: relationshipRecord!["ImageKey"] as? CKAsset)
-                        self.friends += [friendRelationship]
+                        let friendRelationship = Relationship(record:relationshipRecord!)
+                        self.friends += [friendRelationship!]
                         
                         if friend == relationship.friends?.last {
                             completion(success: true)

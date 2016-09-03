@@ -20,12 +20,11 @@ class AddContactTableViewController: UITableViewController {
     let panRec = UIPanGestureRecognizer()
     var statusBarIsVisible = true
 
-
     var searchedUsers: [Relationship] = []
     let darkView = UIView()
     var names: [String] = []
     var requests: [CKReference]?
-    
+    var appeared = false
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
@@ -72,14 +71,17 @@ class AddContactTableViewController: UITableViewController {
         bigContactView.relationship = user
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! UserSearchTableViewCell
         dispatch_async(dispatch_get_main_queue()) {
-            self.bigContactView.profilePic.image = cell.profilePic.image
+            if user.profilePic != nil {
+                self.bigContactView.profilePic.image = cell.profilePic.image
+                self.bigContactView.profilePic.backgroundColor = UIColor.clearColor()
+            }
+            
         }
         
-        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.8)
+        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.5)
         darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height + 200)
         
         tableView.scrollEnabled = false
-        
         
         dispatch_async(dispatch_get_main_queue()) {
             self.navigationController?.navigationBarHidden = true
@@ -87,14 +89,22 @@ class AddContactTableViewController: UITableViewController {
             self.statusBarIsVisible = false
             self.preferredStatusBarStyle()
             self.setNeedsStatusBarAppearanceUpdate()
-            self.view.addSubview(self.darkView)
+
+            switch self.appeared {
+            case true:
+                self.darkView.hidden = false
+            default:
+                self.view.addSubview(self.darkView)
+            }
             self.view.addSubview(self.bigContactView)
+            
         }
         panRec.addTarget(self, action: #selector(AddContactTableViewController.swipedView))
         bigContactView.addGestureRecognizer(panRec)
         bigContactView.userInteractionEnabled = true
 
         searchBar.resignFirstResponder()
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -106,17 +116,19 @@ class AddContactTableViewController: UITableViewController {
     }
     
     func swipedView(sender:UIPanGestureRecognizer) {
-        dispatch_async(dispatch_get_main_queue()) { 
-            self.bigContactView.removeFromSuperview()
-            self.darkView.removeFromSuperview()
-            
-            self.navigationController?.navigationBarHidden = false
-            self.statusBarIsVisible = true
-            self.prefersStatusBarHidden()
-            self.setNeedsStatusBarAppearanceUpdate()
-            
-            self.tableView.scrollEnabled = true
-        }
+        UIView.animateWithDuration(0.2, delay:0.0, options: .CurveEaseIn, animations: {
+            self.bigContactView.center = CGPointMake(self.view.center.x, self.view.frame.size.height + 200)
+            }, completion: { (finished) in
+                if finished {
+                    self.appeared = true
+                    self.darkView.hidden = true
+                    self.navigationController?.navigationBarHidden = false
+                    self.statusBarIsVisible = true
+                    self.prefersStatusBarHidden()
+                    self.setNeedsStatusBarAppearanceUpdate()
+                    self.tableView.scrollEnabled = true
+                }
+        })
     }
     
     func getIndexOfUserWithUserId(user: User, userArray: [User]) -> Int {

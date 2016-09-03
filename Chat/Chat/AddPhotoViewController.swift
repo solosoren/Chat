@@ -16,10 +16,13 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var addImageButton: UIButton!
     var defaultContainer: CKContainer?
+    @IBOutlet var saveImageButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.backgroundToImage.hidden = true
+        backgroundToImage.hidden = true
+        saveImageButton.layer.borderWidth = 2
+        saveImageButton.layer.borderColor = UIColor.whiteColor().CGColor
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -48,14 +51,14 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     }
     
     @IBAction func saveImageTapped(sender: AnyObject) {
-        if self.imageView.image != nil {
+        if imageView.image != nil {
             
 //        TODO: fix activity indicator throughout
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
             indicator.center = view.center
             view.addSubview(indicator)
             indicator.startAnimating()
-            self.saveImage({ (success, record) in
+            saveImage({ (success, record) in
 
 
                 if success {

@@ -43,11 +43,15 @@ class UserController {
                     completion(success: true, user: newUser)
                     } else {
                         completion(success: false, user: nil)
+                        print(error)
                         print("Couldn't fetch record with ID")
                     }
                 })
+            } else if error == nil {
+                print("Something wrong with internet connection most likely")
             } else {
                 completion(success: false, user: nil)
+                print(error)
                 print("Couldn't fetch user record ID")
             }
         }
@@ -357,34 +361,13 @@ class UserController {
             self.defaultContainer?.publicCloudDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { (records, error) in
                 if let records = records {
                     for record in records {
-                        if record["UserIDRef"] != nil && record["FullName"] != nil && record["ImageKey"] != nil {
-                                let uid = record["UserIDRef"] as! CKReference
-                                let fullName = record["FullName"] as! String
-                                let pic = record["ImageKey"] as! CKAsset
-                                let relationship = Relationship(fullName: fullName, userID: uid, requests: nil, friends: nil, profilePic: pic)
-                                tempUsers.append(relationship)
+                        
+                        if let relationship = Relationship(record: record) {
+                            tempUsers.append(relationship)
                         }
                         if record == records.last {
                             completion(success: true, users: tempUsers)
                         }
-                        
-//                        self.defaultContainer?.publicCloudDatabase.fetchRecordWithID(ID, completionHandler: { (userRecord, error) in
-//                            if error == nil {
-//                                let UID = userRecord?.recordID
-//                                let fullName = record["FullName"] as! String
-//                                let pic = record["ImageKey"] as! CKAsset
-//                                let user = User(userID:UID!, fullName:fullName, friends:nil, userPic:pic)
-//                                tempUsers.append(user)
-//                                if record == records.last {
-//                                    completion(success: true, users: tempUsers)
-//                                }
-//                            } else {
-//                                if record == records.last {
-//                                    completion(success: false, users: nil)
-//                                }
-//                                print("error searching users \(error?.localizedDescription)")
-//                            }
-//                        })
                     }
                 } else {
                     completion(success: false, users: nil)

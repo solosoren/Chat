@@ -33,8 +33,13 @@ struct Relationship {
         userID = (record.objectForKey(userIDKey) as? CKReference)!
         requests = record.objectForKey("FriendRequests") as? [CKReference] ?? []
         friends = record.objectForKey("Friends") as? [CKReference] ?? []
-        guard let profilePic = record.objectForKey("ImageKey") as? CKAsset else { return nil }
-        self.profilePic = profilePic
+        if let profilePic = record.objectForKey("ImageKey") as? CKAsset {
+           self.profilePic = profilePic
+        } else {
+            self.profilePic = nil
+        }
+//        guard let profilePic = record.objectForKey("ImageKey") as? CKAsset else { return nil }
+        
     }
     
     func toAnyObject() -> AnyObject {
