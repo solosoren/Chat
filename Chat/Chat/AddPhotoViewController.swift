@@ -175,6 +175,12 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
         })
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let navController = segue.destinationViewController as! UINavigationController
+        let destinationVC = navController.topViewController as! HomeViewController
+        destinationVC.demo = true
+    }
+    
 }
 
 

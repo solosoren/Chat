@@ -11,8 +11,6 @@ import CloudKit
 
 class ProfileTableViewController: UITableViewController {
     
-    @IBOutlet weak var displayName: UILabel!
-    
     @IBOutlet weak var profilePic: UIImageView!
     
     override func viewDidLoad() {

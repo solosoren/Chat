@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         alert = queryNotification.alertBody
         alerts += [alert]
         
-//        figure out what to do with these alertsds
+//        figure out what to do with these alerts
         
         guard let recordID = queryNotification.recordID else { print("No Record ID available from CKQueryNotification."); return }
         
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
             case "Conversation":
                 let convo = Conversation(record: record)
-                ConversationController.sharedInstance.myConversations += [convo]
+                UserController.sharedInstance.myRelationship!.myAlertedConversations += [convo]
             case "Relationship":
                 let relationship = Relationship(record: record)
                 userController.myRelationship = relationship

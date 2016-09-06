@@ -32,6 +32,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var convoRecord: CKRecord?
     var contactRelationship: Relationship?
     var addContactIndex:Int?
+    var demo = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,31 +79,47 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return 80
             
         } else {
+            var contactCellHeight:CGFloat = view.frame.size.height
             if indexPath.row == numberInSection {
                 if let myFriends = myFriends {
                     if myFriends.count != 0 {
                         if myFriends.count % 3 == 1 {
-                            let contactCellHeight = CGFloat(145 * ((myFriends.count + 2)/3)) + 30
-                            return contactCellHeight
+                            contactCellHeight = CGFloat(145 * ((myFriends.count + 2)/3)) + 30
+                            let height = contactHeight(contactCellHeight)
+                            return height
                         } else if myFriends.count % 3 == 2 {
-                            let contactCellHeight = CGFloat(145 * ((myFriends.count + 1)/3)) + 30
-                            return contactCellHeight
+                            contactCellHeight = CGFloat(145 * ((myFriends.count + 1)/3)) + 30
+                            let height = contactHeight(contactCellHeight)
+                            return height
                         } else {
-                            let contactCellHeight = CGFloat(145 * (myFriends.count/3)) + 30
-                            return contactCellHeight
+                            contactCellHeight = CGFloat(145 * (myFriends.count/3)) + 30
+                            let height = contactHeight(contactCellHeight)
+                            return height
                         }
                     } else {
-                        return 175
+                        tableView.scrollEnabled = false
+                        return contactCellHeight
                     }
                 } else {
-                    return 175
+                    tableView.scrollEnabled = false
+                    return contactCellHeight
                 }
+                
             } else {
                 return 87
             }
         }
     }
 
+    func contactHeight(contactCellHeight:CGFloat) -> CGFloat {
+        if contactCellHeight < view.frame.size.height {
+            let height = view.frame.size.height
+            tableView.scrollEnabled = false
+            return height
+        } else {
+            return contactCellHeight
+        }
+    }
 
 
 //  TODO: create sections ??
@@ -118,22 +135,35 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     convoCell.messageText.text = convo.lastMessage?.messageText
                     var groupName = convo.convoName
                     if let myName = UserController.sharedInstance.myRelationship?.fullName {
-                        if let range = groupName?.rangeOfString("\(myName), ") {
-                            groupName?.removeRange(range)
+                        if groupName?.containsString(myName) == true {
+                            if let range = groupName?.rangeOfString("\(myName), ") {
+                                groupName?.removeRange(range)
+                                convoCell.userName.text = groupName
+                            }
+                            if let range = groupName?.rangeOfString(", \(myName)") {
+                                groupName?.removeRange(range)
+                                convoCell.userName.text = groupName
+                            }
+                        } else if groupName != nil {
                             convoCell.userName.text = groupName
+                        } else {
+                            convoCell.userName.text = "..."
                         }
-                        if let range = groupName?.rangeOfString(", \(myName)") {
-                            groupName?.removeRange(range)
-                            convoCell.userName.text = groupName
-                        }
-                    } else {
-                        convoCell.userName.text = "..."
                     }
                     if let time = convo.lastMessage?.time {
                         convoCell.messageTime.text = time
                     }
                     if let userPic = convo.lastMessage?.userPic {
                         convoCell.userImage.image = userPic
+                    }
+                    if UserController.sharedInstance.myRelationship!.alerts.count != 0 {
+                        for c in UserController.sharedInstance.myRelationship!.alerts {
+                            if convo.ref != c {
+                                convoCell.alertImage.hidden = true
+                            }
+                        }
+                    } else {
+                        convoCell.alertImage.hidden = true
                     }
                 }
             }
@@ -184,11 +214,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if myConversations?.count != 0 {
                 if let myConversations = myConversations {
                     return myConversations.count
+                } else if demo {
+                    return 1
                 } else {
                     return 0
                 }
-            } else {
+            } else if demo {
                 return 1
+            } else {
+                return 0
             }
             
         } else {
@@ -209,7 +243,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
         }
     }
-
+    
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if segmentedControl.selectedSegmentIndex == 0 {
             performSegueWithIdentifier("messageSegue", sender: self)
@@ -221,28 +255,29 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "messageSegue" {
-            if myConversations?.count != 0 {
-                let destinationVC = segue.destinationViewController as! MessagingViewController
-                if let convoIndex = tableView.indexPathForSelectedRow?.row {
-                    destinationVC.convoRecord = self.convoRecords![convoIndex]
-                    if let myConversation = myConversations?[convoIndex] {
+            if let myConversations = myConversations {
+                if myConversations.count != 0 {
+                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    if let convoIndex = tableView.indexPathForSelectedRow?.row {
+                        destinationVC.convoRecord = self.convoRecords![convoIndex]
+                        let myConversation = myConversations[convoIndex]
                         ConversationController.sharedInstance.grabMessages(myConversation, completion: { (error, conversation, theMessages) in
                             if let error = error {
                                 destinationVC.conversation = conversation
                                 destinationVC.conversation?.messages = []
                                 destinationVC.conversation?.theMessages = []
+                                destinationVC.sendButton.enabled = true
                                 print("ERROR: \(error)")
                             } else {
-                                if let messages = myConversation.messages,
+                                if let messages = conversation!.messages,
                                     let theMessages = theMessages {
                                     var passOnConversation = Conversation(convoName: conversation?.convoName, users: (conversation?.users)!, messages: messages)
-                                    let sortedMessages = theMessages.sort { $0.time < $1.time }
-                                    passOnConversation.theMessages = sortedMessages
-                                    destinationVC.conversation?.theMessages = sortedMessages
+                                    passOnConversation.theMessages = theMessages
+                                    destinationVC.conversation?.theMessages = theMessages
                                     destinationVC.conversation?.messages = messages
                                     destinationVC.conversation = passOnConversation
+                                    destinationVC.sendButton.enabled = true
                                     dispatch_async(dispatch_get_main_queue(), {
-                                        
                                         destinationVC.tableView.reloadData(destinationVC.conversation)
                                     })
                                 }
@@ -252,12 +287,19 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         print("ERROR")
                     }
                 } else {
-                    print("ERROR")
+                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    destinationVC.demo = demo
                 }
             } else {
-                let destinationVC = segue.destinationViewController as! MessagingViewController
-                destinationVC.sendButton.enabled = false
+                if demo {
+                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    destinationVC.demo = demo
+                } else {
+                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    destinationVC.tableView.reloadData()
+                }
             }
+            
         } else if segue.identifier == "newMessageSegue" {
             let destinationVC = segue.destinationViewController as! MessagingViewController
             destinationVC.conversation = self.passOnConvo
@@ -424,11 +466,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if let myFriends = myFriends {
             if myFriends.count != 0 {
                 return myFriends.count
-            } else {
+            } else if demo {
                 return 1
+            } else {
+                return 0
             }
-        } else {
+        } else if demo {
             return 1
+        } else {
+            return 0
         }
     }
     
@@ -468,7 +514,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         darkView.backgroundColor = UIColor.blackColor()
         darkView.alpha = 0.5
         
-//        set up contactView Content
+//        set up contactView content
         if let myFriends = myFriends {
             if myFriends.count != 0 {
                 bigName.text = myFriends[indexPath.item].fullName

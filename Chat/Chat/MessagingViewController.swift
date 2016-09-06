@@ -19,9 +19,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet var constraint: NSLayoutConstraint!
     var conversation: Conversation?
     var convoRecord: CKRecord?
-    var changed = false
+    var demo = false
     @IBOutlet var keyboardViewHeightConstraint: NSLayoutConstraint!
-    
     @IBOutlet var sendButton: UIButton!
     
     override func viewDidLoad() {
@@ -31,12 +30,16 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         sendButton.layer.borderColor = UIColor.whiteColor().CGColor
         sendButton.layer.borderWidth = 1.0
         setNavBar()
+        if demo {
+            sendButton.enabled = false
+        }
         sendButton.enabled = false
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagingViewController.keyboardWasShown(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagingViewController.keyboardWillBeHidden), name: UIKeyboardWillHideNotification, object: nil)
     }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-    }
+        
+    
     
 //    MARK: Tableview
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -78,17 +81,40 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             } else {
                 themMessageCell.messageText.text = message.messageText
                 if let image = message.userPic {
-                    meMessageCell.userIcon.image = image
+                    themMessageCell.userIcon.image = image
                 } else {
-                    meMessageCell.userIcon?.image = UIImage(named: "Contact")
+                    themMessageCell.userIcon?.image = UIImage(named: "Contact")
                 }
                 return themMessageCell
             }
+        } else if demo {
+            return themMessageCell
         } else {
+            themMessageCell.messageText.text = "Loading..."
             return themMessageCell
         }
     }
     
+    func keyboardWasShown(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+            constraint.constant = keyboardSize.height
+            UIView.animateWithDuration(0.3) {
+                self.tableView.layoutIfNeeded()
+            }
+        }
+        tableView.reloadData(conversation)
+    }
+    
+    func keyboardWillBeHidden(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+            if constraint.constant != 52 {
+                self.constraint.constant -= keyboardSize.height
+            }
+        }
+        keyboardViewHeightConstraint.constant = messageTextView.frame.size.height + 14
+        reloadInputViews()
+        tableView.reloadData(conversation)
+    }
     
 //    MARK: Input Accessory View
     override var inputAccessoryView: UIView {
@@ -104,7 +130,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         messageTextView.frame = newFrame
 
 //        keyboardView.frame.size.height = self.messageTextView.frame.size.height + 14
-        keyboardViewHeightConstraint.constant = self.messageTextView.frame.size.height + 14
+        keyboardViewHeightConstraint.constant = messageTextView.frame.size.height + 14
         keyboardView.autoresizingMask = .FlexibleHeight
         return keyboardInputView
     }
@@ -113,12 +139,9 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         return true
     }
     
-//    let minKeyboardViewHeight = CGFloat(36)
-//    let maxKeyboardViewHeight = CGFloat(144)
     
     func textViewDidBeginEditing(textView: UITextView) {
-        //        let keyboardHeight = keyboardView.frame.origin.y
-        //        constraint.constant = keyboardHeight
+    
     }
     
     func textViewDidChange(textView: UITextView) {
@@ -140,10 +163,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     func textViewDidEndEditing(textView: UITextView) {
         tableView.reloadData(conversation)
-//        if let conversation = conversation {
-//            let index = NSIndexPath(forRow: conversation.theMessages.count - 1, inSection: 0)
-//            tableView.scrollToRowAtIndexPath(index, atScrollPosition: .None, animated: true)
-//        }
         constraint.constant = keyboardView.frame.size.height + 2
     }
     
@@ -175,7 +194,10 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                         self.conversation?.theMessages += [message]
                                         self.conversation?.lastMessage = message
                                         self.conversation?.messages = messages
+                                        self.keyboardViewHeightConstraint.constant = self.messageTextView.frame.size.height + 14
+                                        
                                         self.tableView.reloadData(self.conversation)
+                                        self.resignFirstResponder()
                                     })
                                 } else {
                                     print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
@@ -212,6 +234,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             }
         }
     }
+ 
 }
 
 class TableView: UITableView {

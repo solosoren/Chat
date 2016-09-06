@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="MkT-15-nm8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="MkT-15-nm8">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -205,6 +205,19 @@
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gOf-kF-MaX">
+                                                    <rect key="frame" x="573" y="34" width="10" height="10"/>
+                                                    <color key="backgroundColor" red="1" green="0.16143058733507665" blue="0.10874547160505488" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="10" id="ZjR-NP-evh"/>
+                                                        <constraint firstAttribute="height" constant="10" id="aYg-hk-QvZ"/>
+                                                    </constraints>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="5"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
+                                                </imageView>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="Owu-Dp-Dgi" firstAttribute="top" secondItem="XaE-rD-mvW" secondAttribute="topMargin" constant="23" id="3dZ-Ks-1fP"/>
@@ -215,7 +228,9 @@
                                                 <constraint firstItem="Owu-Dp-Dgi" firstAttribute="top" secondItem="2HK-SW-3Fy" secondAttribute="bottom" id="chs-vQ-jWt"/>
                                                 <constraint firstItem="bw9-xz-81B" firstAttribute="leading" secondItem="XaE-rD-mvW" secondAttribute="leadingMargin" constant="4" id="fDV-Ni-Ge5"/>
                                                 <constraint firstItem="Owu-Dp-Dgi" firstAttribute="leading" secondItem="bw9-xz-81B" secondAttribute="trailing" constant="10" id="jSN-aO-gOY"/>
+                                                <constraint firstItem="gOf-kF-MaX" firstAttribute="centerY" secondItem="XaE-rD-mvW" secondAttribute="centerY" constant="-0.5" id="pSH-EX-ckJ"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Owu-Dp-Dgi" secondAttribute="trailing" constant="9" id="qHw-xh-o8q"/>
+                                                <constraint firstItem="gOf-kF-MaX" firstAttribute="trailing" secondItem="ATc-4W-ciL" secondAttribute="trailing" id="u58-Mh-b5N"/>
                                                 <constraint firstItem="bw9-xz-81B" firstAttribute="centerY" secondItem="XaE-rD-mvW" secondAttribute="centerY" constant="-1" id="v8O-Jt-lMP"/>
                                             </constraints>
                                             <variation key="default">
@@ -225,6 +240,7 @@
                                             </variation>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="alertImage" destination="gOf-kF-MaX" id="hvV-RP-QNg"/>
                                             <outlet property="messageText" destination="Owu-Dp-Dgi" id="fpF-Eb-J47"/>
                                             <outlet property="messageTime" destination="ATc-4W-ciL" id="3U1-1b-CUK"/>
                                             <outlet property="userImage" destination="bw9-xz-81B" id="nf2-mH-N0f"/>
@@ -505,13 +521,13 @@
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="clipsToBounds" value="YES"/>
                             </userDefinedRuntimeAttributes>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Socialize" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qhE-Dg-JoS">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Socialize" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qhE-Dg-JoS">
                             <rect key="frame" x="20" y="169" width="200" height="38"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="38" id="vNh-3O-Z5V"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.0" green="0.21960784310000001" blue="0.39607843139999999" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UOD-RS-3mc">
@@ -570,8 +586,8 @@
                         <constraint firstItem="UOD-RS-3mc" firstAttribute="centerY" secondItem="RWx-bg-Ni9" secondAttribute="centerY" constant="108" id="G2t-VN-KqB"/>
                         <constraint firstItem="xh0-hl-FjB" firstAttribute="centerY" secondItem="RWx-bg-Ni9" secondAttribute="centerY" constant="108" id="Gzt-BI-1sA"/>
                         <constraint firstItem="qhE-Dg-JoS" firstAttribute="top" secondItem="DTS-EM-LsX" secondAttribute="bottom" constant="3" id="Id2-h4-kRc"/>
-                        <constraint firstItem="qhE-Dg-JoS" firstAttribute="leading" secondItem="RWx-bg-Ni9" secondAttribute="leading" constant="27" id="MlG-6O-gFL"/>
-                        <constraint firstAttribute="trailing" secondItem="qhE-Dg-JoS" secondAttribute="trailing" constant="27" id="UcU-ew-DPt"/>
+                        <constraint firstItem="qhE-Dg-JoS" firstAttribute="leading" secondItem="RWx-bg-Ni9" secondAttribute="leading" constant="20" id="MlG-6O-gFL"/>
+                        <constraint firstAttribute="trailing" secondItem="qhE-Dg-JoS" secondAttribute="trailing" constant="20" id="UcU-ew-DPt"/>
                         <constraint firstAttribute="trailing" secondItem="WvU-Ve-Q7i" secondAttribute="trailing" id="Xhp-L4-HLI"/>
                         <constraint firstItem="b6w-wB-RKb" firstAttribute="top" secondItem="RWx-bg-Ni9" secondAttribute="top" constant="12" id="Yjv-vL-f75"/>
                         <constraint firstItem="WvU-Ve-Q7i" firstAttribute="leading" secondItem="RWx-bg-Ni9" secondAttribute="leading" id="dGX-vA-B30"/>
@@ -657,7 +673,7 @@
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Socialize" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J9L-Ip-dgr">
                                                     <rect key="frame" x="22" y="93" width="155" height="36"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
-                                                    <color key="textColor" red="0.0" green="0.21960784310000001" blue="0.39607843139999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rfL-gb-AAH">
@@ -757,7 +773,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="51"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="g9N-cE-XLT">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Contact" highlightedImage="Contact" translatesAutoresizingMaskIntoConstraints="NO" id="g9N-cE-XLT">
                                             <rect key="frame" x="13" y="5" width="41" height="41"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="41" id="Yxz-5m-CcC"/>
@@ -782,7 +798,7 @@
                                                 <constraint firstAttribute="width" constant="25" id="PlY-Ev-hTW"/>
                                                 <constraint firstAttribute="height" constant="25" id="eud-u9-Xja"/>
                                             </constraints>
-                                            <state key="normal" title="Button" image="Add User Male Filled-50">
+                                            <state key="normal" title="Button" image="Plus Math-50">
                                                 <color key="titleColor" red="0.0" green="0.38431372549999998" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
                                                 <color key="titleShadowColor" red="0.0" green="0.38431372549999998" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
@@ -1320,7 +1336,7 @@
                     </constraints>
                 </view>
             </objects>
-            <point key="canvasLocation" x="1819" y="1398"/>
+            <point key="canvasLocation" x="1819" y="1434"/>
         </scene>
         <!--Initial Loading View-->
         <scene sceneID="ayA-J8-4tl">
@@ -1410,11 +1426,11 @@
     <resources>
         <image name="Add Camera-96" width="96" height="96"/>
         <image name="Add User Group Man Man-50-2" width="50" height="50"/>
-        <image name="Add User Male Filled-50" width="50" height="50"/>
         <image name="Blue-Delete" width="25" height="25"/>
         <image name="Chat Filled" width="25" height="25"/>
         <image name="Contact" width="100" height="100"/>
         <image name="Contact Card-50" width="25" height="25"/>
+        <image name="Plus Math-50" width="50" height="50"/>
         <image name="Plus-50" width="25" height="25"/>
         <image name="Remove User Male-50-2" width="50" height="50"/>
         <image name="Settings-50" width="25" height="25"/>
@@ -1426,7 +1442,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="dpH-XW-Jl8"/>
-        <segue reference="2wJ-Oh-Csn"/>
-        <segue reference="f1I-1z-OCT"/>
+        <segue reference="j4p-Xa-mpQ"/>
+        <segue reference="i1d-R3-GKv"/>
     </inferredMetricsTieBreakers>
 </document>

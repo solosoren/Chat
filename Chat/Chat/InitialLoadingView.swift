@@ -59,7 +59,7 @@ class InitialLoadingView: UIViewController {
                                 UserController.sharedInstance.myRelationshipRecord = relationshipRecord
                                 if let myRelationship = Relationship(record: relationshipRecord) {
                                     UserController.sharedInstance.myRelationship = myRelationship
-                                    
+                                    ConversationController.sharedInstance.fetchNotificationChanges()
                                     self.initiallyGrabRequests(myRelationship, completion: { (success) in
                                         if success {
                                             self.initiallyGrabFriends(myRelationship, completion: { (success) in

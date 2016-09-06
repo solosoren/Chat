@@ -21,11 +21,13 @@ struct Message {
     var userPic: UIImage?
     
 
-    init(senderUID: CKReference, messageText:String, time: String?, userPic: UIImage?) {
+    init(senderUID: CKReference, messageText:String, time: NSDate?, userPic: UIImage?) {
         self.senderUID = senderUID
         self.messageText = messageText
         self.ref = nil
-        self.time = time
+        if let time = time {
+            self.time = Timer.sharedInstance.setMessageTime(time)
+        }
         self.userPic = userPic
     }
     

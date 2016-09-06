@@ -19,6 +19,8 @@ struct Relationship {
     var profilePic: CKAsset?
     var requests: [CKReference]?
     var friends: [CKReference]?
+    var myAlertedConversations: [Conversation] = []
+    var alerts: [CKReference] = []
     
     init(fullName: String, userID:CKReference, requests: [CKReference]?, friends: [CKReference]?, profilePic: CKAsset?) {
         self.fullName = fullName

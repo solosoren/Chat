@@ -41,7 +41,7 @@ class Timer {
     
     static let sharedInstance = Timer()
     
-    func setMessageTime(record:CKRecord) -> String {
+    func setMessageTime(date:NSDate) -> String {
         
         let calendar = NSCalendar.currentCalendar()
         
@@ -50,9 +50,9 @@ class Timer {
         let formatter = NSDateFormatter()
         formatter.timeStyle = .ShortStyle
         let current = NSDate()
-        let time = calendar.components(calendarUnit, fromDate: record.creationDate!, toDate: current, options: [])
+        let time = calendar.components(calendarUnit, fromDate: date, toDate: current, options: [])
         
-        if calendar.isDateInToday(record.creationDate!) {
+        if calendar.isDateInToday(date) {
             if time.hour < 1 {
                 if time.minute < 1 {
                     let dateTime = ("\(time.second) Sec Ago")
