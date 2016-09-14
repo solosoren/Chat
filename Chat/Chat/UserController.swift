@@ -40,19 +40,19 @@ class UserController {
                 let newUser = User.init(userID: userID!, fullName: nil, friends: nil, userPic: nil)
                 self.defaultContainer!.privateCloudDatabase.fetchRecordWithID(userID!, completionHandler: { (user: CKRecord?, error) in
                     if error == nil {
-                    completion(success: true, user: newUser)
+                        completion(success: true, user: newUser)
                     } else {
-                        completion(success: false, user: nil)
                         print(error)
                         print("Couldn't fetch record with ID")
+                        completion(success: false, user: nil)
                     }
                 })
             } else if error == nil {
                 print("Something wrong with internet connection most likely")
             } else {
-                completion(success: false, user: nil)
                 print(error)
                 print("Couldn't fetch user record ID")
+                completion(success: false, user: nil)
             }
         }
     }
@@ -125,39 +125,67 @@ class UserController {
     
 //    TODO: query to see if the friend is already a user
     
-    func sendRequest(user:User, friend:Relationship, completion:(success: Bool, record:CKRecord?) -> Void) {
+    func sendRequest(user:User, friend:Relationship, completion:(success: Bool, record:CKRecord?, alreadyFriend:Bool?, alreadyRequested:Bool ) -> Void) {
         self.queryForRelationshipByName(friend.fullName) { (success, relationshipRecord) in
+            
             if success {
-//                TODO: This might not work. Haven't tested out whether I need this or not
-                if relationshipRecord!["FriendRequests"] != nil {
-                    var priorRequests = relationshipRecord!["FriendRequests"] as! [CKReference]
-                    let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
-                    priorRequests.append(ref)
-                    relationshipRecord?.setObject(priorRequests, forKey: "FriendRequests")
-                    
-                    self.defaultContainer?.publicCloudDatabase.saveRecord(relationshipRecord!, completionHandler: { (record, error) in
-                        if error == nil {
-                            completion(success: true, record: record)
+                guard let myRelationshipRecord = self.myRelationshipRecord else {
+                    return
+                }
+                if let alreadyFriends = myRelationshipRecord["Friends"] {
+                    let friends = alreadyFriends as! [CKReference]
+                    self.dontSendRequest(friends, ref: friend.userID, completion: { (success) in
+                        
+                        if success {
+                            completion(success: false, record: nil, alreadyFriend: true, alreadyRequested: false)
+                        }
+                    })
+                }
+                if let friendRequests = relationshipRecord!["FriendRequests"] {
+                    var priorRequests = friendRequests as! [CKReference]
+                    self.dontSendRequest(priorRequests, ref: self.myRelationship!.userID, completion: { (success) in
+                        
+                        if success {
+                            completion(success: false, record: nil, alreadyFriend: false, alreadyRequested: true)
                         } else {
-                            completion(success: false, record: nil)
+                            let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
+                            priorRequests.append(ref)
+                            relationshipRecord?.setObject(priorRequests, forKey: "FriendRequests")
+                            self.defaultContainer?.publicCloudDatabase.saveRecord(relationshipRecord!, completionHandler: { (record, error) in
+                                
+                                if error == nil {
+                                    completion(success: true, record: record, alreadyFriend: false, alreadyRequested: false)
+                                    
+                                } else {
+                                    completion(success: false, record: nil, alreadyFriend: false, alreadyRequested: false)
+                                }
+                            })
                         }
                     })
                 } else {
                     let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
-                    let requests = [ref]
-                    relationshipRecord?.setObject(requests, forKey: "FriendRequests")
-                    
+                    relationshipRecord?.setObject([ref], forKey: "FriendRequests")
                     self.defaultContainer?.publicCloudDatabase.saveRecord(relationshipRecord!, completionHandler: { (record, error) in
+                        
                         if error == nil {
-                            completion(success: true, record: record)
+                            completion(success: true, record: record, alreadyFriend: false, alreadyRequested: false)
+                            
                         } else {
-                            completion(success: false, record: nil)
-//                            NSLog("ERROR: \(error)")
+                            completion(success: false, record: nil, alreadyFriend: false, alreadyRequested: false)
                         }
                     })
                 }
             } else {
-                completion(success: false, record: nil)
+                completion(success: false, record: nil, alreadyFriend: false, alreadyRequested: false)
+            }
+        }
+    }
+
+
+    func dontSendRequest(refArray: [CKReference], ref:CKReference, completion:(success: Bool) -> Void) {
+        for person in refArray {
+            if person.recordID == ref.recordID {
+                completion(success: true)
             }
         }
     }
@@ -187,7 +215,7 @@ class UserController {
                             completion(success: true, user: user)
                         }
                     } else {
-                        print("Couldn't fetch User info")
+                        print("Couldn't fetch User info \(error)")
                         completion(success: false, user: nil)
                     }
                     
@@ -244,6 +272,9 @@ class UserController {
                     }
                 })
             } else {
+                if let error = error {
+                    print(error)
+                }
                 completion(success: false)
             }
         })
@@ -280,12 +311,14 @@ class UserController {
     func createRelationship(user: User, completion:(success: Bool, ref: CKReference?) -> Void) {
         let ref = CKReference(recordID: user.userID, action: .DeleteSelf)
         let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil, friends: nil, profilePic: nil)
+        UserController.sharedInstance.myRelationship = relationship
         let record = CKRecord(recordType: "Relationship")
         
         record.setValuesForKeysWithDictionary(relationship.toAnyObject() as! [String: AnyObject])
-        self.defaultContainer!.publicCloudDatabase.saveRecord(record) { (relationship, error) in
+        self.defaultContainer!.publicCloudDatabase.saveRecord(record) { (relationshipRecord, error) in
             if error == nil {
                 completion(success: true, ref: ref)
+                UserController.sharedInstance.myRelationshipRecord = relationshipRecord
             } else {
                 NSLog("ERROR: \(error?.localizedDescription)")
                 completion(success: false, ref: nil)
@@ -409,7 +442,7 @@ class UserController {
         }
     }
     
-//    pass in friend when you request so they subscribe to the request
+//    TODO: subscribe when they create an account to all changes in friend requests
     func subscribeToFriendRequests(relationship:Relationship, completion:((success:Bool, error: NSError?) -> Void)?) {
         let recordID = relationship.userID
         let predicate = NSPredicate(format: "recordID == %@", recordID)
@@ -427,9 +460,9 @@ class UserController {
                 if relationshipRecord!["Friends"] != nil {
                     var friends = relationshipRecord!["Friends"] as! [CKReference]
                     let index = 0
-                    for friend in friends {
+                    for f in friends {
                         index + 1
-                        if friend == currentRel.userID {
+                        if f == currentRel.userID {
                             friends.removeAtIndex(index)
                         }
                     }
@@ -443,7 +476,6 @@ class UserController {
                 }
             }
         }
-        
     }
     
 }

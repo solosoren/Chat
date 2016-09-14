@@ -297,50 +297,54 @@ class ConversationController: NSObject {
 //    }
     
     
-    func fetchNotificationChanges() {
-        let operation = CKFetchNotificationChangesOperation(previousServerChangeToken: nil)
-        
-        var notificationIDsToMarkRead = [CKNotificationID]()
-        
-        operation.notificationChangedBlock = { (notification: CKNotification) -> Void in
-            // Process each notification received
-            if notification.notificationType == .Query {
-                let queryNotification = notification as! CKQueryNotification
-                let reason = queryNotification.queryNotificationReason
-                let recordID = queryNotification.recordID
-                
-                print("reason \(reason)")
-                print("recordID \(recordID)")
-                
-                let ref = CKReference(recordID: recordID!, action: .DeleteSelf)
-                UserController.sharedInstance.myRelationship!.alerts.append(ref)
-                // Add the notification id to the array of processed notifications to mark them as read
-                notificationIDsToMarkRead.append(queryNotification.notificationID!)
-            }
-        }
-        
-        operation.fetchNotificationChangesCompletionBlock = { (serverChangeToken: CKServerChangeToken?, operationError: NSError?) -> Void in
-            guard operationError == nil else {
-                // Handle the error here
-                return
-            }
-            
-            // Mark the notifications as read to avoid processing them again
-            let markOperation = CKMarkNotificationsReadOperation(notificationIDsToMarkRead: notificationIDsToMarkRead)
-            markOperation.markNotificationsReadCompletionBlock = { (notificationIDsMarkedRead: [CKNotificationID]?, operationError: NSError?) -> Void in
-                guard operationError == nil else {
-                    // Handle the error here
-                    return
-                }
-            }
-            
-            let operationQueue = NSOperationQueue()
-            operationQueue.addOperation(markOperation)
-        }
-        
-        let operationQueue = NSOperationQueue()
-        operationQueue.addOperation(operation)
-    }
+//    func fetchNotificationChanges(completion:(success:Bool) -> Void) {
+//        let operation = CKFetchNotificationChangesOperation(previousServerChangeToken: nil)
+//        
+//        var notificationIDsToMarkRead = [CKNotificationID]()
+//        
+//        operation.notificationChangedBlock = { (notification: CKNotification) -> Void in
+//// Process each notification received
+//            if notification.notificationType == .Query {
+//                let queryNotification = notification as! CKQueryNotification
+//                let reason = queryNotification.queryNotificationReason
+//                let recordID = queryNotification.recordID
+//                
+////                print("reason \(reason)")
+//                print("recordID \(recordID)")
+//                
+//                let ref = CKReference(recordID: recordID!, action: .DeleteSelf)
+//                UserController.sharedInstance.myRelationship!.alerts.append(ref)
+//                
+//                // Add the notification id to the array of processed notifications to mark them as read
+//                notificationIDsToMarkRead.append(queryNotification.notificationID!)
+//                if operation.moreComing == false  {
+//                    completion(success: true)
+//                }
+//            }
+//        }
+    
+//        operation.fetchNotificationChangesCompletionBlock = { (serverChangeToken: CKServerChangeToken?, operationError: NSError?) -> Void in
+//            guard operationError == nil else {
+//                // Handle the error here
+//                return
+//            }
+//            
+//            // Mark the notifications as read to avoid processing them again
+//            let markOperation = CKMarkNotificationsReadOperation(notificationIDsToMarkRead: notificationIDsToMarkRead)
+//            markOperation.markNotificationsReadCompletionBlock = { (notificationIDsMarkedRead: [CKNotificationID]?, operationError: NSError?) -> Void in
+//                guard operationError == nil else {
+//                    // Handle the error here
+//                    return
+//                }
+//            }
+//            
+//            let operationQueue = NSOperationQueue()
+//            operationQueue.addOperation(markOperation)
+//        }
+//        
+//        let operationQueue = NSOperationQueue()
+//        operationQueue.addOperation(operation)
+//    }
 
 }
 

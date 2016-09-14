@@ -8,8 +8,9 @@
 
 import UIKit
 import CloudKit
+import MessageUI
 
-class ProfileTableViewController: UITableViewController {
+class ProfileTableViewController: UITableViewController, MFMailComposeViewControllerDelegate {
     
     @IBOutlet weak var profilePic: UIImageView!
     
@@ -35,6 +36,8 @@ class ProfileTableViewController: UITableViewController {
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         if let fullName = UserController.sharedInstance.currentUser?.fullName {
             navigationItem.title = fullName
+        } else {
+            navigationItem.title = "Socialize"
         }
     }
     
@@ -50,5 +53,27 @@ class ProfileTableViewController: UITableViewController {
         }
     }
     
+    @IBAction func contactUsButtonTapped(sender: AnyObject) {
+        if MFMailComposeViewController.canSendMail() {
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            mail.setToRecipients(["sorennelson33@gmail.com"])
+            mail.setSubject("Socialize")
+            presentViewController(mail, animated: true, completion: nil)
+        } else {
+            let alert = UIAlertController(title: "Something is wrong with your mail settings", message: "You can contact us via the app store.", preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        controller.dismissViewControllerAnimated(true, completion: nil)
+    }
     
 }
+
+
+
+
+

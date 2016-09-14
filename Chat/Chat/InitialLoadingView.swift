@@ -59,11 +59,46 @@ class InitialLoadingView: UIViewController {
                                 UserController.sharedInstance.myRelationshipRecord = relationshipRecord
                                 if let myRelationship = Relationship(record: relationshipRecord) {
                                     UserController.sharedInstance.myRelationship = myRelationship
-                                    ConversationController.sharedInstance.fetchNotificationChanges()
-                                    self.initiallyGrabRequests(myRelationship, completion: { (success) in
+//                                    ConversationController.sharedInstance.fetchNotificationChanges({ (success) in
                                         if success {
-                                            self.initiallyGrabFriends(myRelationship, completion: { (success) in
+                                            self.initiallyGrabRequests(myRelationship, completion: { (success) in
                                                 if success {
+                                                    self.initiallyGrabFriends(myRelationship, completion: { (success) in
+                                                        if success {
+                                                            self.initiallyGrabConvos({ (success) in
+                                                                if success {
+                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                        indicator.stopAnimating()
+                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                    })
+                                                                } else {
+                                                                    NSLog("Couldn't grab initial conversations")
+                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                        indicator.stopAnimating()
+                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                    })
+                                                                }
+                                                            })
+                                                        } else {
+                                                            //                                                figure out
+                                                            self.initiallyGrabConvos({ (success) in
+                                                                if success {
+                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                        indicator.stopAnimating()
+                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                    })
+                                                                } else {
+                                                                    NSLog("Couldn't grab initial conversations")
+                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                        indicator.stopAnimating()
+                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                    })
+                                                                }
+                                                            })
+                                                        }
+                                                    })
+                                                } else {
+                                                    //                                        figure out
                                                     self.initiallyGrabConvos({ (success) in
                                                         if success {
                                                             dispatch_async(dispatch_get_main_queue(), {
@@ -77,43 +112,11 @@ class InitialLoadingView: UIViewController {
                                                                 self.performSegueWithIdentifier("initialLoad", sender: self)
                                                             })
                                                         }
-                                                    })
-                                                } else {
-//                                                figure out
-                                                    self.initiallyGrabConvos({ (success) in
-                                                        if success {
-                                                            dispatch_async(dispatch_get_main_queue(), {
-                                                                indicator.stopAnimating()
-                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
-                                                            })
-                                                        } else {
-                                                            NSLog("Couldn't grab initial conversations")
-                                                            dispatch_async(dispatch_get_main_queue(), {
-                                                                indicator.stopAnimating()
-                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
-                                                            })
-                                                        }
-                                                    })
-                                                }
-                                            })
-                                        } else {
-                                            //                                        figure out
-                                            self.initiallyGrabConvos({ (success) in
-                                                if success {
-                                                    dispatch_async(dispatch_get_main_queue(), {
-                                                        indicator.stopAnimating()
-                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
-                                                    })
-                                                } else {
-                                                    NSLog("Couldn't grab initial conversations")
-                                                    dispatch_async(dispatch_get_main_queue(), {
-                                                        indicator.stopAnimating()
-                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
                                                     })
                                                 }
                                             })
                                         }
-                                    })
+//                                    })
                                 } else {
                                     dispatch_async(dispatch_get_main_queue(), {
                                         indicator.stopAnimating()
@@ -158,7 +161,6 @@ class InitialLoadingView: UIViewController {
     }
     
     func initiallyGrabRequests(relationship:Relationship, completion:(success: Bool) -> Void) {
-        
         if relationship.requests == nil {
             self.requests = []
             completion(success: true)
@@ -168,14 +170,12 @@ class InitialLoadingView: UIViewController {
                     if let relationshipRecord = relationshipRecord {
                         let requestRelationship = Relationship(record:relationshipRecord)
                         self.requests += [requestRelationship!]
-                        if request == relationship.requests!.last {
+                        if self.requests.count == relationship.requests?.count {
                             completion(success: true)
                         }
                     } else {
                         self.requests = []
-                        if request == relationship.requests!.last {
                             completion(success: true)
-                        }
                     }
                 }
             }
@@ -186,7 +186,6 @@ class InitialLoadingView: UIViewController {
     }
     
     func initiallyGrabFriends(relationship:Relationship, completion:(success: Bool) -> Void) {
-        
         if relationship.friends == nil {
             self.friends = []
             completion(success: true)
@@ -197,16 +196,14 @@ class InitialLoadingView: UIViewController {
                         let friendRelationship = Relationship(record:relationshipRecord!)
                         self.friends += [friendRelationship!]
                         
-                        if friend == relationship.friends?.last {
+                        if self.friends.count == relationship.friends?.count {
                             completion(success: true)
                         }
-                        
+    
                     } else {
                         self.friends = []
-                        if friend == relationship.friends?.last {
-                            completion(success: true)
-
-                        }
+                        completion(success: true)
+                        
                     }
                 })
             }

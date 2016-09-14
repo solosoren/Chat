@@ -115,6 +115,14 @@ class LoginViewController: UIViewController {
             }
         }
     }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "skip" {
+            let navController = segue.destinationViewController as! UINavigationController
+            let destinationVC = navController.topViewController as! HomeViewController
+            destinationVC.skippedLogin = true
+        }
+    }
 
 }
 

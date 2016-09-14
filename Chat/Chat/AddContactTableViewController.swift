@@ -97,13 +97,13 @@ class AddContactTableViewController: UITableViewController {
                 self.view.addSubview(self.darkView)
             }
             self.view.addSubview(self.bigContactView)
-            
+            self.searchBar.resignFirstResponder()
         }
         panRec.addTarget(self, action: #selector(AddContactTableViewController.swipedView))
         bigContactView.addGestureRecognizer(panRec)
         bigContactView.userInteractionEnabled = true
 
-        searchBar.resignFirstResponder()
+        
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
     
@@ -142,20 +142,16 @@ class AddContactTableViewController: UITableViewController {
         }
         return index
     }
-
-    
     
     @IBAction func addContactButtonTapped(sender: AnyObject) {
         let user = UserController.sharedInstance.currentUser
         let friend = searchedUsers[sender.tag]
-//        if user?.userID != friend?.userID {
+        if user?.userID != friend.userID.recordID {
             if let user = user {
-                NSLog("Friend: \(friend.fullName)")
-                UserController.sharedInstance.sendRequest(user, friend: friend) { (success, record) in
+                UserController.sharedInstance.sendRequest(user, friend: friend) { (success, record, alreadyFriends, alreadyRequested) in
                     if success {
                         dispatch_async(dispatch_get_main_queue(), {
-                            let name = record!["FullName"]
-                            let alert = UIAlertController(title: nil, message: "A friend request has been sent to \(name!)", preferredStyle: .Alert)
+                            let alert = UIAlertController(title: "A friend request has been sent to \(friend.fullName)", message: nil, preferredStyle: .Alert)
                             let action = UIAlertAction(title: "Okay", style: .Default, handler: { (action) in
                                 dispatch_async(dispatch_get_main_queue(), {
                                     self.performSegueWithIdentifier("addedContact", sender: self)
@@ -164,27 +160,34 @@ class AddContactTableViewController: UITableViewController {
                             alert.addAction(action)
                             self.presentViewController(alert, animated: true, completion:nil)
                         })
+                    } else if alreadyRequested == true {
+                        dispatch_async(dispatch_get_main_queue(), {
+                            let alert = UIAlertController(title: "You've already sent a friend request to \(friend.fullName).", message: nil, preferredStyle: .Alert)
+                            let okay = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+                            alert.addAction(okay)
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        })
+                    } else if alreadyFriends == true {
+                        dispatch_async(dispatch_get_main_queue(), {
+                            let alert = UIAlertController(title: "\(friend.fullName) is already your friend.", message: nil, preferredStyle: .Alert)
+                            let okay = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+                            alert.addAction(okay)
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        })
                     } else {
                         dispatch_async(dispatch_get_main_queue(), {
-                            let alert = UIAlertController(title: "Uh oh", message: "Their was an error sending the friend request", preferredStyle: .Alert)
+                            let alert = UIAlertController(title: "Their was an error sending the friend request.", message: nil, preferredStyle: .Alert)
                             let retry = UIAlertAction(title: "Retry", style: .Default, handler: nil)
-//                TODO: Fix
+                            //                TODO: Fix
                             alert.addAction(retry)
-//                let whatever = UIAlertAction(title: "", style: , handler: )
                             self.presentViewController(alert, animated: true, completion: nil)
                         })
                     }
                 }
             }
-//        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "addedContact" {
-
         }
     }
-
+    
 }
 
 extension AddContactTableViewController: UISearchBarDelegate {

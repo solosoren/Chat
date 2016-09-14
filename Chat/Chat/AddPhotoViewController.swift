@@ -30,7 +30,6 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     }
     
     @IBAction func addImageTapped(sender: AnyObject) {
-        
         dispatch_async(dispatch_get_main_queue()) { 
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
@@ -41,7 +40,7 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        self.imageView.image = (info[UIImagePickerControllerEditedImage] as! UIImage)
+        imageView.image = (info[UIImagePickerControllerEditedImage] as! UIImage)
         imageView.contentMode = .ScaleToFill
         dismissViewControllerAnimated(true) {
             self.addImageButton.hidden = true
@@ -52,14 +51,12 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
     
     @IBAction func saveImageTapped(sender: AnyObject) {
         if imageView.image != nil {
-            
 //        TODO: fix activity indicator throughout
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
             indicator.center = view.center
             view.addSubview(indicator)
             indicator.startAnimating()
             saveImage({ (success, record) in
-
 
                 if success {
                     dispatch_async(dispatch_get_main_queue(), {

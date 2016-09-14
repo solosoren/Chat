@@ -20,6 +20,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     var conversation: Conversation?
     var convoRecord: CKRecord?
     var demo = false
+    var skippedLogin = false
     @IBOutlet var keyboardViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet var sendButton: UIButton!
     
@@ -32,11 +33,13 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         setNavBar()
         if demo {
             sendButton.enabled = false
+        } else if skippedLogin {
+            sendButton.enabled = false
         }
         sendButton.enabled = false
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagingViewController.keyboardWasShown(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagingViewController.keyboardWillBeHidden), name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagingViewController.keyboardWillBeHidden(_:)), name: UIKeyboardWillHideNotification, object: nil)
     }
         
     
@@ -89,6 +92,9 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             }
         } else if demo {
             return themMessageCell
+        } else if skippedLogin {
+            themMessageCell.messageText.text = "Create an account to get started socializing."
+            return themMessageCell
         } else {
             themMessageCell.messageText.text = "Loading..."
             return themMessageCell
@@ -112,13 +118,12 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             }
         }
         keyboardViewHeightConstraint.constant = messageTextView.frame.size.height + 14
-        reloadInputViews()
+        resignFirstResponder()
         tableView.reloadData(conversation)
     }
     
 //    MARK: Input Accessory View
     override var inputAccessoryView: UIView {
-        
         messageTextView.translatesAutoresizingMaskIntoConstraints = false
         keyboardView.translatesAutoresizingMaskIntoConstraints = false
         messageTextView.layoutIfNeeded()
@@ -137,11 +142,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     override func canBecomeFirstResponder() -> Bool {
         return true
-    }
-    
-    
-    func textViewDidBeginEditing(textView: UITextView) {
-    
     }
     
     func textViewDidChange(textView: UITextView) {
