@@ -30,21 +30,22 @@ class AddContactTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavBar()
+        navigationItem.backBarButtonItem?.image = UIImage(named: "Down")
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let searchResultsCell = tableView.dequeueReusableCellWithIdentifier("searchResultsCell", forIndexPath: indexPath) as! UserSearchTableViewCell
+        let searchResultsCell = tableView.dequeueReusableCell(withIdentifier: "searchResultsCell", for: indexPath) as! UserSearchTableViewCell
         searchResultsCell.relationship = searchedUsers[indexPath.row]
         searchResultsCell.usernameLabel.text = searchResultsCell.relationship!.fullName
         
         searchResultsCell.sendRequestButton.tag = indexPath.row
 //        see if this works
         
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             UserController.sharedInstance.grabImage(searchResultsCell.relationship!.fullName) { (success, image) in
                 if success == true {
-                    dispatch_async(dispatch_get_main_queue()) {
+                    DispatchQueue.main.async {
                         searchResultsCell.profilePic.image = image
                     }
                 } else {
@@ -56,58 +57,55 @@ class AddContactTableViewController: UITableViewController {
         return searchResultsCell
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return searchedUsers.count
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
             return 52
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         bigContactView.center.x = view.center.x
         bigContactView.center.y = view.center.y - 40
         let user = searchedUsers[indexPath.row]
         bigContactView.relationship = user
-        let cell = tableView.cellForRowAtIndexPath(indexPath) as! UserSearchTableViewCell
-        dispatch_async(dispatch_get_main_queue()) {
+        let cell = tableView.cellForRow(at: indexPath) as! UserSearchTableViewCell
+        DispatchQueue.main.async {
             if user.profilePic != nil {
                 self.bigContactView.profilePic.image = cell.profilePic.image
-                self.bigContactView.profilePic.backgroundColor = UIColor.clearColor()
+                self.bigContactView.profilePic.backgroundColor = UIColor.clear
             }
             
         }
         
-        darkView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.5)
-        darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height + 200)
+        darkView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        darkView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height + 200)
         
-        tableView.scrollEnabled = false
-        
-        dispatch_async(dispatch_get_main_queue()) {
-            self.navigationController?.navigationBarHidden = true
-            self.navigationController?.prefersStatusBarHidden()
+        DispatchQueue.main.async {
+            self.navigationController?.isNavigationBarHidden = true
             self.statusBarIsVisible = false
-            self.preferredStatusBarStyle()
             self.setNeedsStatusBarAppearanceUpdate()
 
             switch self.appeared {
             case true:
-                self.darkView.hidden = false
+                self.darkView.isHidden = false
             default:
                 self.view.addSubview(self.darkView)
             }
             self.view.addSubview(self.bigContactView)
             self.searchBar.resignFirstResponder()
+            tableView.isScrollEnabled = false
         }
         panRec.addTarget(self, action: #selector(AddContactTableViewController.swipedView))
         bigContactView.addGestureRecognizer(panRec)
-        bigContactView.userInteractionEnabled = true
+        bigContactView.isUserInteractionEnabled = true
 
         
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         if statusBarIsVisible {
             return false
         } else {
@@ -115,23 +113,22 @@ class AddContactTableViewController: UITableViewController {
         }
     }
     
-    func swipedView(sender:UIPanGestureRecognizer) {
-        UIView.animateWithDuration(0.2, delay:0.0, options: .CurveEaseIn, animations: {
-            self.bigContactView.center = CGPointMake(self.view.center.x, self.view.frame.size.height + 200)
+    func swipedView(_ sender:UIPanGestureRecognizer) {
+        UIView.animate(withDuration: 0.2, delay:0.0, options: .curveEaseIn, animations: {
+            self.bigContactView.center = CGPoint(x: self.view.center.x, y: self.view.frame.size.height + 200)
             }, completion: { (finished) in
                 if finished {
                     self.appeared = true
-                    self.darkView.hidden = true
-                    self.navigationController?.navigationBarHidden = false
+                    self.darkView.isHidden = true
+                    self.navigationController?.isNavigationBarHidden = false
                     self.statusBarIsVisible = true
-                    self.prefersStatusBarHidden()
                     self.setNeedsStatusBarAppearanceUpdate()
-                    self.tableView.scrollEnabled = true
+                    self.tableView.isScrollEnabled = true
                 }
         })
     }
     
-    func getIndexOfUserWithUserId(user: User, userArray: [User]) -> Int {
+    func getIndexOfUserWithUserId(_ user: User, userArray: [User]) -> Int {
         var index = 0
         for member in userArray {
             if member.userID == user.userID {
@@ -143,44 +140,44 @@ class AddContactTableViewController: UITableViewController {
         return index
     }
     
-    @IBAction func addContactButtonTapped(sender: AnyObject) {
+    @IBAction func addContactButtonTapped(_ sender: AnyObject) {
         let user = UserController.sharedInstance.currentUser
         let friend = searchedUsers[sender.tag]
         if user?.userID != friend.userID.recordID {
             if let user = user {
                 UserController.sharedInstance.sendRequest(user, friend: friend) { (success, record, alreadyFriends, alreadyRequested) in
                     if success {
-                        dispatch_async(dispatch_get_main_queue(), {
-                            let alert = UIAlertController(title: "A friend request has been sent to \(friend.fullName)", message: nil, preferredStyle: .Alert)
-                            let action = UIAlertAction(title: "Okay", style: .Default, handler: { (action) in
-                                dispatch_async(dispatch_get_main_queue(), {
-                                    self.performSegueWithIdentifier("addedContact", sender: self)
+                        DispatchQueue.main.async(execute: {
+                            let alert = UIAlertController(title: "A friend request has been sent to \(friend.fullName)", message: nil, preferredStyle: .alert)
+                            let action = UIAlertAction(title: "Okay", style: .default, handler: { (action) in
+                                DispatchQueue.main.async(execute: {
+                                    self.performSegue(withIdentifier: "addedContact", sender: self)
                                 })
                             })
                             alert.addAction(action)
-                            self.presentViewController(alert, animated: true, completion:nil)
+                            self.present(alert, animated: true, completion:nil)
                         })
                     } else if alreadyRequested == true {
-                        dispatch_async(dispatch_get_main_queue(), {
-                            let alert = UIAlertController(title: "You've already sent a friend request to \(friend.fullName).", message: nil, preferredStyle: .Alert)
-                            let okay = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+                        DispatchQueue.main.async(execute: {
+                            let alert = UIAlertController(title: "You've already sent a friend request to \(friend.fullName).", message: nil, preferredStyle: .alert)
+                            let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
                             alert.addAction(okay)
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            self.present(alert, animated: true, completion: nil)
                         })
                     } else if alreadyFriends == true {
-                        dispatch_async(dispatch_get_main_queue(), {
-                            let alert = UIAlertController(title: "\(friend.fullName) is already your friend.", message: nil, preferredStyle: .Alert)
-                            let okay = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+                        DispatchQueue.main.async(execute: {
+                            let alert = UIAlertController(title: "\(friend.fullName) is already your friend.", message: nil, preferredStyle: .alert)
+                            let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
                             alert.addAction(okay)
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            self.present(alert, animated: true, completion: nil)
                         })
                     } else {
-                        dispatch_async(dispatch_get_main_queue(), {
-                            let alert = UIAlertController(title: "Their was an error sending the friend request.", message: nil, preferredStyle: .Alert)
-                            let retry = UIAlertAction(title: "Retry", style: .Default, handler: nil)
+                        DispatchQueue.main.async(execute: {
+                            let alert = UIAlertController(title: "Their was an error sending the friend request.", message: nil, preferredStyle: .alert)
+                            let retry = UIAlertAction(title: "Retry", style: .default, handler: nil)
                             //                TODO: Fix
                             alert.addAction(retry)
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            self.present(alert, animated: true, completion: nil)
                         })
                     }
                 }
@@ -192,13 +189,13 @@ class AddContactTableViewController: UITableViewController {
 
 extension AddContactTableViewController: UISearchBarDelegate {
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        dispatch_async(dispatch_get_main_queue()) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        DispatchQueue.main.async {
             UserController.sharedInstance.searchAllUsers(searchText) { (success, users) in
                 if success {
                     if let users = users {
                         self.searchedUsers = users
-                        dispatch_async(dispatch_get_main_queue(), {
+                        DispatchQueue.main.async(execute: {
                             self.tableView.reloadData()
                         })
                     }
@@ -209,14 +206,14 @@ extension AddContactTableViewController: UISearchBarDelegate {
         }
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if searchBar.text != nil {
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 UserController.sharedInstance.searchAllUsers(searchBar.text!, completion: { (success, users) in
                     if success {
                         if let users = users {
                             self.searchedUsers = users
-                            dispatch_async(dispatch_get_main_queue(), {
+                            DispatchQueue.main.async(execute: {
                                 searchBar.resignFirstResponder()
                                 self.tableView.reloadData()
                             })

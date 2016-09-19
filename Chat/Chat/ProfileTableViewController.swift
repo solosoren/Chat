@@ -22,7 +22,7 @@ class ProfileTableViewController: UITableViewController, MFMailComposeViewContro
     }
     
     func setUpView() {
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             if let asset = UserController.sharedInstance.myRelationship?.profilePic {
                 self.profilePic.image = asset.image
             }
@@ -31,9 +31,9 @@ class ProfileTableViewController: UITableViewController, MFMailComposeViewContro
     
     func setProfileNavBar() {
         navigationController?.navigationBar.barTintColor = UIColor.init(red: 0, green: 0.384, blue: 0.608, alpha: 1.0)
-        navigationController?.navigationBar.translucent = false
-        navigationController?.navigationBar.barStyle = UIBarStyle.Black
-        navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.barStyle = UIBarStyle.black
+        navigationController?.navigationBar.tintColor = UIColor.white
         if let fullName = UserController.sharedInstance.currentUser?.fullName {
             navigationItem.title = fullName
         } else {
@@ -43,32 +43,32 @@ class ProfileTableViewController: UITableViewController, MFMailComposeViewContro
     
     func noAccount() {
         if UserController.sharedInstance.myRelationship == nil {
-            dispatch_async(dispatch_get_main_queue(), { 
-                let alert = UIAlertController(title: "No Account", message: "Go set up an account to get started socializing", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: { (action) in
-                    self.dismissViewControllerAnimated(true, completion: nil)
+            DispatchQueue.main.async(execute: { 
+                let alert = UIAlertController(title: "No Account", message: "Go set up an account to get started socializing", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: { (action) in
+                    self.dismiss(animated: true, completion: nil)
                 }))
-                self.presentViewController(alert, animated: true, completion:nil)
+                self.present(alert, animated: true, completion:nil)
             })
         }
     }
     
-    @IBAction func contactUsButtonTapped(sender: AnyObject) {
+    @IBAction func contactUsButtonTapped(_ sender: AnyObject) {
         if MFMailComposeViewController.canSendMail() {
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
             mail.setToRecipients(["sorennelson33@gmail.com"])
             mail.setSubject("Socialize")
-            presentViewController(mail, animated: true, completion: nil)
+            present(mail, animated: true, completion: nil)
         } else {
-            let alert = UIAlertController(title: "Something is wrong with your mail settings", message: "You can contact us via the app store.", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+            let alert = UIAlertController(title: "Something is wrong with your mail settings", message: "You can contact us via the app store.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
-    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
-        controller.dismissViewControllerAnimated(true, completion: nil)
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
     }
     
 }

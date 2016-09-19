@@ -37,33 +37,33 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBarHidden = false
+        navigationController?.isNavigationBarHidden = false
         if skippedLogin {
-            navigationItem.rightBarButtonItem?.enabled = false
+            navigationItem.rightBarButtonItem?.isEnabled = false
         }
         setNavBar()
         leftSwipe.addTarget(self, action: #selector(HomeViewController.leftSwiped))
-        leftSwipe.direction = .Left
+        leftSwipe.direction = .left
         tableView.addGestureRecognizer(leftSwipe)
         rightSwipe.addTarget(self, action: #selector(HomeViewController.rightSwiped))
-        rightSwipe.direction = .Right
+        rightSwipe.direction = .right
         tableView.addGestureRecognizer(rightSwipe)
-        tableView.userInteractionEnabled = true
+        tableView.isUserInteractionEnabled = true
         tableView.reloadData()
     }
     
-    @IBAction func unwindToHome(segue: UIStoryboardSegue) {}
+    @IBAction func unwindToHome(_ segue: UIStoryboardSegue) {}
  
 // MARK: Segmented Control
     
-    @IBAction func segmentedControlChanged(sender: AnyObject) {
+    @IBAction func segmentedControlChanged(_ sender: AnyObject) {
         tableView.reloadData()
     }
     
     func rightSwiped() {
         if segmentedControl.selectedSegmentIndex == 1 {
             segmentedControl.selectedSegmentIndex = 0
-            tableView.scrollEnabled = true
+            tableView.isScrollEnabled = true
         }
         tableView.reloadData()
     }
@@ -78,9 +78,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
 // MARK: TableView
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if segmentedControl.selectedSegmentIndex == 0 {
-            tableView.scrollEnabled = true
+            tableView.isScrollEnabled = true
             return 80
             
         } else {
@@ -93,7 +93,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 contactCellHeight = view.frame.size.height
                 requestHeight = 0
             }
-            if indexPath.row == numberInSection {
+            if (indexPath as NSIndexPath).row == numberInSection {
                 if let myFriends = myFriends {
                     if myFriends.count != 0 {
                         if myFriends.count % 3 == 1 {
@@ -122,7 +122,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
 
-    func contactHeight(contactCellHeight:CGFloat) -> CGFloat {
+    func contactHeight(_ contactCellHeight:CGFloat) -> CGFloat {
         if contactCellHeight < view.frame.size.height {
             let height = view.frame.size.height
             return height
@@ -133,25 +133,59 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
 //  TODO: create sections ??
+    
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        if segmentedControl.selectedSegmentIndex == 1 {
+//            if let myRequests = myRequests, let myFriends = myFriends {
+//                if myRequests.count > 0 && myFriends.count > 0 {
+//                    return 2
+//                } else {
+//                    return 1
+//                }
+//            } else {
+//                return 1
+//            }
+//        } else {
+//            return 1
+//        }
+//    }
+    
+//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        guard let myRequests = myRequests , let myFriends = myFriends else {
+//            return nil
+//        }
+//        if segmentedControl.selectedSegmentIndex == 1 {
+//            if myRequests.count > 0 && myFriends.count > 0 {
+//                if section == 1 {
+//                    return "Friend Requests"
+//                } else {
+//                    return "Friends"
+//                }
+//            } else {
+//               return nil
+//            }
+//        } else {
+//            return nil
+//        }
+//    }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-//        see if pass on convo works with multiple convo's
         if segmentedControl.selectedSegmentIndex == 0 {
-            let convoCell = tableView.dequeueReusableCellWithIdentifier("conversationCell", forIndexPath: indexPath) as! HomeMessageCell
+            let convoCell = tableView.dequeueReusableCell(withIdentifier: "conversationCell", for: indexPath) as! HomeMessageCell
             if let myConversations = myConversations {
                 if myConversations.count != 0 {
-                    let convo = myConversations[indexPath.row]
+                    let convo = myConversations[(indexPath as NSIndexPath).row]
                     convoCell.messageText.text = convo.lastMessage?.messageText
                     var groupName = convo.convoName
                     if let myName = UserController.sharedInstance.myRelationship?.fullName {
-                        if groupName?.containsString(myName) == true {
-                            if let range = groupName?.rangeOfString("\(myName), ") {
-                                groupName?.removeRange(range)
+                        if groupName?.contains(myName) == true {
+                            if let range = groupName?.range(of: "\(myName), ") {
+                                groupName?.removeSubrange(range)
                                 convoCell.userName.text = groupName
                             }
-                            if let range = groupName?.rangeOfString(", \(myName)") {
-                                groupName?.removeRange(range)
+                            if let range = groupName?.range(of: ", \(myName)") {
+                                groupName?.removeSubrange(range)
                                 convoCell.userName.text = groupName
                             }
                         } else if groupName != nil {
@@ -160,7 +194,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             convoCell.userName.text = "..."
                         }
                     }
-                    if let time = convo.lastMessage?.time {
+                    if let time = convo.lastMessage?.timeString {
                         convoCell.messageTime.text = time
                     }
                     if let userPic = convo.lastMessage?.userPic {
@@ -169,34 +203,34 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     if UserController.sharedInstance.myRelationship!.alerts.count != 0 {
                         for a in UserController.sharedInstance.myRelationship!.alerts {
                             if convo.ref != a {
-                                convoCell.alertImage.hidden = true
+                                convoCell.alertImage.isHidden = true
                             }
                         }
                     } else {
-                        convoCell.alertImage.hidden = true
+                        convoCell.alertImage.isHidden = true
                     }
                 }
             } else if skippedLogin {
                 convoCell.messageText.text = "Create an account to get started socializing."
-                convoCell.alertImage.hidden = true
+                convoCell.alertImage.isHidden = true
             } else {
-                convoCell.alertImage.hidden = true
+                convoCell.alertImage.isHidden = true
             }
             return convoCell
             
         } else {
-            if indexPath.row == numberInSection {
-                let contactCell = tableView.dequeueReusableCellWithIdentifier("contactCell", forIndexPath: indexPath) as! ContactTableViewCell
+            if (indexPath as NSIndexPath).row == numberInSection {
+                let contactCell = tableView.dequeueReusableCell(withIdentifier: "contactCell", for: indexPath) as! ContactTableViewCell
                 return contactCell
                 
             } else {
-                let notificationCell = tableView.dequeueReusableCellWithIdentifier("notificationCell", forIndexPath: indexPath) as! NotificationCell
+                let notificationCell = tableView.dequeueReusableCell(withIdentifier: "notificationCell", for: indexPath) as! NotificationCell
                 
-                notificationCell.acceptButton.tag = indexPath.row
-                notificationCell.declineButton.tag = indexPath.row
+                notificationCell.acceptButton.tag = (indexPath as NSIndexPath).row
+                notificationCell.declineButton.tag = (indexPath as NSIndexPath).row
                 if let myRequests = myRequests {
                     if myRequests.count != 0 {
-                        let index = indexPath.row
+                        let index = (indexPath as NSIndexPath).row
                         let name = myRequests[index].fullName
                         notificationCell.inviteLabel.text = "\(name) sent you a friend request"
                         if let asset = myRequests[index].profilePic {
@@ -209,13 +243,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func returnLastMessage(conversation: Conversation, profilePic: CKAsset?) {
+    func returnLastMessage(_ conversation: Conversation, profilePic: CKAsset?) {
         changedConvo = conversation
         convoImage = profilePic
         
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if segmentedControl.selectedSegmentIndex == 0 {
             if let myConversations = myConversations {
@@ -244,36 +278,36 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     return number
                 }
             } else {
-                self.tableView.scrollEnabled = false
+                self.tableView.isScrollEnabled = false
                 self.numberInSection = 0
                 return 1
             }
         }
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if segmentedControl.selectedSegmentIndex == 0 {
-            performSegueWithIdentifier("messageSegue", sender: self)
+            performSegue(withIdentifier: "messageSegue", sender: self)
         }
-        self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        self.tableView.deselectRow(at: indexPath, animated: true)
     }
     
     
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "messageSegue" {
             if let myConversations = myConversations {
                 if myConversations.count != 0 {
-                    let destinationVC = segue.destinationViewController as! MessagingViewController
-                    if let convoIndex = tableView.indexPathForSelectedRow?.row {
-                        destinationVC.convoRecord = self.convoRecords![convoIndex]
+                    let destinationVC = segue.destination as! MessagingViewController
+                    if let convoIndex = (tableView.indexPathForSelectedRow as NSIndexPath?)?.row {
+                        destinationVC.convoRecord = convoRecords![convoIndex]
                         let myConversation = myConversations[convoIndex]
                         ConversationController.sharedInstance.grabMessages(myConversation, completion: { (error, conversation, theMessages) in
                             if let error = error {
                                 destinationVC.conversation = conversation
                                 destinationVC.conversation?.messages = []
                                 destinationVC.conversation?.theMessages = []
-                                destinationVC.sendButton.enabled = true
+                                destinationVC.sendButton.isEnabled = true
                                 print("ERROR: \(error)")
                             } else {
                                 if let messages = conversation!.messages,
@@ -283,8 +317,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                     destinationVC.conversation?.theMessages = theMessages
                                     destinationVC.conversation?.messages = messages
                                     destinationVC.conversation = passOnConversation
-                                    destinationVC.sendButton.enabled = true
-                                    dispatch_async(dispatch_get_main_queue(), {
+                                    destinationVC.sendButton.isEnabled = true
+                                    DispatchQueue.main.async(execute: {
                                         destinationVC.tableView.reloadData(destinationVC.conversation)
                                     })
                                 }
@@ -294,28 +328,29 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         print("ERROR")
                     }
                 } else {
-                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    let destinationVC = segue.destination as! MessagingViewController
                     destinationVC.demo = demo
                     destinationVC.skippedLogin = skippedLogin
                 }
             } else {
                 if demo {
-                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    let destinationVC = segue.destination as! MessagingViewController
                     destinationVC.demo = demo
                 } else if skippedLogin {
-                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    let destinationVC = segue.destination as! MessagingViewController
                     destinationVC.skippedLogin = skippedLogin
                 } else {
-                    let destinationVC = segue.destinationViewController as! MessagingViewController
+                    let destinationVC = segue.destination as! MessagingViewController
                     destinationVC.tableView.reloadData()
                 }
             }
         } else if segue.identifier == "newMessageSegue" {
-            let destinationVC = segue.destinationViewController as! MessagingViewController
+            let destinationVC = segue.destination as! MessagingViewController
             destinationVC.conversation = self.passOnConvo
+            destinationVC.newConvo = true
             destinationVC.convoRecord = self.convoRecord
         } else if segue.identifier == "addToGroup" {
-            let navController = segue.destinationViewController as! UINavigationController
+            let navController = segue.destination as! UINavigationController
             let destinationVC = navController.topViewController as! CreateGroupViewController
             destinationVC.contacts = self.myFriends
             destinationVC.initialContact = self.contactRelationship
@@ -325,15 +360,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
 // MARK: Friend Request actions
     
-    @IBAction func acceptButtonTapped(sender: AnyObject) {
+    @IBAction func acceptButtonTapped(_ sender: AnyObject) {
         if myRequests != nil {
             let requester = myRequests?[sender.tag]
-            myRequests!.removeAtIndex(sender.tag)
+            myRequests!.remove(at: sender.tag)
             guard let myRequests = myRequests else {
                 return
             }
             for request in myRequests {
-                let ref = CKReference(recordID: request.userID.recordID, action: .DeleteSelf)
+                let ref = CKReference(recordID: request.userID.recordID, action: .deleteSelf)
                 requests? += [ref]
             }
             if requests == nil {
@@ -343,105 +378,105 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 if success {
                     if UserController.sharedInstance.myRelationship?.friends != nil {
                         var friends = UserController.sharedInstance.myRelationship?.friends
-                        let ref = CKReference(recordID: requester!.userID.recordID, action: .DeleteSelf)
+                        let ref = CKReference(recordID: requester!.userID.recordID, action: .deleteSelf)
                         friends? += [ref]
                         UserController.sharedInstance.saveRecordArray(friends!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
                             if success {
                                 UserController.sharedInstance.acceptRequest(UserController.sharedInstance.currentUser!, friend: requester!, completion: { (success, record) in
                                     if success {
                                         let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
-                                        dispatch_async(dispatch_get_main_queue(), {
+                                        DispatchQueue.main.async(execute: {
                                             self.myFriends! += [relationship]
                                             self.tableView.reloadData()
-                                            let indexPath = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
-                                            let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
+                                            let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                                            let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                                             cell.collectionView.reloadData()
                                         })
                                     } else {
-                                        dispatch_async(dispatch_get_main_queue(), { 
-                                            let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .Alert)
-                                            let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                                        DispatchQueue.main.async(execute: { 
+                                            let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .alert)
+                                            let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                                                 return
                                             })
                                             alert.addAction(action)
-                                            self.presentViewController(alert, animated: true, completion: nil)
+                                            self.present(alert, animated: true, completion: nil)
                                         })
                                     }
                                 })
                             } else {
-                                dispatch_async(dispatch_get_main_queue(), {
-                                    let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .Alert)
-                                    let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                                DispatchQueue.main.async(execute: {
+                                    let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .alert)
+                                    let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                                         return
                                     })
                                     alert.addAction(action)
-                                    self.presentViewController(alert, animated: true, completion: nil)
+                                    self.present(alert, animated: true, completion: nil)
                                 })
                             }
                         })
                     } else {
                         var friends = UserController.sharedInstance.myRelationship?.friends
-                        let ref = CKReference(recordID: requester!.userID.recordID, action: .DeleteSelf)
+                        let ref = CKReference(recordID: requester!.userID.recordID, action: .deleteSelf)
                         friends? += [ref]
                         UserController.sharedInstance.saveRecordArray(friends!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends", completion: { (success) in
                             if success {
                                 UserController.sharedInstance.acceptRequest(UserController.sharedInstance.currentUser!, friend: requester!, completion: { (success, record) in
                                     if success {
                                         let relationship = Relationship(fullName: record!["FullName"] as! String, userID: record!["UserIDRef"] as! CKReference, requests: nil, friends: nil, profilePic: record!["ImageKey"] as? CKAsset)
-                                        dispatch_async(dispatch_get_main_queue(), {
+                                        DispatchQueue.main.async(execute: {
                                             self.myFriends! += [relationship]
                                             self.tableView.reloadData()
-                                            let indexPath = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
-                                            let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
+                                            let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                                            let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                                             cell.collectionView.reloadData()
                                         })
                                     } else {
-                                        dispatch_async(dispatch_get_main_queue(), {
-                                            let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .Alert)
-                                            let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                                        DispatchQueue.main.async(execute: {
+                                            let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .alert)
+                                            let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                                                 return
                                             })
                                             alert.addAction(action)
-                                            self.presentViewController(alert, animated: true, completion: nil)
+                                            self.present(alert, animated: true, completion: nil)
                                         })
                                     }
                                 })
                             } else {
-                                dispatch_async(dispatch_get_main_queue(), {
-                                    let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .Alert)
-                                    let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                                DispatchQueue.main.async(execute: {
+                                    let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .alert)
+                                    let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                                         return
                                     })
                                     alert.addAction(action)
-                                    self.presentViewController(alert, animated: true, completion: nil)
+                                    self.present(alert, animated: true, completion: nil)
                                 })
                             }
                         })
                     }
                 } else {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        let alert = UIAlertController(title: "Error", message: "Couldn't remove requests", preferredStyle: .Alert)
-                        let action = UIAlertAction(title: "Okay", style: .Cancel, handler: { (action) in
+                    DispatchQueue.main.async(execute: {
+                        let alert = UIAlertController(title: "Error", message: "Couldn't remove requests", preferredStyle: .alert)
+                        let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                             return
                         })
                         alert.addAction(action)
-                        self.presentViewController(alert, animated: true, completion: nil)
+                        self.present(alert, animated: true, completion: nil)
                     })
                 }
             }
         }
     }
 
-    @IBAction func declineButtonTapped(sender: AnyObject) {
-        myRequests?.removeAtIndex(sender.tag)
+    @IBAction func declineButtonTapped(_ sender: AnyObject) {
+        myRequests?.remove(at: sender.tag)
         for request in self.myRequests! {
-            let ref = CKReference(recordID: request.userID.recordID, action: .DeleteSelf)
+            let ref = CKReference(recordID: request.userID.recordID, action: .deleteSelf)
             requests? += [ref]
         }
         if let requesters = requests {
             UserController.sharedInstance.saveRecordArray(requesters, record: UserController.sharedInstance.myRelationshipRecord!, string: "FriendRequests") { (success) in
                 if success {
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.tableView.reloadData()
                     })
                 } else {
@@ -451,7 +486,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         } else {
             UserController.sharedInstance.saveRecordArray([], record: UserController.sharedInstance.myRelationshipRecord!, string: "FriendRequests") { (success) in
                 if success {
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.tableView.reloadData()
                     })
                 } else {
@@ -467,12 +502,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
 // MARK: Collection View
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let item = collectionView.dequeueReusableCellWithReuseIdentifier("contactItem", forIndexPath: indexPath) as! ContactCollectionCell
+        let item = collectionView.dequeueReusableCell(withReuseIdentifier: "contactItem", for: indexPath) as! ContactCollectionCell
         if let myFriends = myFriends {
             if myFriends.count != 0 {
-                let index = indexPath.item
+                let index = (indexPath as NSIndexPath).item
                 item.contactName.text = myFriends[index].fullName
                 if let asset = myFriends[index].profilePic {
                     item.contactImage.image = asset.image
@@ -486,7 +521,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return item
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let myFriends = myFriends {
             if myFriends.count != 0 {
                 return myFriends.count
@@ -504,7 +539,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
         
         let size = CGSize(width:(self.view.bounds.width / 3) - 12, height:150)
         return size
@@ -518,34 +553,34 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet var bigName: UILabel!
     @IBOutlet var dismissButton: UIButton!
 
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        index = indexPath.item
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        index = (indexPath as NSIndexPath).item
         
 //        get cell for contact collection view to start animation from item center
         guard case segmentedControl.selectedSegmentIndex = 1 else {
             return
         }
-        let cellIndex = NSIndexPath(forRow: numberInSection!, inSection: 0)
-        let cell = tableView.cellForRowAtIndexPath(cellIndex) as! ContactTableViewCell
+        let cellIndex = IndexPath(row: numberInSection!, section: 0)
+        let cell = tableView.cellForRow(at: cellIndex) as! ContactTableViewCell
 //        start view at item
-        if let item = cell.collectionView.layoutAttributesForItemAtIndexPath(indexPath) {
+        if let item = cell.collectionView.layoutAttributesForItem(at: indexPath) {
             contactView.center.x = item.center.x
             contactView.center.y = item.frame.maxY
         } else {
-            contactView.center = CGPointMake(self.view.frame.width, self.view.frame.height + 100)
+            contactView.center = CGPoint(x: self.view.frame.width, y: self.view.frame.height + 100)
         }
         
-        darkView.frame = CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)
-        darkView.backgroundColor = UIColor.blackColor()
+        darkView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height)
+        darkView.backgroundColor = UIColor.black
         darkView.alpha = 0.5
         
 //        set up contactView content
         if let myFriends = myFriends {
             if myFriends.count != 0 {
-                bigName.text = myFriends[indexPath.item].fullName
-                contactRelationship = myFriends[indexPath.item]
+                bigName.text = myFriends[(indexPath as NSIndexPath).item].fullName
+                contactRelationship = myFriends[(indexPath as NSIndexPath).item]
                 
-                if let asset = myFriends[indexPath.item].profilePic {
+                if let asset = myFriends[(indexPath as NSIndexPath).item].profilePic {
                     bigProfilePic.image = asset.image
                 } else {
                     bigProfilePic.image = UIImage(named: "Square Contact")
@@ -555,27 +590,27 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         view.addSubview(darkView)
         view.addSubview(contactView)
         
-        UIView.animateWithDuration(0.3, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
-            self.contactView.center = CGPointMake(self.view.bounds.width / 2, self.view.bounds.height / 2)
+        UIView.animate(withDuration: 0.3, delay: 0.0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+            self.contactView.center = CGPoint(x: self.view.bounds.width / 2, y: self.view.bounds.height / 2)
             }, completion: nil)
     }
     
 // MARK: Contact View
     
-    @IBAction func contactDismissButtonTapped(sender: AnyObject) {
-        UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseIn, animations: {
+    @IBAction func contactDismissButtonTapped(_ sender: AnyObject) {
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseIn, animations: {
             guard case self.segmentedControl.selectedSegmentIndex = 1 else {
                 return
             }
-            let cellIndex = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
-            let cell = self.tableView.cellForRowAtIndexPath(cellIndex) as! ContactTableViewCell
-            let indexPath = NSIndexPath(forItem: self.index!, inSection: 0)
+            let cellIndex = IndexPath(row: self.numberInSection!, section: 0)
+            let cell = self.tableView.cellForRow(at: cellIndex) as! ContactTableViewCell
+            let indexPath = IndexPath(item: self.index!, section: 0)
             
-            if let item = cell.collectionView.layoutAttributesForItemAtIndexPath(indexPath) {
+            if let item = cell.collectionView.layoutAttributesForItem(at: indexPath) {
                 self.contactView.center.x = item.center.x
                 self.contactView.center.y = item.frame.maxY
             } else {
-                self.contactView.center = CGPointMake(self.view.frame.width, self.view.frame.height + 100)
+                self.contactView.center = CGPoint(x: self.view.frame.width, y: self.view.frame.height + 100)
             }
             
         }) { (true) in
@@ -585,15 +620,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
-    @IBAction func addToGroupButtonPressed(sender: AnyObject) {
+    @IBAction func addToGroupButtonPressed(_ sender: AnyObject) {
         guard let myFriends = myFriends else {
             return
         }
         if myFriends.count != 0 {
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 self.contactView.removeFromSuperview()
                 self.darkView.removeFromSuperview()
-                self.performSegueWithIdentifier("addToGroup", sender: self)
+                self.performSegue(withIdentifier: "addToGroup", sender: self)
                 
                 let destinationVC = CreateGroupViewController()
                 destinationVC.contacts = self.myFriends
@@ -602,15 +637,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    @IBAction func removeFriendButtonPressed(sender: AnyObject) {
+    @IBAction func removeFriendButtonPressed(_ sender: AnyObject) {
         guard let myFriends = myFriends else {
             return
         }
         if myFriends.count != 0 {
-            self.myFriends?.removeAtIndex(index!)
+            self.myFriends?.remove(at: index!)
             UserController.sharedInstance.myRelationship?.friends? = []
             for friend in myFriends {
-                let ref = CKReference(recordID: friend.userID.recordID, action: .DeleteSelf)
+                let ref = CKReference(recordID: friend.userID.recordID, action: .deleteSelf)
                 UserController.sharedInstance.myRelationship?.friends? += [ref]
             }
             UserController.sharedInstance.saveRecordArray((UserController.sharedInstance.myRelationship?.friends)!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Friends") { (success) in
@@ -618,48 +653,48 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     UserController.sharedInstance.removeFriend(self.contactRelationship!, currentRel: UserController.sharedInstance.myRelationship!, completion: { (success) in
                         if success {
                             if self.myFriends?.count != 0 {
-                                dispatch_async(dispatch_get_main_queue(), {
+                                DispatchQueue.main.async(execute: {
                                     self.contactView.removeFromSuperview()
                                     self.darkView.removeFromSuperview()
-                                    let indexPath = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
-                                    let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
+                                    let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                                    let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                                     cell.collectionView.reloadData()
                                 })
                             } else {
-                                dispatch_async(dispatch_get_main_queue(), {
+                                DispatchQueue.main.async(execute: {
                                     self.contactView.removeFromSuperview()
                                     self.darkView.removeFromSuperview()
-                                    let indexPath = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
-                                    let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
+                                    let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                                    let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                                     cell.collectionView.reloadData()
                                 })
                             }
                         } else {
-                            let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .Alert)
-                            let action = UIAlertAction(title: "Okay", style: .Cancel, handler: nil)
+                            let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .alert)
+                            let action = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
                             alertController.addAction(action)
-                            dispatch_async(dispatch_get_main_queue(), {
-                                self.presentViewController(alertController, animated: true, completion: nil)
+                            DispatchQueue.main.async(execute: {
+                                self.present(alertController, animated: true, completion: nil)
                             })
                         }
                     })
                     
                 } else {
-                    let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .Alert)
-                    let action = UIAlertAction(title: "Okay", style: .Cancel, handler: nil)
+                    let alertController = UIAlertController(title: "Uh oh", message: "There was an error removing your friend.", preferredStyle: .alert)
+                    let action = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
                     alertController.addAction(action)
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.presentViewController(alertController, animated: true, completion: nil)
+                    DispatchQueue.main.async(execute: {
+                        self.present(alertController, animated: true, completion: nil)
                     })
                 }
             }
         }
-        let indexPath = NSIndexPath(forRow: self.numberInSection!, inSection: 0)
-        let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! ContactTableViewCell
+        let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+        let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
         cell.collectionView.reloadData()
     }
     
-    @IBAction func sendMessageButtonTapped(sender: AnyObject) {
+    @IBAction func sendMessageButtonTapped(_ sender: AnyObject) {
         if let myFriends = myFriends {
             if myFriends.count != 0 {
                 let myRelationship = UserController.sharedInstance.myRelationship
@@ -669,15 +704,11 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     if success {
                         self.convoRecord = record
                         self.passOnConvo = conversation
-                        if self.myConversations?.count == 0 {
-                            self.myConversations = [conversation]
-                        } else {
-                            self.myConversations! += [conversation]
-                        }
-                        dispatch_async(dispatch_get_main_queue(), {
+                        
+                        DispatchQueue.main.async(execute: {
                             self.contactView.removeFromSuperview()
                             self.darkView.removeFromSuperview()
-                            self.performSegueWithIdentifier("newMessageSegue", sender: self)
+                            self.performSegue(withIdentifier: "newMessageSegue", sender: self)
                         })
                         
                     } else {
@@ -686,17 +717,17 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
                 
             } else {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.contactView.removeFromSuperview()
                     self.darkView.removeFromSuperview()
-                    self.performSegueWithIdentifier("newMessageSegue", sender: self)
+                    self.performSegue(withIdentifier: "newMessageSegue", sender: self)
                 })
             }
         } else if bigName.text == "Socialize"  {
-            let alert = UIAlertController(title: "Get some friends", message: "Add contacts to start socializing", preferredStyle: .Alert)
-            let action = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+            let alert = UIAlertController(title: "Get some friends", message: "Add contacts to start socializing", preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default, handler: nil)
             alert.addAction(action)
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
             
         }
     }
@@ -706,12 +737,12 @@ extension UIViewController {
     
     func setNavBar() {
         navigationController?.navigationBar.barTintColor = UIColor.init(red: 0, green: 0.384, blue: 0.608, alpha: 1.0)
-        navigationController?.navigationBar.translucent = false
-        navigationController?.navigationBar.barStyle = UIBarStyle.Black
-        navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.barStyle = UIBarStyle.black
+        navigationController?.navigationBar.tintColor = UIColor.white
         let iconImage = UIImage.init(named: "Little White Icon")
         let imageView = UIImageView(frame: CGRect(x: 0, y: -5, width: 30, height: 30))
-        imageView.contentMode = .ScaleAspectFit
+        imageView.contentMode = .scaleAspectFit
         imageView.image = iconImage
         navigationItem.titleView = imageView
     }

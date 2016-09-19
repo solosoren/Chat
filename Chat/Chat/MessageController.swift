@@ -13,24 +13,24 @@ class MessageController: NSObject {
         
 //    var messages: [CKRecord]()
     
-    static func postMessage(message: Message, completion:(success: Bool, messageRecord:CKRecord?) -> Void) {
+    static func postMessage(_ message: Message, completion:@escaping (_ success: Bool, _ messageRecord:CKRecord?) -> Void) {
         let record = CKRecord(recordType: "Message")
-        record.setValuesForKeysWithDictionary(message.toAnyObject() as! [String : AnyObject])
+        record.setValuesForKeys(message.toAnyObject() as! [String : AnyObject])
         
-        let container = CKContainer.defaultContainer()
-        container.publicCloudDatabase.saveRecord(record) { (message, error) in
+        let container = CKContainer.default()
+        container.publicCloudDatabase.save(record, completionHandler: { (message, error) in
             if error == nil {
-                completion(success: true, messageRecord: message)
+                completion(true, message)
             } else {
                 print(error?.localizedDescription)
-                completion(success: false, messageRecord: nil)
+                completion(false, nil)
 //                handle error
             }
-        }
+        }) 
        
     }
     
-    static func fetchConversationMessages(completion:(success: Bool) -> Void) {
+    static func fetchConversationMessages(_ completion:(_ success: Bool) -> Void) {
         
     }
     
@@ -41,36 +41,36 @@ class Timer {
     
     static let sharedInstance = Timer()
     
-    func setMessageTime(date:NSDate) -> String {
+    func setMessageTime(_ date:Date) -> String {
         
-        let calendar = NSCalendar.currentCalendar()
+        let calendar = Calendar.current
         
-        let calendarUnit: NSCalendarUnit = [.Day, .Hour, .Minute, .Second]
+        let calendarUnit: NSCalendar.Unit = [.day, .hour, .minute, .second]
         
-        let formatter = NSDateFormatter()
-        formatter.timeStyle = .ShortStyle
-        let current = NSDate()
-        let time = calendar.components(calendarUnit, fromDate: date, toDate: current, options: [])
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        let current = Date()
+        let time = (calendar as NSCalendar).components(calendarUnit, from: date, to: current, options: [])
         
         if calendar.isDateInToday(date) {
-            if time.hour < 1 {
-                if time.minute < 1 {
-                    let dateTime = ("\(time.second) Sec Ago")
+            if time.hour! < 1 {
+                if time.minute! < 1 {
+                    let dateTime = ("\((time.second)!) Sec Ago")
                     return dateTime
                 } else {
-                    let dateTime = ("\(time.minute) Min Ago")
+                    let dateTime = ("\((time.minute)!) Min Ago")
                     return dateTime
                 }
             } else if time.hour == 1 {
-                let dateTime = ("\(time.hour) Hour Ago")
+                let dateTime = ("\((time.hour)!) Hour Ago")
                 return dateTime
             } else {
-                let dateTime = ("\(time.hour) Hours Ago")
+                let dateTime = ("\((time.hour)!) Hours Ago")
                 return dateTime
             }
         } else {
-            if time.day > 1 {
-                let dateTime = ("\(time.day) Days Ago")
+            if time.day! > 1 {
+                let dateTime = ("\((time.day)!) Days Ago")
                 return dateTime
             } else {
                 let dateTime = ("Yesterday")

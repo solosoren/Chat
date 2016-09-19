@@ -11,9 +11,9 @@ import UIKit
 
 struct Conversation {
     
-    private let groupNameKey = "GroupName"
-    private let usersKey = "Users"
-    private let messagesKey = "Messages"
+    fileprivate let groupNameKey = "GroupName"
+    fileprivate let usersKey = "Users"
+    fileprivate let messagesKey = "Messages"
     
     var ref: CKRecordID?
     var users: [CKReference]
@@ -29,18 +29,20 @@ struct Conversation {
     }
     
     init(record:CKRecord) {
-        self.convoName = record.objectForKey(groupNameKey) as? String ?? ""
-        self.users = record.objectForKey(usersKey) as! [CKReference]
-        self.messages = record.objectForKey(messagesKey) as? [CKReference] ?? []
+        self.convoName = record.object(forKey: groupNameKey) as? String ?? ""
+        self.users = record.object(forKey: usersKey) as! [CKReference]
+        self.messages = record.object(forKey: messagesKey) as? [CKReference] ?? []
     }
     
     func toAnyObject() -> AnyObject {
         
         if let groupName = convoName {
-            return [groupNameKey:groupName,
-                    usersKey:users]
+            let convo = [groupNameKey:groupName,
+                    usersKey:users] as AnyObject
+            return convo
         } else {
-            return [usersKey:users]
+            let convo = [usersKey:users]
+            return convo as AnyObject
         }
              
     }

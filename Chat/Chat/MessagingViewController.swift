@@ -12,40 +12,37 @@ import CloudKit
 class MessagingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate {
     
     @IBOutlet weak var tableView: TableView!
-    var newConstraint: NSLayoutConstraint?
     @IBOutlet var keyboardInputView: UIView!
     @IBOutlet var keyboardView: UIView!
     @IBOutlet weak var messageTextView: UITextView!
     @IBOutlet var constraint: NSLayoutConstraint!
+    @IBOutlet var keyboardViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet var sendButton: UIButton!
     var conversation: Conversation?
     var convoRecord: CKRecord?
     var demo = false
     var skippedLogin = false
-    @IBOutlet var keyboardViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet var sendButton: UIButton!
+    var newConstraint: NSLayoutConstraint?
+    var grouped = false
+    var newConvo = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.separatorColor = UIColor.whiteColor()
+        tableView.separatorColor = UIColor.white
         messageTextView.delegate = self
-        sendButton.layer.borderColor = UIColor.whiteColor().CGColor
+        sendButton.layer.borderColor = UIColor.white.cgColor
         sendButton.layer.borderWidth = 1.0
         setNavBar()
-        if demo {
-            sendButton.enabled = false
-        } else if skippedLogin {
-            sendButton.enabled = false
-        }
-        sendButton.enabled = false
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagingViewController.keyboardWasShown(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagingViewController.keyboardWillBeHidden(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        sendButton.isEnabled = false
+
+        NotificationCenter.default.addObserver(self, selector: #selector(MessagingViewController.keyboardWasShown(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MessagingViewController.keyboardWillBeHidden(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
         
     
     
 //    MARK: Tableview
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let conversation = conversation {
             return conversation.theMessages.count
             
@@ -54,24 +51,24 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         }
     }
     
-    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableViewAutomaticDimension
     }
     
     
 //    fix message record
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let themMessageCell = tableView.dequeueReusableCellWithIdentifier("themMessageCell", forIndexPath: indexPath) as! ThemMessageTableViewCell
-        let meMessageCell = tableView.dequeueReusableCellWithIdentifier("meMessageCell", forIndexPath: indexPath) as! MeMessageTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let themMessageCell = tableView.dequeueReusableCell(withIdentifier: "themMessageCell", for: indexPath) as! ThemMessageTableViewCell
+        let meMessageCell = tableView.dequeueReusableCell(withIdentifier: "meMessageCell", for: indexPath) as! MeMessageTableViewCell
         
 //    fix
         if let conversation = conversation {
             
-            let message = conversation.theMessages[indexPath.row]
+            let message = conversation.theMessages[(indexPath as NSIndexPath).row]
             
             if message.senderUID == UserController.sharedInstance.myRelationship?.userID {
                 meMessageCell.messageText.text = message.messageText
@@ -101,18 +98,18 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         }
     }
     
-    func keyboardWasShown(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+    func keyboardWasShown(_ notification: Notification) {
+        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             constraint.constant = keyboardSize.height
-            UIView.animateWithDuration(0.3) {
+            UIView.animate(withDuration: 0.3, animations: {
                 self.tableView.layoutIfNeeded()
-            }
+            }) 
         }
         tableView.reloadData(conversation)
     }
     
-    func keyboardWillBeHidden(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+    func keyboardWillBeHidden(_ notification: Notification) {
+        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if constraint.constant != 52 {
                 self.constraint.constant -= keyboardSize.height
             }
@@ -129,31 +126,31 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         messageTextView.layoutIfNeeded()
         
         let fixedWidth = messageTextView.frame.size.width
-        let newSize = messageTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.max))
+        let newSize = messageTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         var newFrame = messageTextView.frame
         newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
         messageTextView.frame = newFrame
 
 //        keyboardView.frame.size.height = self.messageTextView.frame.size.height + 14
         keyboardViewHeightConstraint.constant = messageTextView.frame.size.height + 14
-        keyboardView.autoresizingMask = .FlexibleHeight
+        keyboardView.autoresizingMask = .flexibleHeight
         return keyboardInputView
     }
     
-    override func canBecomeFirstResponder() -> Bool {
+    override var canBecomeFirstResponder : Bool {
         return true
     }
     
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         if messageTextView.text.isEmpty {
-            sendButton.enabled = false
+            sendButton.isEnabled = false
         } else {
-            sendButton.enabled = true
+            sendButton.isEnabled = true
         }
         if messageTextView.contentSize.height > 200 {
             messageTextView.frame.size.height = 200
         }
-        dispatch_async(dispatch_get_main_queue()) { 
+        DispatchQueue.main.async { 
             if self.keyboardView.frame.size.height != self.messageTextView.frame.size.height + 14 {
                 self.keyboardViewHeightConstraint.constant = self.messageTextView.frame.size.height + 14
                 self.reloadInputViews()
@@ -161,34 +158,40 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         }
     }
     
-    func textViewDidEndEditing(textView: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) {
         tableView.reloadData(conversation)
         constraint.constant = keyboardView.frame.size.height + 2
     }
     
     
 //    MARK: Send Button
-    @IBAction func sendMessageTapped(sender: AnyObject) {
+    @IBAction func sendMessageTapped(_ sender: AnyObject) {
         var message: Message
+        
         if messageTextView.text.isEmpty == false {
             let userpic = UserController.sharedInstance.myRelationship?.profilePic?.image
+            
             message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil, userPic: userpic)
+            
             MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
                     if let record = self.convoRecord, let conversation = self.conversation {
-                        let ref = CKReference(record: messageRecord!, action: .DeleteSelf)
-                        if conversation.messages != nil {
+                        let ref = CKReference(record: messageRecord!, action: .deleteSelf)
+                        message.timeString = Timer.sharedInstance.setMessageTime((messageRecord?.creationDate)!)
+                        message.time = messageRecord?.creationDate
+                        if conversation.messages != nil && conversation.messages?.count != 0 {
                             var messages = record["Messages"] as! [CKReference]
                             messages += [ref]
                             record.setValue(messages, forKey: "Messages")
                             let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+                            
                             mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                                 if error == nil {
                                     if conversation.theMessages.isEmpty == true {
                                         ConversationController.sharedInstance.subscribeToConversations(self.convoRecord!, contentAvailable: true, completion: { (success) in
                                         })
                                     }
-                                    dispatch_async(dispatch_get_main_queue(), {
+                                    DispatchQueue.main.async(execute: {
                                         self.messageTextView.text = ""
                                         self.keyboardView.frame.size.height = self.messageTextView.frame.size.height + 14
                                         self.conversation?.theMessages += [message]
@@ -203,7 +206,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                     print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
                                 }
                             }
-                            CKContainer.defaultContainer().publicCloudDatabase.addOperation(mod)
+                            CKContainer.default().publicCloudDatabase.add(mod)
                             
                         } else {
                             let messages = [ref]
@@ -211,9 +214,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                             let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
                             mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                                 if error == nil {
-                                    print("It Worked!")
                                     print(message.senderUID)
-                                    dispatch_async(dispatch_get_main_queue(), {
+                                    DispatchQueue.main.async(execute: {
                                         self.messageTextView.text = ""
                                         self.conversation?.messages! = messages
                                         self.conversation?.theMessages = [message]
@@ -224,9 +226,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                     print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
                                 }
                             }
-                            CKContainer.defaultContainer().publicCloudDatabase.addOperation(mod)
+                            CKContainer.default().publicCloudDatabase.add(mod)
                         }
-                        
                     }
                 } else {
                     print("Not this time")
@@ -234,16 +235,94 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             }
         }
     }
+    
+    @IBAction func backButton(_ sender: AnyObject) {
+        if grouped {
+            performSegue(withIdentifier: "groupUnwind", sender: self)
+        } else {
+            performSegue(withIdentifier: "messageUnwind", sender: self)
+        }
+    }
+    
+    override func unwind(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
+        
+        if unwindSegue.identifier == "messageUnwind" {
+            let destinationVC = unwindSegue.destination as! HomeViewController
+            
+            guard let conversation = conversation else {
+                return
+            }
+            
+            var messages = false
+            if conversation.theMessages.count > 0 {
+                messages = true
+            }
+            if let homeConvos = destinationVC.myConversations {
+                if messages {
+                    
+                        if homeConvos.count > 0 {
+                            
+                            if newConvo {
+                                destinationVC.myConversations?.insert(conversation, at: 0)
+                                destinationVC.convoRecords?.insert(convoRecord!, at: 0)
+                            } else {
+                                // check if it is same conversation and swap it
+                                var convoIndex = 0
+                                for _ in homeConvos {
+                                    convoIndex = convoIndex + 1
+                                    let homeConversation = homeConvos[convoIndex - 1]
+                                    if homeConversation.users == conversation.users {
+                                        destinationVC.myConversations?[convoIndex - 1].lastMessage = conversation.lastMessage
+                                        destinationVC.myConversations?.remove(at: convoIndex - 1)
+                                        destinationVC.myConversations?.insert(conversation, at: 0)
+                                    }
+                                }
+                            }
+                        } else {
+                            destinationVC.myConversations = [conversation]
+                            destinationVC.convoRecords = [convoRecord!]
+                        }
+                    
+                } else {
+                    if newConvo {
+                        if homeConvos.count > 0 {
+                            destinationVC.myConversations!.insert(conversation, at:0)
+                            destinationVC.convoRecords!.insert(convoRecord!, at:0)
+                            
+                        } else {
+                            destinationVC.myConversations = [conversation]
+                            destinationVC.convoRecords = [convoRecord!]
+                        }
+                    }
+                }
+                destinationVC.tableView.reloadData()
+            }
+        } else if unwindSegue.identifier == "groupUnwind" {
+            let destinationVC = unwindSegue.destination as! CreateGroupViewController
+            let homeVC = destinationVC.presentedViewController?.presentedViewController as!HomeViewController
+            if (homeVC.myConversations?.count)! > 0 {
+                    homeVC.myConversations?.insert(conversation!, at: 0)
+                    homeVC.convoRecords?.insert(convoRecord!, at:0)
+            } else {
+                    homeVC.myConversations = [conversation!]
+                    homeVC.convoRecords = [convoRecord!]
+            }
+            destinationVC.dismiss(animated: false, completion: nil)
+            homeVC.tableView.reloadData()
+        }
+    }
  
 }
 
 class TableView: UITableView {
     
-    func reloadData(conversation:Conversation?) {
+    func reloadData(_ conversation:Conversation?) {
         super.reloadData()
         if let conversation = conversation {
-            let index = NSIndexPath(forRow: conversation.theMessages.count - 1, inSection: 0)
-            scrollToRowAtIndexPath(index, atScrollPosition: .None, animated: true)
+            if conversation.theMessages.count >= 1 {
+                let index = IndexPath(row: conversation.theMessages.count - 1, section: 0)
+                scrollToRow(at: index, at: .none, animated: true)
+            }
         }
     }
 }

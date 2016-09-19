@@ -13,34 +13,34 @@ class ConversationController: NSObject {
     
     static let sharedInstance = ConversationController()
     
-    static func createConversation(conversation:Conversation, completion:(success:Bool, record: CKRecord?) -> Void) {
+    static func createConversation(_ conversation:Conversation, completion:@escaping (_ success:Bool, _ record: CKRecord?) -> Void) {
         let record = CKRecord(recordType: "Conversation")
-        record.setValuesForKeysWithDictionary(conversation.toAnyObject() as! [String : AnyObject])
-        record["Messages"] = []
-        let container = CKContainer.defaultContainer()
-        container.publicCloudDatabase.saveRecord(record) { (conversation, error) in
+        record.setValuesForKeys(conversation.toAnyObject() as! [String : AnyObject])
+//        record.setObject([], "Messages")
+        let container = CKContainer.default()
+        container.publicCloudDatabase.save(record, completionHandler: { (conversation, error) in
             if error == nil {
-                completion(success: true, record: record)
+                completion(true, record)
 
             } else {
                 print("error: \(error?.localizedDescription)")
-                completion(success: false, record: nil)
+                completion(false, nil)
 //                handle error
             }
             
-        }
+        }) 
     }
     
-    func grabUserConversations(relationship:Relationship, completion:(success:Bool, conversations:[Conversation]?, convoRecords:[CKRecord]?) -> Void) {
+    func grabUserConversations(_ relationship:Relationship, completion:@escaping (_ success:Bool, _ conversations:[Conversation]?, _ convoRecords:[CKRecord]?) -> Void) {
         
         var convoNumber = 0
         var conversations: [Conversation] = []
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let pred = NSPredicate(format: "Users CONTAINS %@", relationship.userID)
         let query = CKQuery(recordType: "Conversation", predicate: pred)
         query.sortDescriptors = [NSSortDescriptor(key: "modificationDate", ascending: false)]
 
-        container.publicCloudDatabase.performQuery(query, inZoneWithID: nil) { (records, error) in
+        container.publicCloudDatabase.perform(query, inZoneWith: nil) { (records, error) in
             if error == nil {
                 if records?.count != 0 {
                     
@@ -60,24 +60,26 @@ class ConversationController: NSObject {
                         self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
                             if conversation.messages?.count != 0 {
                                 let ref = conversation.messages?.last
-                                container.publicCloudDatabase.fetchRecordWithID((ref?.recordID)!, completionHandler: { (lastMessageRecord, error) in
+                                container.publicCloudDatabase.fetch(withRecordID: (ref?.recordID)!, completionHandler: { (lastMessageRecord, error) in
                                     if error == nil {
                                         conversation.lastMessage = Message(record: lastMessageRecord!)
                                         UserController.sharedInstance.grabImageByUID((conversation.lastMessage?.senderUID.recordID)!, completion: { (success, image) in
                                             if success {
                                                 convoNumber = convoNumber + 1
                                                 conversation.lastMessage?.userPic = image
-                                                conversation.lastMessage?.time = Timer.sharedInstance.setMessageTime(lastMessageRecord!.creationDate!)
+                                                conversation.lastMessage?.time = lastMessageRecord?.creationDate
+                                                conversation.lastMessage?.timeString = Timer.sharedInstance.setMessageTime(lastMessageRecord!.creationDate!)
                                                 conversations += [conversation]
                                                 if convoNumber == records?.count {
-                                                    completion(success: true, conversations: conversations, convoRecords: records)
+                                                    completion(true, conversations, records)
                                                 }
                                             } else {
                                                 convoNumber = convoNumber + 1
-                                                conversation.lastMessage?.time = Timer.sharedInstance.setMessageTime(lastMessageRecord!.creationDate!)
+                                                conversation.lastMessage?.time = lastMessageRecord?.creationDate
+                                                conversation.lastMessage?.timeString = Timer.sharedInstance.setMessageTime(lastMessageRecord!.creationDate!)
                                                 conversations += [conversation]
                                                 if convoNumber == records?.count {
-                                                    completion(success: true, conversations: conversations, convoRecords: records)
+                                                    completion(true, conversations, records)
                                                 }
                                             }
                                         })
@@ -86,7 +88,7 @@ class ConversationController: NSObject {
                                         convoNumber = convoNumber + 1
                                         conversations += [conversation]
                                         if convoNumber == records?.count {
-                                            completion(success: true, conversations: conversations, convoRecords: records)
+                                            completion(true, conversations, records)
                                         }
                                     }
                                 })
@@ -94,32 +96,32 @@ class ConversationController: NSObject {
                                 convoNumber = convoNumber + 1
                                 conversations += [conversation]
                                 if convoNumber == records?.count {
-                                    completion(success: true, conversations: conversations, convoRecords: records)
+                                    completion(true, conversations, records)
                                 }
                             }
                         })
                     }
                 } else {
-                    completion(success: true, conversations: [], convoRecords: [])
+                    completion(true, [], [])
                 }
             } else {
                 print("ERROR: \(error?.localizedDescription)")
-                completion(success: true, conversations: [], convoRecords: [])
+                completion(true, [], [])
             }
         }
     }
     
-    func grabMessages(conversation:Conversation, completion:((error: NSError?, conversation: Conversation?, messages:[Message]?) -> Void)?) {
+    func grabMessages(_ conversation:Conversation, completion:((_ error: NSError?, _ conversation: Conversation?, _ messages:[Message]?) -> Void)?) {
         
         var refNumber = 0
         var records:[CKRecord] = []
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         var messages: [Message] = []
         if let messageRefs: [CKReference] = conversation.messages {
             if messageRefs.count != 0 {
                 print("CONVERSATION HAS \(conversation.messages!.count) MESSAGES")
                 for ref in messageRefs {
-                    container.publicCloudDatabase.fetchRecordWithID(ref.recordID, completionHandler: { (record, error) in
+                    container.publicCloudDatabase.fetch(withRecordID: ref.recordID, completionHandler: { (record, error) in
                         
                         guard let record = record else {
                             if let error = error {
@@ -131,7 +133,8 @@ class ConversationController: NSObject {
                         let time = Timer.sharedInstance.setMessageTime(record.creationDate!)
                         var message = Message(record: record)
                         print("MESSAGE: \(message)")
-                        message.time = time
+                        message.timeString = time
+                        message.time = record.creationDate
                         
                         UserController.sharedInstance.grabImageByUID(message.senderUID.recordID, completion: { (success, image) in
                             if success {
@@ -154,13 +157,13 @@ class ConversationController: NSObject {
                                 }
                                 if refNumber == messageRefs.count {
                                     
-                                    let sorted = records.sort({$0.0.creationDate?.compare($0.1.creationDate!) == NSComparisonResult.OrderedAscending})
+                                    let sorted = records.sorted(by: {$0.0.creationDate?.compare($0.1.creationDate!) == ComparisonResult.orderedAscending})
                                     var sortedMessages:[Message] = []
                                     var convo = conversation
                                     convo.messages = []
                                     for r in sorted {
                                         for m in messages {
-                                            let ref = CKReference(record: r, action: .DeleteSelf)
+                                            let ref = CKReference(record: r, action: .deleteSelf)
                                             if ref == m.ref {
                                                 sortedMessages.append(m)
                                                 convo.messages?.append(ref)
@@ -168,7 +171,7 @@ class ConversationController: NSObject {
                                         }
                                     }
                                     if let completion = completion {
-                                        completion(error: error, conversation: convo, messages: sortedMessages)
+                                        completion(error as NSError?, convo, sortedMessages)
                                     }
                                 }
                                 
@@ -182,13 +185,13 @@ class ConversationController: NSObject {
                                     messages += [message]
                                 }
                                 if refNumber == messageRefs.count {
-                                    let sorted = records.sort({$0.0.creationDate?.compare($0.1.creationDate!) == NSComparisonResult.OrderedAscending})
+                                    let sorted = records.sorted(by: {$0.0.creationDate?.compare($0.1.creationDate!) == ComparisonResult.orderedAscending})
                                     var sortedMessages:[Message] = []
                                     var convo = conversation
                                     convo.messages = []
                                     for r in sorted {
                                         for m in messages {
-                                            let ref = CKReference(record: r, action: .DeleteSelf)
+                                            let ref = CKReference(record: r, action: .deleteSelf)
                                             if ref == m.ref {
                                                 sortedMessages.append(m)
                                                 convo.messages?.append(ref)
@@ -196,7 +199,7 @@ class ConversationController: NSObject {
                                         }
                                     }
                                     if let completion = completion {
-                                        completion(error: error, conversation: conversation, messages: messages)
+                                        completion(error as NSError?, conversation, messages)
                                     }
                                 }
                             }
@@ -205,42 +208,42 @@ class ConversationController: NSObject {
                 }
             } else {
                 if let completion = completion {
-                    completion(error: nil, conversation: conversation, messages: [])
+                    completion(nil, conversation, [])
                 }
             }
         } else {
             if let completion = completion {
-                completion(error: nil, conversation: conversation, messages: [])
+                completion(nil, conversation, [])
             }
         }
     }
     
  
     
-    func subscribeToConversations(conversationRecord:CKRecord, contentAvailable:Bool, alertBody:String? = nil, completion:(success:Bool) -> Void) {
+    func subscribeToConversations(_ conversationRecord:CKRecord, contentAvailable:Bool, alertBody:String? = nil, completion:@escaping (_ success:Bool) -> Void) {
         
         let pred = NSPredicate(format: "Users CONTAINS %@", UserController.sharedInstance.myRelationship!.userID)
-        let sub = CKSubscription(recordType: "Conversation", predicate: pred, subscriptionID: "\(conversationRecord.recordID)A", options: [.FiresOnRecordUpdate, .FiresOnRecordCreation])
+        let sub = CKSubscription(recordType: "Conversation", predicate: pred, subscriptionID: "\(conversationRecord.recordID)A", options: [.firesOnRecordUpdate, .firesOnRecordCreation])
 
         let notificationInfo = CKNotificationInfo()
         notificationInfo.alertBody = alertBody
         notificationInfo.shouldSendContentAvailable = contentAvailable
         sub.notificationInfo = notificationInfo
         
-        let publicDatabase = CKContainer.defaultContainer().publicCloudDatabase
-        publicDatabase.saveSubscription(sub) { (subscription, error) in
+        let publicDatabase = CKContainer.default().publicCloudDatabase
+        publicDatabase.save(sub, completionHandler: { (subscription, error) in
             if subscription != nil {
-                completion(success: true)
+                completion(true)
             } else {
 //                FIX
                 NSLog("ERROR: \(error)")
-                completion(success: true)
+                completion(true)
             }
-        }
+        }) 
         
     }
     
-    func subscribe(type: String, predicate: NSPredicate, subscriptionID: String, contentAvailable: Bool, alertBody: String? = nil, desiredKeys: [String]? = nil, options: CKSubscriptionOptions, completion: ((subscription: CKSubscription?, error: NSError?) -> Void)?) {
+    func subscribe(_ type: String, predicate: NSPredicate, subscriptionID: String, contentAvailable: Bool, alertBody: String? = nil, desiredKeys: [String]? = nil, options: CKSubscriptionOptions, completion: ((_ subscription: CKSubscription?, _ error: NSError?) -> Void)?) {
         
         let subscription = CKSubscription(recordType: type, predicate: predicate, subscriptionID: subscriptionID, options: options)
         
@@ -251,12 +254,12 @@ class ConversationController: NSObject {
         
         subscription.notificationInfo = notificationInfo
         
-        CKContainer.defaultContainer().publicCloudDatabase.saveSubscription(subscription) { (subscription, error) in
+        CKContainer.default().publicCloudDatabase.save(subscription, completionHandler: { (subscription, error) in
             
             if let completion = completion {
-                completion(subscription: subscription, error: error)
+                completion(subscription, error as NSError?)
             }
-        }
+        }) 
     }
     
 //    func fetchSubscription(subscriptionID: String, completion: ((subscription: CKSubscription?, error: NSError?) -> Void)?) {

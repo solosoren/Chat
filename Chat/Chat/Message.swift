@@ -11,36 +11,38 @@ import CloudKit
 
 struct Message {
     
-    private let textKey = "MessageText"
+    fileprivate let textKey = "MessageText"
+    fileprivate let senderKey = "SenderUID"
     
     var senderUID: CKReference
     var messageText: String
     let ref: CKReference?
-    var time: String?
+    var time:Date?
+    var timeString: String?
     var relationship: Relationship?
     var userPic: UIImage?
     
 
-    init(senderUID: CKReference, messageText:String, time: NSDate?, userPic: UIImage?) {
+    init(senderUID: CKReference, messageText:String, time: Date?, userPic: UIImage?) {
         self.senderUID = senderUID
         self.messageText = messageText
         self.ref = nil
         if let time = time {
-            self.time = Timer.sharedInstance.setMessageTime(time)
+            self.timeString = Timer.sharedInstance.setMessageTime(time)
         }
         self.userPic = userPic
     }
     
     init(record:CKRecord) {
-        self.senderUID = record.objectForKey("SenderUID") as! CKReference
-        self.messageText = record.objectForKey(textKey) as? String ?? ""
-        self.ref = CKReference(record: record, action: CKReferenceAction.DeleteSelf)
+        self.senderUID = record.object(forKey: "SenderUID") as! CKReference
+        self.messageText = record.object(forKey: textKey) as? String ?? ""
+        self.ref = CKReference(record: record, action: CKReferenceAction.deleteSelf)
 //        self.userPic = (record.objectForKey(userPicKey) as? CKAsset)!
     }
     
     func toAnyObject() -> AnyObject {
         return [textKey:messageText,
-                "SenderUID":senderUID]
+                senderKey:senderUID] as AnyObject
     }
     
 }

@@ -11,8 +11,8 @@ import CloudKit
 
 struct Relationship {
     
-    private let nameKey = "FullName"
-    private let userIDKey = "UserIDRef"
+    fileprivate let nameKey = "FullName"
+    fileprivate let userIDKey = "UserIDRef"
     
     var fullName:String
     var userID: CKReference
@@ -31,11 +31,11 @@ struct Relationship {
     }
     
     init?(record:CKRecord) {
-        fullName = record.objectForKey(nameKey) as? String ?? ""
-        userID = (record.objectForKey(userIDKey) as? CKReference)!
-        requests = record.objectForKey("FriendRequests") as? [CKReference] ?? []
-        friends = record.objectForKey("Friends") as? [CKReference] ?? []
-        if let profilePic = record.objectForKey("ImageKey") as? CKAsset {
+        fullName = record.object(forKey: nameKey) as? String ?? ""
+        userID = (record.object(forKey: userIDKey) as? CKReference)!
+        requests = record.object(forKey: "FriendRequests") as? [CKReference] ?? []
+        friends = record.object(forKey: "Friends") as? [CKReference] ?? []
+        if let profilePic = record.object(forKey: "ImageKey") as? CKAsset {
            self.profilePic = profilePic
         } else {
             self.profilePic = nil
@@ -46,7 +46,7 @@ struct Relationship {
     
     func toAnyObject() -> AnyObject {
         return [nameKey:fullName,
-                userIDKey: userID]
+                userIDKey: userID] as AnyObject
         
     }
     

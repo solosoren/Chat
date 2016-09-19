@@ -8,7 +8,16 @@
 
 import UIKit
 import CloudKit
-
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
 
 class InitialLoadingView: UIViewController {
 
@@ -41,11 +50,11 @@ class InitialLoadingView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBarHidden = true
+        navigationController?.isNavigationBarHidden = true
         
         //        self.performSegueWithIdentifier("loginSegue", sender: self)
         
-        let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        let indicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         indicator.center = view.center
         view.addSubview(indicator)
         indicator.startAnimating()
@@ -67,15 +76,15 @@ class InitialLoadingView: UIViewController {
                                                         if success {
                                                             self.initiallyGrabConvos({ (success) in
                                                                 if success {
-                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                    DispatchQueue.main.async(execute: {
                                                                         indicator.stopAnimating()
-                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                        self.performSegue(withIdentifier: "initialLoad", sender: self)
                                                                     })
                                                                 } else {
                                                                     NSLog("Couldn't grab initial conversations")
-                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                    DispatchQueue.main.async(execute: {
                                                                         indicator.stopAnimating()
-                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                        self.performSegue(withIdentifier: "initialLoad", sender: self)
                                                                     })
                                                                 }
                                                             })
@@ -83,15 +92,15 @@ class InitialLoadingView: UIViewController {
                                                             //                                                figure out
                                                             self.initiallyGrabConvos({ (success) in
                                                                 if success {
-                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                    DispatchQueue.main.async(execute: {
                                                                         indicator.stopAnimating()
-                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                        self.performSegue(withIdentifier: "initialLoad", sender: self)
                                                                     })
                                                                 } else {
                                                                     NSLog("Couldn't grab initial conversations")
-                                                                    dispatch_async(dispatch_get_main_queue(), {
+                                                                    DispatchQueue.main.async(execute: {
                                                                         indicator.stopAnimating()
-                                                                        self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                        self.performSegue(withIdentifier: "initialLoad", sender: self)
                                                                     })
                                                                 }
                                                             })
@@ -101,15 +110,15 @@ class InitialLoadingView: UIViewController {
                                                     //                                        figure out
                                                     self.initiallyGrabConvos({ (success) in
                                                         if success {
-                                                            dispatch_async(dispatch_get_main_queue(), {
+                                                            DispatchQueue.main.async(execute: {
                                                                 indicator.stopAnimating()
-                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                self.performSegue(withIdentifier: "initialLoad", sender: self)
                                                             })
                                                         } else {
                                                             NSLog("Couldn't grab initial conversations")
-                                                            dispatch_async(dispatch_get_main_queue(), {
+                                                            DispatchQueue.main.async(execute: {
                                                                 indicator.stopAnimating()
-                                                                self.performSegueWithIdentifier("initialLoad", sender: self)
+                                                                self.performSegue(withIdentifier: "initialLoad", sender: self)
                                                             })
                                                         }
                                                     })
@@ -118,52 +127,78 @@ class InitialLoadingView: UIViewController {
                                         }
 //                                    })
                                 } else {
-                                    dispatch_async(dispatch_get_main_queue(), {
+                                    DispatchQueue.main.async(execute: {
                                         indicator.stopAnimating()
-                                        self.performSegueWithIdentifier("loginSegue", sender: self)
+                                        self.performSegue(withIdentifier: "loginSegue", sender: self)
                                     })
                                 }
                             } else {
                                 print("right hur")
                             }
                         } else {
-                            dispatch_async(dispatch_get_main_queue(), {
+                            DispatchQueue.main.async(execute: {
                                 indicator.stopAnimating()
-                                self.performSegueWithIdentifier("loginSegue", sender: self)
+                                self.performSegue(withIdentifier: "loginSegue", sender: self)
                             })
                         }
                     })
                 } else {
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         indicator.stopAnimating()
-                        self.performSegueWithIdentifier("loginSegue", sender: self)
+                        self.performSegue(withIdentifier: "loginSegue", sender: self)
                     })
                 }
             } else {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     indicator.stopAnimating()
-                    self.performSegueWithIdentifier("loginSegue", sender: self)
+                    self.performSegue(withIdentifier: "loginSegue", sender: self)
                 })
             }
         }
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "initialLoad" {
-            let destinationVC = segue.destinationViewController as! HomeViewController
+            let destinationVC = segue.destination as! HomeViewController
             destinationVC.myRequests = requests
-            let sortedFriends = friends.sort { $0.fullName < $1.fullName }
+            
+            let sortedFriends = friends.sorted { $0.fullName < $1.fullName }
             destinationVC.myFriends = sortedFriends
-            let sortedConvos = conversations.sort { $0.lastMessage!.time < $1.lastMessage!.time }
-            destinationVC.myConversations = sortedConvos
-            destinationVC.convoRecords = convoRecords
+            
+            var convosWithMessages: [Conversation] = []
+            var convos: [Conversation] = []
+            var sortedConvos:[Conversation] = []
+            
+            for convo in conversations {
+                if convo.lastMessage != nil {
+                    convosWithMessages.append(convo)
+                    if convo.convoName == conversations.last?.convoName {
+                        sortedConvos = convosWithMessages.sorted { $0.lastMessage!.time! > $1.lastMessage!.time! }
+                    }
+                } else {
+                    convos.append(convo)
+                }
+            }
+            convos.append(contentsOf: sortedConvos)
+            destinationVC.myConversations = convos
+            
+            var sortedRecords:[CKRecord] = []
+            
+            for c in convos {
+                for cr in convoRecords {
+                    if c.ref == cr.recordID {
+                        sortedRecords.append(cr)
+                    }
+                }
+            }
+            destinationVC.convoRecords = sortedRecords
         }
     }
     
-    func initiallyGrabRequests(relationship:Relationship, completion:(success: Bool) -> Void) {
+    func initiallyGrabRequests(_ relationship:Relationship, completion:@escaping (_ success: Bool) -> Void) {
         if relationship.requests == nil {
             self.requests = []
-            completion(success: true)
+            completion(true)
         } else if relationship.requests! != [] {
             for request in relationship.requests! {
                 UserController.sharedInstance.queryForRelationshipbyUID(request.recordID) { (success, relationshipRecord) in
@@ -171,24 +206,24 @@ class InitialLoadingView: UIViewController {
                         let requestRelationship = Relationship(record:relationshipRecord)
                         self.requests += [requestRelationship!]
                         if self.requests.count == relationship.requests?.count {
-                            completion(success: true)
+                            completion(true)
                         }
                     } else {
                         self.requests = []
-                            completion(success: true)
+                            completion(true)
                     }
                 }
             }
         } else {
             self.requests = []
-            completion(success: true)
+            completion(true)
         }
     }
     
-    func initiallyGrabFriends(relationship:Relationship, completion:(success: Bool) -> Void) {
+    func initiallyGrabFriends(_ relationship:Relationship, completion:@escaping (_ success: Bool) -> Void) {
         if relationship.friends == nil {
             self.friends = []
-            completion(success: true)
+            completion(true)
         } else if relationship.friends! != [] {
             for friend in relationship.friends! {
                 UserController.sharedInstance.queryForRelationshipbyUID(friend.recordID, completion: { (success, relationshipRecord) in
@@ -197,32 +232,32 @@ class InitialLoadingView: UIViewController {
                         self.friends += [friendRelationship!]
                         
                         if self.friends.count == relationship.friends?.count {
-                            completion(success: true)
+                            completion(true)
                         }
     
                     } else {
                         self.friends = []
-                        completion(success: true)
+                        completion(true)
                         
                     }
                 })
             }
         } else {
             self.friends = []
-            completion(success: true)
+            completion(true)
         }
     }
     
-    func initiallyGrabConvos(completion:(success: Bool) -> Void) {
+    func initiallyGrabConvos(_ completion:@escaping (_ success: Bool) -> Void) {
         ConversationController().grabUserConversations(UserController.sharedInstance.myRelationship!) { (success, conversations, convoRecords) in
             if success {
                 self.conversations = conversations!
                 self.convoRecords = convoRecords!
-                completion(success: true)
+                completion(true)
             } else {
                 self.conversations = []
 //                throw error
-                completion(success: true)
+                completion(true)
             }
         }
     }

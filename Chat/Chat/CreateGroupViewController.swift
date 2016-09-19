@@ -19,6 +19,7 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
     var conversation: Conversation?
     var convoRecord: CKRecord?
     
+    @IBAction func unwindToGroup(_ segue: UIStoryboardSegue) {}
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,17 +27,17 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
         self.setNavBar()
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let item = collectionView.dequeueReusableCellWithReuseIdentifier("addContact", forIndexPath: indexPath) as! CreateGroupCollectionViewCell
-        item.nameLabel.text = contacts![indexPath.item].fullName
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let item = collectionView.dequeueReusableCell(withReuseIdentifier: "addContact", for: indexPath) as! CreateGroupCollectionViewCell
+        item.nameLabel.text = contacts![(indexPath as NSIndexPath).item].fullName
         item.checked = false
-        if let asset = contacts![indexPath.item].profilePic {
+        if let asset = contacts![(indexPath as NSIndexPath).item].profilePic {
             item.profilePic.image = asset.image
         }
-        item.addButton.tag = indexPath.item
+        item.addButton.tag = (indexPath as NSIndexPath).item
         
         if item.nameLabel.text == initialContact?.fullName {
-            dispatch_async(dispatch_get_main_queue(), { 
+            DispatchQueue.main.async(execute: { 
                 item.addButton.imageView?.image = UIImage(named: "Checked")
             })
             if selectedContacts != nil {
@@ -49,29 +50,29 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
         return item
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return contacts!.count
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
         
         let size = CGSize(width:(self.view.bounds.width / 3) - 20, height:130)
         return size
     }
     
-    @IBAction func dismissButtonTapped(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func dismissButtonTapped(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
     
-    @IBAction func addButtonTapped(sender: AnyObject) {
+    @IBAction func addButtonTapped(_ sender: AnyObject) {
         var item = CreateGroupCollectionViewCell()
-        let indexPath = NSIndexPath(forItem: sender.tag, inSection: 0)
-        item = collectionView.cellForItemAtIndexPath(indexPath) as! CreateGroupCollectionViewCell
+        let indexPath = IndexPath(item: sender.tag, section: 0)
+        item = collectionView.cellForItem(at: indexPath) as! CreateGroupCollectionViewCell
         if item.checked == false {
             let selectedContact = contacts![sender.tag]
             if selectedContacts != nil {
@@ -79,13 +80,13 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
             } else {
                 selectedContacts = [selectedContact]
             }
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 item.addButton.imageView?.image = UIImage(named: "Checked")
                 item.checked = true
             }
         } else {
-            selectedContacts!.removeAtIndex(sender.tag)
-            dispatch_async(dispatch_get_main_queue(), { 
+            selectedContacts!.remove(at: sender.tag)
+            DispatchQueue.main.async(execute: { 
                 item.addButton.imageView?.image = UIImage(named: "Plus-50")
                 item.checked = false
             })
@@ -94,44 +95,71 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
     }
     
     
-    @IBAction func saveButtonTapped(sender: AnyObject) {
+    @IBAction func saveButtonTapped(_ sender: AnyObject) {
         
-        let currentUserRef = CKReference(recordID: UserController.sharedInstance.currentUser!.userID, action: CKReferenceAction.None)
-        
-        var selectedRef = [currentUserRef]
-        for relationship in selectedContacts! {
-            selectedRef += [relationship.userID]
-        }
-        let conversation = Conversation.init(convoName: groupTitle.text!, users: selectedRef, messages: [])
-        ConversationController.createConversation(conversation) { (success, record) in
-            if success {
-                print("It Worked!")
-                print("CONVERSATION: \(conversation)")
-                self.conversation = conversation
-                self.convoRecord = record
-                dispatch_async(dispatch_get_main_queue(), {
-                    
-//                    TODO: need to fixxx!!!
-                    
-                    self.dismissViewControllerAnimated(true, completion: {
-//                        let homeView = HomeViewController()
-//                        homeView.performSegueWithIdentifier("messageSegue", sender: self)
-//                        homeView
-                    })
-                    
-                })
-            } else {
-                print("Not this time")
+        guard let selectedContacts = selectedContacts else {
+            let alert = UIAlertController(title: "Tap the + button next to the contacts to add them to group.", message: nil, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default, handler: nil)
+            alert.addAction(action)
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
             }
+            return
         }
+        
+        if selectedContacts.count <= 1 {
+            let alert = UIAlertController(title: "You must have more than one contact to create a group.", message: nil, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default, handler: nil)
+            alert.addAction(action)
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
+        } else {
+            let currentUserRef = CKReference(recordID: UserController.sharedInstance.currentUser!.userID, action: CKReferenceAction.none)
+            
+            var selectedRef = [currentUserRef]
+            var groupName:String
+            for relationship in selectedContacts {
+                selectedRef += [relationship.userID]
+            }
+            
+            if groupTitle.text == "" {
+                var names:[String] = []
+                for contact in selectedContacts {
+                    names.append(contact.fullName)
+                }
+                names.append((UserController.sharedInstance.myRelationship?.fullName)!)
+                groupName = names.joined(separator: ", ")
+                
+            } else {
+                groupName = groupTitle.text!
+            }
+            conversation = Conversation.init(convoName: groupName, users: selectedRef, messages: [])
+            
+            ConversationController.createConversation(conversation!) { (success, record) in
+                if success {
+                    self.convoRecord = record
+                    
+                    DispatchQueue.main.async(execute: {
+                    self.performSegue(withIdentifier: "groupCreated", sender: self)
+                    })
+                } else {
+                    print("Not this time")
+                }
+            }
+
+        }
+        
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "groupCreated" {
-            let navController = segue.destinationViewController as! UINavigationController
-            let destinationVC = navController.topViewController as! MessagingViewController
-            destinationVC.conversation = self.conversation
-            destinationVC.convoRecord = self.convoRecord
+            let destinationVC = segue.destination as! MessagingViewController
+            destinationVC.conversation = conversation
+            destinationVC.conversation?.theMessages = []
+            destinationVC.conversation?.messages = []
+            destinationVC.convoRecord = convoRecord
+            destinationVC.grouped = true
         }
     }
 }

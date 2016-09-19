@@ -20,114 +20,114 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        backgroundToImage.hidden = true
+        backgroundToImage.isHidden = true
         saveImageButton.layer.borderWidth = 2
-        saveImageButton.layer.borderColor = UIColor.whiteColor().CGColor
+        saveImageButton.layer.borderColor = UIColor.white.cgColor
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return UIStatusBarStyle.LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return UIStatusBarStyle.lightContent
     }
     
-    @IBAction func addImageTapped(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue()) { 
+    @IBAction func addImageTapped(_ sender: AnyObject) {
+        DispatchQueue.main.async { 
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
             imagePicker.allowsEditing = true
-            imagePicker.sourceType = .PhotoLibrary
-            self.presentViewController(imagePicker, animated: true, completion: nil)
+            imagePicker.sourceType = .photoLibrary
+            self.present(imagePicker, animated: true, completion: nil)
         }
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         imageView.image = (info[UIImagePickerControllerEditedImage] as! UIImage)
-        imageView.contentMode = .ScaleToFill
-        dismissViewControllerAnimated(true) {
-            self.addImageButton.hidden = true
-            self.backgroundToImage.hidden = false
+        imageView.contentMode = .scaleToFill
+        dismiss(animated: true) {
+            self.addImageButton.isHidden = true
+            self.backgroundToImage.isHidden = false
         }
         
     }
     
-    @IBAction func saveImageTapped(sender: AnyObject) {
+    @IBAction func saveImageTapped(_ sender: AnyObject) {
         if imageView.image != nil {
 //        TODO: fix activity indicator throughout
-            let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+            let indicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
             indicator.center = view.center
             view.addSubview(indicator)
             indicator.startAnimating()
             saveImage({ (success, record) in
 
                 if success {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        let alert = UIAlertController(title: "One last thing", message: "Would you like to add all your contacts that are already Socializing", preferredStyle: .Alert)
-                        let yes = UIAlertAction(title: "Yes", style: .Default, handler: { (action) in
+                    DispatchQueue.main.async(execute: {
+                        let alert = UIAlertController(title: "One last thing", message: "Would you like to add all your contacts that are already Socializing", preferredStyle: .alert)
+                        let yes = UIAlertAction(title: "Yes", style: .default, handler: { (action) in
                             
                             UserController.sharedInstance.setFriends(UserController.sharedInstance.currentUser!, record: record!, completion: { (success, user) in
                                 if success {
-                                    dispatch_async(dispatch_get_main_queue(), {
+                                    DispatchQueue.main.async(execute: {
                                         indicator.stopAnimating()
-                                        let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
-                                        let ok = UIAlertAction(title: "Okay", style: .Default, handler: {
+                                        let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .alert)
+                                        let ok = UIAlertAction(title: "Okay", style: .default, handler: {
                                             (action) in
-                                            self.performSegueWithIdentifier("loggedIn", sender: self)
+                                            self.performSegue(withIdentifier: "loggedIn", sender: self)
                                         })
                                         successAlert.addAction(ok)
-                                        self.presentViewController(successAlert, animated: true, completion:nil)
+                                        self.present(successAlert, animated: true, completion:nil)
                                     })
                                 } else {
 //         TODO: add where they can go to try again to get friends
-                                    dispatch_async(dispatch_get_main_queue(), {
+                                    DispatchQueue.main.async(execute: {
                                         indicator.stopAnimating()
-                                        let unsuccessful = UIAlertController(title: "Uh Oh", message: "We are having troubles getting your contacts", preferredStyle: .Alert)
-                                        let action = UIAlertAction(title: "Okay", style: .Default, handler: { (action) in
-                                            self.performSegueWithIdentifier("loggedIn", sender: self)
+                                        let unsuccessful = UIAlertController(title: "Uh Oh", message: "We are having troubles getting your contacts", preferredStyle: .alert)
+                                        let action = UIAlertAction(title: "Okay", style: .default, handler: { (action) in
+                                            self.performSegue(withIdentifier: "loggedIn", sender: self)
                                         })
                                         unsuccessful.addAction(action)
-                                        self.presentViewController(unsuccessful, animated: true, completion: nil)
+                                        self.present(unsuccessful, animated: true, completion: nil)
                                     })
                                 }
                             })
                         })
-                        dispatch_async(dispatch_get_main_queue(), { 
-                            let no = UIAlertAction(title: "No", style: .Cancel, handler: { (action) in
+                        DispatchQueue.main.async(execute: { 
+                            let no = UIAlertAction(title: "No", style: .cancel, handler: { (action) in
                                 indicator.stopAnimating()
-                                let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
-                                let ok = UIAlertAction(title: "Okay", style: .Default, handler: {
+                                let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .alert)
+                                let ok = UIAlertAction(title: "Okay", style: .default, handler: {
                                     (action) in
-                                    self.performSegueWithIdentifier("loggedIn", sender: self)
+                                    self.performSegue(withIdentifier: "loggedIn", sender: self)
                                 })
                                 successAlert.addAction(ok)
-                                self.presentViewController(successAlert, animated: true, completion:nil)
+                                self.present(successAlert, animated: true, completion:nil)
                             })
                             
                             alert.addAction(yes)
                             alert.addAction(no)
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            self.present(alert, animated: true, completion: nil)
                         })
                     })
                     
                 } else {
-                    dispatch_async(dispatch_get_main_queue(), { 
-                        let errorAlert = UIAlertController(title: "Oops", message: "Error adding profile image to account", preferredStyle: .Alert)
-                        let retry = UIAlertAction(title: "Retry", style: .Default, handler: nil)
+                    DispatchQueue.main.async(execute: { 
+                        let errorAlert = UIAlertController(title: "Oops", message: "Error adding profile image to account", preferredStyle: .alert)
+                        let retry = UIAlertAction(title: "Retry", style: .default, handler: nil)
                         errorAlert.addAction(retry)
 //                    TODO: fix?
-                        let ignore = UIAlertAction(title: "Continue without one", style: .Default, handler: { (action) in
-                            self.performSegueWithIdentifier("loggedIn", sender: self)
+                        let ignore = UIAlertAction(title: "Continue without one", style: .default, handler: { (action) in
+                            self.performSegue(withIdentifier: "loggedIn", sender: self)
                         })
                         errorAlert.addAction(ignore)
-                        self.presentViewController(errorAlert, animated: true, completion: nil)
+                        self.present(errorAlert, animated: true, completion: nil)
                     })
                 }
             })
             
         } else {
-            dispatch_async(dispatch_get_main_queue(), { 
-                let noImageAlert = UIAlertController(title: "No Image", message: "Add a photo to continue", preferredStyle: .Alert)
-                let ok = UIAlertAction(title: "Okay", style: .Default, handler: nil)
+            DispatchQueue.main.async(execute: { 
+                let noImageAlert = UIAlertController(title: "No Image", message: "Add a photo to continue", preferredStyle: .alert)
+                let ok = UIAlertAction(title: "Okay", style: .default, handler: nil)
                 noImageAlert.addAction(ok)
-                self.presentViewController(noImageAlert, animated: true, completion: nil)
+                self.present(noImageAlert, animated: true, completion: nil)
             })
             
         }
@@ -135,7 +135,7 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
         
     }
     
-    func saveImage(completion:(success:Bool, record: CKRecord?) -> Void) {
+    func saveImage(_ completion:@escaping (_ success:Bool, _ record: CKRecord?) -> Void) {
         UserController.sharedInstance.queryForMyRelationship(UserController.sharedInstance.currentUser!) { (success, record) in
             if success {
                 do {
@@ -144,36 +144,36 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
                 }
                 catch {
                     print("Error creating assets", error)
-                    completion(success: false, record: nil)
+                    completion(false, nil)
                 }
-                CKContainer.defaultContainer().publicCloudDatabase.saveRecord(record!, completionHandler: { (record, error) in
+                CKContainer.default().publicCloudDatabase.save(record!, completionHandler: { (record, error) in
                     if error == nil {
-                        completion(success: true, record: record)
+                        completion(true, record)
                     } else {
-                        completion(success: false, record: nil)
+                        completion(false, nil)
                     }
                 })
             } else {
-                completion(success: false, record: nil)
+                completion(false, nil)
             }
         }
     }
     
 //    figure out how to get record so I can ask if they want to add friends
-    @IBAction func skipButtonTapped(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue(), {
-            let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .Alert)
-            let ok = UIAlertAction(title: "Okay", style: .Default, handler: {
+    @IBAction func skipButtonTapped(_ sender: AnyObject) {
+        DispatchQueue.main.async(execute: {
+            let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Okay", style: .default, handler: {
                 (action) in
-                self.performSegueWithIdentifier("loggedIn", sender: self)
+                self.performSegue(withIdentifier: "loggedIn", sender: self)
             })
             successAlert.addAction(ok)
-            self.presentViewController(successAlert, animated: true, completion:nil)
+            self.present(successAlert, animated: true, completion:nil)
         })
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let navController = segue.destinationViewController as! UINavigationController
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navController = segue.destination as! UINavigationController
         let destinationVC = navController.topViewController as! HomeViewController
         destinationVC.demo = true
     }

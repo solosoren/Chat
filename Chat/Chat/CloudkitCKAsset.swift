@@ -10,53 +10,53 @@ import UIKit
 import CloudKit
 
 enum ImageFileType {
-    case JPG(compressionQuality: CGFloat)
-    case PNG
+    case jpg(compressionQuality: CGFloat)
+    case png
     
     var fileExtension: String {
         switch self {
-        case .JPG(_):
+        case .jpg(_):
             return ".jpg"
-        case .PNG:
+        case .png:
             return ".png"
         }
     }
 }
 
-enum ImageError: ErrorType {
-    case UnableToConvertImageToData
+enum ImageError: Error {
+    case unableToConvertImageToData
 }
 
 extension CKAsset {
-    convenience init(image: UIImage, fileType: ImageFileType = .JPG(compressionQuality: 70)) throws {
+    convenience init(image: UIImage, fileType: ImageFileType = .jpg(compressionQuality: 70)) throws {
         let url = try image.saveToTempLocationWithFileType(fileType)
         self.init(fileURL: url)
     }
     
     var image: UIImage? {
-        guard let data = NSData(contentsOfURL: fileURL), image = UIImage(data: data) else { return nil }
+        guard let data = try? Data(contentsOf: fileURL), let image = UIImage(data: data) else { return nil }
         return image
     }
 }
 
 extension UIImage {
     
-    func saveToTempLocationWithFileType(fileType: ImageFileType) throws -> NSURL {
-        let imageData: NSData?
+    func saveToTempLocationWithFileType(_ fileType: ImageFileType) throws -> URL {
+        let imageData: Data?
         
         switch fileType {
-        case .JPG(let quality):
+        case .jpg(let quality):
             imageData = UIImageJPEGRepresentation(self, quality)
-        case .PNG:
+        case .png:
             imageData = UIImagePNGRepresentation(self)
         }
         guard let data = imageData else {
-            throw ImageError.UnableToConvertImageToData
+            throw ImageError.unableToConvertImageToData
         }
         
-        let filename = NSProcessInfo.processInfo().globallyUniqueString + fileType.fileExtension
-        let url = NSURL.fileURLWithPath(NSTemporaryDirectory()).URLByAppendingPathComponent(filename)
-        try data.writeToURL(url, options: .AtomicWrite)
+        let filename = ProcessInfo.processInfo.globallyUniqueString + fileType.fileExtension
+        let url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(filename)
+        try data.write(to: url, options: .atomicWrite)
         
         return url
     }
