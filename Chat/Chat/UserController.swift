@@ -195,6 +195,7 @@ class UserController {
             if error == nil {
                 completion(true)
             } else {
+                print(error)
                 completion(false)
             }
         })
@@ -460,7 +461,9 @@ class UserController {
                     var friends = relationshipRecord!["Friends"] as! [CKReference]
                     var index: Int = 0
                     for f in friends {
-                        index = index + 1
+                        if f != friends[0] {
+                           index = index + 1
+                        }
                         if f == currentRel.userID {
                             friends.remove(at: index)
                         }

@@ -114,18 +114,36 @@ class AddContactTableViewController: UITableViewController {
     }
     
     func swipedView(_ sender:UIPanGestureRecognizer) {
-        UIView.animate(withDuration: 0.2, delay:0.0, options: .curveEaseIn, animations: {
-            self.bigContactView.center = CGPoint(x: self.view.center.x, y: self.view.frame.size.height + 200)
-            }, completion: { (finished) in
-                if finished {
-                    self.appeared = true
-                    self.darkView.isHidden = true
-                    self.navigationController?.isNavigationBarHidden = false
-                    self.statusBarIsVisible = true
-                    self.setNeedsStatusBarAppearanceUpdate()
-                    self.tableView.isScrollEnabled = true
-                }
-        })
+        var start = CGPoint(x:0, y:0)
+        var end = CGPoint(x:0, y:0)
+        
+        if sender.state == .began {
+            start = sender.location(in: bigContactView)
+        } else if sender.state == .ended {
+            end = sender.location(in: bigContactView)
+            let dx = end.x - start.x
+            let dy = end.y - start.y
+            let distance = sqrt(dx*dx + dy*dy)
+            let max = CGFloat(205)
+            if distance > max {
+                UIView.animate(withDuration: 0.2, delay:0.0, options: .curveEaseIn, animations: {
+                    self.bigContactView.center = CGPoint(x: self.view.center.x, y: self.view.frame.size.height + 200)
+                    }, completion: { (finished) in
+                        if finished {
+                            DispatchQueue.main.async(execute: { 
+                                self.appeared = true
+                                self.darkView.isHidden = true
+                                self.navigationController?.isNavigationBarHidden = false
+                                self.statusBarIsVisible = true
+                                self.setNeedsStatusBarAppearanceUpdate()
+                                self.tableView.isScrollEnabled = true
+                            })
+                        }
+                })
+            } else {
+                return
+            }
+        }
     }
     
     func getIndexOfUserWithUserId(_ user: User, userArray: [User]) -> Int {

@@ -17,7 +17,9 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet weak var messageTextView: UITextView!
     @IBOutlet var constraint: NSLayoutConstraint!
     @IBOutlet var keyboardViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet var messagingBorder: UIView!
     @IBOutlet var sendButton: UIButton!
+    
     var conversation: Conversation?
     var convoRecord: CKRecord?
     var demo = false
@@ -30,16 +32,15 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         super.viewDidLoad()
         tableView.separatorColor = UIColor.white
         messageTextView.delegate = self
+        messageTextView.text = "Message..."
+        messageTextView.textColor = UIColor.lightGray
         sendButton.layer.borderColor = UIColor.white.cgColor
         sendButton.layer.borderWidth = 1.0
-        setNavBar()
         sendButton.isEnabled = false
 
         NotificationCenter.default.addObserver(self, selector: #selector(MessagingViewController.keyboardWasShown(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(MessagingViewController.keyboardWillBeHidden(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
-        
-    
     
 //    MARK: Tableview
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -100,7 +101,10 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     func keyboardWasShown(_ notification: Notification) {
         if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            constraint.constant = keyboardSize.height
+            
+            DispatchQueue.main.async {
+                self.constraint.constant = keyboardSize.height
+            }
             UIView.animate(withDuration: 0.3, animations: {
                 self.tableView.layoutIfNeeded()
             }) 
@@ -109,18 +113,26 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func keyboardWillBeHidden(_ notification: Notification) {
+        if messageTextView.text == "" {
+            messageTextView.text = "Message..."
+            messageTextView.textColor = UIColor.lightGray
+        }
         if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if constraint.constant != 52 {
                 self.constraint.constant -= keyboardSize.height
             }
         }
-        keyboardViewHeightConstraint.constant = messageTextView.frame.size.height + 14
-        resignFirstResponder()
-        tableView.reloadData(conversation)
+        DispatchQueue.main.async {
+            self.keyboardViewHeightConstraint.constant = self.messageTextView.frame.size.height + 14
+            self.resignFirstResponder()
+            self.tableView.reloadData(self.conversation)
+        }
     }
     
 //    MARK: Input Accessory View
     override var inputAccessoryView: UIView {
+        messageTextView.layer.borderColor = UIColor.gray.cgColor
+        messageTextView.layer.borderWidth = 1
         messageTextView.translatesAutoresizingMaskIntoConstraints = false
         keyboardView.translatesAutoresizingMaskIntoConstraints = false
         messageTextView.layoutIfNeeded()
@@ -141,6 +153,14 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         return true
     }
     
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        if messageTextView.text == "Message..." {
+            messageTextView.text = ""
+            messageTextView.textColor = UIColor.darkText
+        }
+        return true
+    }
+
     func textViewDidChange(_ textView: UITextView) {
         if messageTextView.text.isEmpty {
             sendButton.isEnabled = false
@@ -163,7 +183,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         constraint.constant = keyboardView.frame.size.height + 2
     }
     
-    
 //    MARK: Send Button
     @IBAction func sendMessageTapped(_ sender: AnyObject) {
         var message: Message
@@ -172,6 +191,27 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             let userpic = UserController.sharedInstance.myRelationship?.profilePic?.image
             
             message = Message(senderUID: UserController.sharedInstance.myRelationship!.userID, messageText: messageTextView.text, time: nil, userPic: userpic)
+            
+            if (conversation?.theMessages.count)! > 0 {
+                DispatchQueue.main.async(execute: {
+                    self.messageTextView.text = ""
+                    self.keyboardView.frame.size.height = self.messageTextView.frame.size.height + 14
+                    self.conversation?.theMessages += [message]
+                    self.conversation?.lastMessage = message
+                    self.keyboardViewHeightConstraint.constant = self.messageTextView.frame.size.height + 14
+                    
+                    self.tableView.reloadData(self.conversation)
+                    self.resignFirstResponder()
+                })
+            } else {
+                DispatchQueue.main.async(execute: {
+                    self.messageTextView.text = ""
+                    
+                    self.conversation?.theMessages = [message]
+                    self.conversation?.lastMessage = message
+                    self.tableView.reloadData(self.conversation)
+                })
+            }
             
             MessageController.postMessage(message) { (success, messageRecord) in
                 if success {
@@ -191,17 +231,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                         ConversationController.sharedInstance.subscribeToConversations(self.convoRecord!, contentAvailable: true, completion: { (success) in
                                         })
                                     }
-                                    DispatchQueue.main.async(execute: {
-                                        self.messageTextView.text = ""
-                                        self.keyboardView.frame.size.height = self.messageTextView.frame.size.height + 14
-                                        self.conversation?.theMessages += [message]
-                                        self.conversation?.lastMessage = message
-                                        self.conversation?.messages = messages
-                                        self.keyboardViewHeightConstraint.constant = self.messageTextView.frame.size.height + 14
-                                        
-                                        self.tableView.reloadData(self.conversation)
-                                        self.resignFirstResponder()
-                                    })
+                                    self.conversation?.messages = messages
+                                    
                                 } else {
                                     print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
                                 }
@@ -214,14 +245,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                             let mod = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
                             mod.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                                 if error == nil {
-                                    print(message.senderUID)
-                                    DispatchQueue.main.async(execute: {
-                                        self.messageTextView.text = ""
-                                        self.conversation?.messages! = messages
-                                        self.conversation?.theMessages = [message]
-                                        self.conversation?.lastMessage = message
-                                        self.tableView.reloadData(self.conversation)
-                                    })
+                                    self.conversation?.messages! = messages
+                                    
                                 } else {
                                     print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
                                 }
@@ -230,7 +255,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                         }
                     }
                 } else {
-                    print("Not this time")
+                    print("Couldn't post message")
                 }
             }
         }

@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Chat/AddContactTableViewController.swift"
-            timestampString = "495692339.796743"
+            filePath = "Chat/UserController.swift"
+            timestampString = "496001794.917316"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "33"
-            endingLineNumber = "33"
-            landmarkName = "viewDidLoad()"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
+            landmarkName = "saveRecordArray(_:record:string:completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
