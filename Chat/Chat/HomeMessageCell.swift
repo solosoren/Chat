@@ -17,4 +17,5 @@ class HomeMessageCell: UITableViewCell {
     
     @IBOutlet var alertImage: UIImageView!
     
+    @IBOutlet var userNameLeadingConstraint: NSLayoutConstraint!
 }

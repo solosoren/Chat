@@ -34,15 +34,15 @@ struct Conversation {
         self.messages = record.object(forKey: messagesKey) as? [CKReference] ?? []
     }
     
-    func toAnyObject() -> AnyObject {
+    func toAnyObject() -> Any {
         
         if let groupName = convoName {
             let convo = [groupNameKey:groupName,
-                    usersKey:users] as AnyObject
+                    usersKey:users] as Any
             return convo
         } else {
             let convo = [usersKey:users]
-            return convo as AnyObject
+            return convo
         }
              
     }

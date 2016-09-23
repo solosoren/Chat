@@ -47,19 +47,12 @@ class ConversationController: NSObject {
                     for record in records! {
                         var conversation = Conversation(record: record)
                         conversation.ref = record.recordID
-//                        if let myName = UserController.sharedInstance.myRelationship?.fullName {
-//                            if let range = groupName?.rangeOfString("\(myName), ") {
-//                                groupName?.removeRange(range)
-//                                
-//                            }
-//                            if let range = groupName?.rangeOfString(", \(myName)") {
-//                                groupName?.removeRange(range)
-//                            }
-                        //                        }
+
                         conversation.convoName = record["GroupName"] as! String?
                         self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
                             if conversation.messages?.count != 0 {
                                 let ref = conversation.messages?.last
+                                UserController.sharedInstance.fetchAlerts(messageRef: ref!)
                                 container.publicCloudDatabase.fetch(withRecordID: (ref?.recordID)!, completionHandler: { (lastMessageRecord, error) in
                                     if error == nil {
                                         conversation.lastMessage = Message(record: lastMessageRecord!)

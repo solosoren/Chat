@@ -39,14 +39,12 @@ struct Relationship {
            self.profilePic = profilePic
         } else {
             self.profilePic = nil
-        }
-//        guard let profilePic = record.objectForKey("ImageKey") as? CKAsset else { return nil }
-        
+        }        
     }
     
-    func toAnyObject() -> AnyObject {
+    func toAnyObject() -> Any {
         return [nameKey:fullName,
-                userIDKey: userID] as AnyObject
+                userIDKey: userID]
         
     }
     

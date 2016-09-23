@@ -207,8 +207,10 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     }
                     if UserController.sharedInstance.myRelationship!.alerts.count != 0 {
                         for a in UserController.sharedInstance.myRelationship!.alerts {
-                            if convo.ref != a {
+                            if convo.lastMessage?.ref != a {
                                 convoCell.alertImage.isHidden = true
+                            } else {
+                                convoCell.userNameLeadingConstraint.constant = convoCell.userNameLeadingConstraint.constant + 15
                             }
                         }
                     } else {
@@ -342,6 +344,19 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     if let convoIndex = (tableView.indexPathForSelectedRow as NSIndexPath?)?.row {
                         destinationVC.convoRecord = convoRecords![convoIndex]
                         let myConversation = myConversations[convoIndex]
+                        
+                        // Alerts work
+                        if let alerts = UserController.sharedInstance.myRelationship?.alerts {
+                            var alertInt = -1
+                            for alert in alerts {
+                                alertInt = alertInt + 1
+                                if myConversation.lastMessage?.ref == alert {
+                                    UserController.sharedInstance.myRelationship?.alerts.remove(at: alertInt)
+                                }
+                            }
+                        }
+                        
+                        // Grab Messages
                         ConversationController.sharedInstance.grabMessages(myConversation, completion: { (error, conversation, theMessages) in
                             if let error = error {
                                 destinationVC.conversation = conversation

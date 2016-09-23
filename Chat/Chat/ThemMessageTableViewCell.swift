@@ -10,6 +10,7 @@ import UIKit
 
 class ThemMessageTableViewCell: UITableViewCell {
     
+    @IBOutlet var themMessageView: UIView!
     @IBOutlet weak var userIcon: UIImageView!
     @IBOutlet weak var messageText: UILabel!
     

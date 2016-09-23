@@ -99,6 +99,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         }
     }
     
+    
+//   MARK: Keyboard observations
     func keyboardWasShown(_ notification: Notification) {
         if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             
@@ -143,7 +145,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
         messageTextView.frame = newFrame
 
-//        keyboardView.frame.size.height = self.messageTextView.frame.size.height + 14
         keyboardViewHeightConstraint.constant = messageTextView.frame.size.height + 14
         keyboardView.autoresizingMask = .flexibleHeight
         return keyboardInputView
@@ -217,8 +218,9 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                 if success {
                     if let record = self.convoRecord, let conversation = self.conversation {
                         let ref = CKReference(record: messageRecord!, action: .deleteSelf)
-                        message.timeString = Timer.sharedInstance.setMessageTime((messageRecord?.creationDate)!)
-                        message.time = messageRecord?.creationDate
+                        
+                        self.conversation?.lastMessage?.time = messageRecord?.creationDate
+                        
                         if conversation.messages != nil && conversation.messages?.count != 0 {
                             var messages = record["Messages"] as! [CKReference]
                             messages += [ref]
@@ -232,6 +234,8 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                         })
                                     }
                                     self.conversation?.messages = messages
+                                    
+                                    UserController.sharedInstance.sendAlerts(messageRef: ref, otherConversationUsers: conversation.users)
                                     
                                 } else {
                                     print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
@@ -261,6 +265,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         }
     }
     
+//    MARK: Back Button
     @IBAction func backButton(_ sender: AnyObject) {
         if grouped {
             performSegue(withIdentifier: "groupUnwind", sender: self)
@@ -271,6 +276,9 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     
     override func unwind(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
         
+        if keyboardView.isFirstResponder {
+            resignFirstResponder()
+        }
         if unwindSegue.identifier == "messageUnwind" {
             let destinationVC = unwindSegue.destination as! HomeViewController
             
@@ -288,23 +296,30 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                         if homeConvos.count > 0 {
                             
                             if newConvo {
-                                destinationVC.myConversations?.insert(conversation, at: 0)
+                                self.conversation?.lastMessage?.timeString = Timer.sharedInstance.setMessageTime((self.conversation?.lastMessage?.time)!)
+                                destinationVC.myConversations?.insert(self.conversation!, at: 0)
                                 destinationVC.convoRecords?.insert(convoRecord!, at: 0)
                             } else {
                                 // check if it is same conversation and swap it
                                 var convoIndex = 0
                                 for _ in homeConvos {
                                     convoIndex = convoIndex + 1
-                                    let homeConversation = homeConvos[convoIndex - 1]
-                                    if homeConversation.users == conversation.users {
-                                        destinationVC.myConversations?[convoIndex - 1].lastMessage = conversation.lastMessage
-                                        destinationVC.myConversations?.remove(at: convoIndex - 1)
-                                        destinationVC.myConversations?.insert(conversation, at: 0)
+                                    if homeConvos[convoIndex - 1].users == conversation.users {
+                                        guard let homeConvoMessages = homeConvos[convoIndex - 1].messages else {
+                                            return
+                                        }
+                                        if homeConvoMessages.count < (conversation.messages?.count)! {
+                                            self.conversation?.lastMessage?.timeString = Timer.sharedInstance.setMessageTime((self.conversation?.lastMessage?.time)!)
+                                            destinationVC.myConversations?[convoIndex - 1].lastMessage = self.conversation?.lastMessage
+                                            destinationVC.myConversations?.remove(at: convoIndex - 1)
+                                            destinationVC.myConversations?.insert(self.conversation!, at: 0)
+                                        }
                                     }
                                 }
                             }
                         } else {
-                            destinationVC.myConversations = [conversation]
+                            self.conversation?.lastMessage?.timeString = Timer.sharedInstance.setMessageTime((self.conversation?.lastMessage?.time)!)
+                            destinationVC.myConversations = [self.conversation!]
                             destinationVC.convoRecords = [convoRecord!]
                         }
                     
@@ -320,21 +335,32 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                         }
                     }
                 }
+                if destinationVC.segmentedControl.selectedSegmentIndex == 1 {
+                    destinationVC.segmentedControl.selectedSegmentIndex = 0
+                }
                 destinationVC.tableView.reloadData()
             }
         } else if unwindSegue.identifier == "groupUnwind" {
+            print(grouped)
             let destinationVC = unwindSegue.destination as! CreateGroupViewController
             let homeVC = destinationVC.presentedViewController?.presentedViewController as!HomeViewController
-            if (homeVC.myConversations?.count)! > 0 {
-                    homeVC.myConversations?.insert(conversation!, at: 0)
-                    homeVC.convoRecords?.insert(convoRecord!, at:0)
-            } else {
-                    homeVC.myConversations = [conversation!]
-                    homeVC.convoRecords = [convoRecord!]
-            }
-            destinationVC.dismiss(animated: false, completion: nil)
-            homeVC.tableView.reloadData()
+            
+            destinationVC.dismiss(animated: false, completion: { 
+                if (homeVC.myConversations?.count)! > 0 {
+                    homeVC.myConversations?.insert(self.conversation!, at: 0)
+                    homeVC.convoRecords?.insert(self.convoRecord!, at:0)
+                } else {
+                    homeVC.myConversations = [self.conversation!]
+                    homeVC.convoRecords = [self.convoRecord!]
+                }
+                if homeVC.segmentedControl.selectedSegmentIndex == 1 {
+                    homeVC.segmentedControl.selectedSegmentIndex = 0
+                }
+                homeVC.tableView.reloadData()
+            })
+            
         }
+        print("Unwind segue")
     }
  
 }

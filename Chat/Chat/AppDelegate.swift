@@ -37,19 +37,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 //        figure out what to do with these alerts
         
-        guard let recordID = queryNotification.recordID else { print("No Record ID available from CKQueryNotification."); return }
+        guard let recordID = queryNotification.recordID else {
+            print("No Record ID available from CKQueryNotification.")
+            return
+        }
         
         let userController = UserController()
         
         userController.fetchRecordWithID(recordID) { (record, error) in
             
-            guard let record = record else { print("Unable to fetch CKRecord from Record ID"); return }
+            guard let record = record else {
+                print("Unable to fetch CKRecord from Record ID")
+                return
+            }
             
             switch record.recordType {
                 
             case "Conversation":
                 let convo = Conversation(record: record)
-                UserController.sharedInstance.myRelationship!.myAlertedConversations += [convo]
+                userController.myRelationship!.myAlertedConversations += [convo]
             case "Relationship":
                 let relationship = Relationship(record: record)
                 userController.myRelationship = relationship

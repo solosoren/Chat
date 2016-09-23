@@ -9,14 +9,46 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Chat/UserController.swift"
-            timestampString = "496001794.917316"
+            filePath = "Chat/MessagingViewController.swift"
+            timestampString = "496366773.306911"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "199"
-            endingLineNumber = "199"
-            landmarkName = "saveRecordArray(_:record:string:completion:)"
+            startingLineNumber = "348"
+            endingLineNumber = "348"
+            landmarkName = "unwind(for:towardsViewController:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Chat.MessagingViewController.unwind (for : __ObjC.UIStoryboardSegue, towardsViewController : __ObjC.UIViewController) -&gt; ()"
+                  moduleName = "Chat"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/MessagingViewController.swift"
+                  timestampString = "496367004.745906"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "348"
+                  endingLineNumber = "348"
+                  offsetFromSymbolStart = "33544">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Chat.MessagingViewController.(unwind (for : __ObjC.UIStoryboardSegue, towardsViewController : __ObjC.UIViewController) -&gt; ()).(closure #1)"
+                  moduleName = "Chat"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/MessagingViewController.swift"
+                  timestampString = "496367004.74806"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "349"
+                  endingLineNumber = "349"
+                  offsetFromSymbolStart = "52">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

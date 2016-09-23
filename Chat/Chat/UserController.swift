@@ -84,6 +84,7 @@ class UserController {
         })
     }
     
+//    MARK: Friend Requests
     func acceptRequest(_ user:User, friend:Relationship, completion:@escaping (_ success: Bool, _ record:CKRecord?) -> Void) {
         self.queryForRelationshipByName(friend.fullName) { (success, relationshipRecord) in
             if success {
@@ -122,8 +123,6 @@ class UserController {
     }
     
     
-//    TODO: query to see if the friend is already a user
-    
     func sendRequest(_ user:User, friend:Relationship, completion:@escaping (_ success: Bool, _ record:CKRecord?, _ alreadyFriend:Bool?, _ alreadyRequested:Bool ) -> Void) {
         self.queryForRelationshipByName(friend.fullName) { (success, relationshipRecord) in
             
@@ -133,46 +132,52 @@ class UserController {
                 }
                 if let alreadyFriends = myRelationshipRecord["Friends"] {
                     let friends = alreadyFriends as! [CKReference]
-                    self.dontSendRequest(friends, ref: friend.userID, completion: { (success) in
+                    self.dontSendRequest(friends, ref: friend.userID, completion: { (dontSend) in
                         
-                        if success {
+                        if dontSend {
+                            // Already Friends
                             completion(false, nil, true, false)
-                        }
-                    })
-                }
-                if let friendRequests = relationshipRecord!["FriendRequests"] {
-                    var priorRequests = friendRequests as! [CKReference]
-                    self.dontSendRequest(priorRequests, ref: self.myRelationship!.userID, completion: { (success) in
-                        
-                        if success {
-                            completion(false, nil, false, true)
                         } else {
-                            let ref = CKReference(recordID: user.userID, action: .deleteSelf)
-                            priorRequests.append(ref)
-                            relationshipRecord?.setObject(priorRequests as CKRecordValue?, forKey: "FriendRequests")
-                            self.defaultContainer?.publicCloudDatabase.save(relationshipRecord!, completionHandler: { (record, error) in
-                                
-                                if error == nil {
-                                    completion(true, record, false, false)
+                            if let friendRequests = relationshipRecord!["FriendRequests"] {
+                                var priorRequests = friendRequests as! [CKReference]
+                                self.dontSendRequest(priorRequests, ref: self.myRelationship!.userID, completion: { (dontSend) in
                                     
-                                } else {
-                                    completion(false, nil, false, false)
-                                }
-                            })
+                                    if dontSend {
+                                        // Already Requested
+                                        completion(false, nil, false, true)
+                                    } else {
+                                        let ref = CKReference(recordID: user.userID, action: .deleteSelf)
+                                        priorRequests.append(ref)
+                                        relationshipRecord?.setObject(priorRequests as CKRecordValue?, forKey: "FriendRequests")
+                                        self.defaultContainer?.publicCloudDatabase.save(relationshipRecord!, completionHandler: { (record, error) in
+                                            
+                                            if error == nil {
+                                                completion(true, record, false, false)
+                                            } else {
+                                                print(error)
+                                                completion(false, nil, false, false)
+                                            }
+                                        })
+                                    }
+                                })
+                            } else {
+                                let ref = CKReference(recordID: user.userID, action: .deleteSelf)
+                                let refArray = [ref]
+                                relationshipRecord?.setObject(refArray as CKRecordValue?, forKey: "FriendRequests")
+                                self.defaultContainer?.publicCloudDatabase.save(relationshipRecord!, completionHandler: { (record, error) in
+                                    
+                                    if error == nil {
+                                        completion(true, record, false, false)
+                                    } else {
+                                        print(error)
+                                        completion(false, nil, false, false)
+                                    }
+                                })
+                            }
                         }
                     })
                 } else {
-                    let ref = CKReference(recordID: user.userID, action: .deleteSelf)
-                    relationshipRecord?.setObject(ref, forKey: "FriendRequests")
-                    self.defaultContainer?.publicCloudDatabase.save(relationshipRecord!, completionHandler: { (record, error) in
-                        
-                        if error == nil {
-                            completion(true, record, false, false)
-                            
-                        } else {
-                            completion(false, nil, false, false)
-                        }
-                    })
+                    
                 }
             } else {
                 completion(false, nil, false, false)
@@ -185,6 +190,8 @@ class UserController {
         for person in refArray {
             if person.recordID == ref.recordID {
                 completion(true)
+            } else {
+                completion(false)
             }
         }
     }
@@ -281,6 +288,25 @@ class UserController {
         
     }
     
+    func createRelationship(_ user: User, completion:@escaping (_ success: Bool, _ ref: CKReference?) -> Void) {
+        let ref = CKReference(recordID: user.userID, action: .deleteSelf)
+        let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil, friends: nil, profilePic: nil)
+        UserController.sharedInstance.myRelationship = relationship
+        let record = CKRecord(recordType: "Relationship")
+        
+        record.setValuesForKeys(relationship.toAnyObject() as! [String: AnyObject])
+        self.defaultContainer!.publicCloudDatabase.save(record, completionHandler: { (relationshipRecord, error) in
+            if error == nil {
+                completion(true, ref)
+                UserController.sharedInstance.myRelationshipRecord = relationshipRecord
+            } else {
+                NSLog("ERROR: \(error?.localizedDescription)")
+                completion(false, nil)
+            }
+        }) 
+    }
+    
+//     MARK: Queries
     func fetchRecordWithID(_ recordID: CKRecordID, completion: ((_ record: CKRecord?, _ error: NSError?) -> Void)?) {
         let publicDatabase = CKContainer.default().publicCloudDatabase
         publicDatabase.fetch(withRecordID: recordID) { (record, error) in
@@ -306,24 +332,6 @@ class UserController {
                 completion(false, nil)
             }
         })
-    }
-    
-    func createRelationship(_ user: User, completion:@escaping (_ success: Bool, _ ref: CKReference?) -> Void) {
-        let ref = CKReference(recordID: user.userID, action: .deleteSelf)
-        let relationship = Relationship.init(fullName: user.fullName!, userID: ref, requests: nil, friends: nil, profilePic: nil)
-        UserController.sharedInstance.myRelationship = relationship
-        let record = CKRecord(recordType: "Relationship")
-        
-        record.setValuesForKeys(relationship.toAnyObject() as! [String: AnyObject])
-        self.defaultContainer!.publicCloudDatabase.save(record, completionHandler: { (relationshipRecord, error) in
-            if error == nil {
-                completion(true, ref)
-                UserController.sharedInstance.myRelationshipRecord = relationshipRecord
-            } else {
-                NSLog("ERROR: \(error?.localizedDescription)")
-                completion(false, nil)
-            }
-        }) 
     }
     
     func queryForMyRelationship(_ user: User, completion:@escaping (_ success: Bool, _ relationshipRecord: CKRecord?) -> Void) {
@@ -410,6 +418,7 @@ class UserController {
         }
     }
     
+//     MARK: Images
     
     func grabImage(_ string: String, completion:@escaping (_ success: Bool, _ image: UIImage?) -> Void) {
         self.queryForRelationshipByName(string) { (success, relationshipRecord) in
@@ -478,6 +487,39 @@ class UserController {
                 }
             }
         }
+    }
+    
+    func sendAlerts(messageRef: CKReference, otherConversationUsers:[CKReference]) {
+        var alerts = UserController.sharedInstance.myRelationshipRecord?.object(forKey: "Alerts") as? [CKReference] ?? []
+        alerts.append(messageRef)
+        
+        for ref in otherConversationUsers {
+            fetchRecordWithID(ref.recordID, completion: { (record, error) in
+                if error == nil {
+                    
+                    self.saveRecordArray(alerts, record: record!, string: "Alerts") { (true) in
+                        if true {
+                            print("Sent Alerts")
+                        }
+                    }
+                } else {
+                    print("Failed to send alerts")
+                }
+            })
+            
+        }
+    }
+    
+    func fetchAlerts(messageRef:CKReference) {
+        let alerts = UserController.sharedInstance.myRelationshipRecord?.object(forKey: "Alerts") as? [CKReference] ?? []
+        var int = -1
+        for alert in alerts {
+            int = int + 1
+            if alert == messageRef {
+                UserController.sharedInstance.myRelationship?.alerts.append(alert)
+            }
+        }
+        
     }
     
 }

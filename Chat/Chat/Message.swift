@@ -37,12 +37,11 @@ struct Message {
         self.senderUID = record.object(forKey: "SenderUID") as! CKReference
         self.messageText = record.object(forKey: textKey) as? String ?? ""
         self.ref = CKReference(record: record, action: CKReferenceAction.deleteSelf)
-//        self.userPic = (record.objectForKey(userPicKey) as? CKAsset)!
     }
     
-    func toAnyObject() -> AnyObject {
+    func toAnyObject() -> Any {
         return [textKey:messageText,
-                senderKey:senderUID] as AnyObject
+                senderKey:senderUID] 
     }
     
 }
