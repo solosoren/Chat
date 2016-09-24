@@ -206,13 +206,17 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         convoCell.userImage.image = userPic
                     }
                     if UserController.sharedInstance.myRelationship!.alerts.count != 0 {
-                        for a in UserController.sharedInstance.myRelationship!.alerts {
-                            if convo.lastMessage?.ref != a {
-                                convoCell.alertImage.isHidden = true
-                            } else {
-                                convoCell.userNameLeadingConstraint.constant = convoCell.userNameLeadingConstraint.constant + 15
+                        if let convoRecord = convoRecords?[indexPath.row] {
+                            let convoRef = CKReference(record: convoRecord, action: .deleteSelf)
+                            for a in UserController.sharedInstance.myRelationship!.alerts {
+                                if convoRef != a {
+                                    convoCell.alertImage.isHidden = true
+                                } else {
+                                    convoCell.userNameLeadingConstraint.constant = convoCell.userNameLeadingConstraint.constant + 15
+                                }
                             }
                         }
+                        
                     } else {
                         convoCell.alertImage.isHidden = true
                     }
@@ -350,8 +354,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             var alertInt = -1
                             for alert in alerts {
                                 alertInt = alertInt + 1
-                                if myConversation.lastMessage?.ref == alert {
+                                if CKReference(record:convoRecords![convoIndex], action:.deleteSelf) == alert {
                                     UserController.sharedInstance.myRelationship?.alerts.remove(at: alertInt)
+                                    // Fix constraint that was moved for alertview
+                                    let cell = tableView.cellForRow(at: IndexPath(row: convoIndex, section: 0)) as! HomeMessageCell
+                                    cell.userNameLeadingConstraint.constant = cell.userNameLeadingConstraint.constant - 15
+                                    
                                     UserController.sharedInstance.saveRecordArray(alerts, record: UserController.sharedInstance.myRelationshipRecord!, string: "Alerts", completion: { (success) in
                                         if success == false {
                                             print("had issues removing alerts")

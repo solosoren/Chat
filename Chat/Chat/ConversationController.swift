@@ -52,7 +52,8 @@ class ConversationController: NSObject {
                         self.subscribeToConversations(record, contentAvailable: true, alertBody: "You have a new message", completion: { (success) in
                             if conversation.messages?.count != 0 {
                                 let ref = conversation.messages?.last
-                                UserController.sharedInstance.fetchAlerts(messageRef: ref!)
+                                let convoRef = CKReference(record: record, action: .deleteSelf)
+                                UserController.sharedInstance.fetchAlerts(convoRef: convoRef)
                                 container.publicCloudDatabase.fetch(withRecordID: (ref?.recordID)!, completionHandler: { (lastMessageRecord, error) in
                                     if error == nil {
                                         conversation.lastMessage = Message(record: lastMessageRecord!)
@@ -112,7 +113,6 @@ class ConversationController: NSObject {
         var messages: [Message] = []
         if let messageRefs: [CKReference] = conversation.messages {
             if messageRefs.count != 0 {
-                print("CONVERSATION HAS \(conversation.messages!.count) MESSAGES")
                 for ref in messageRefs {
                     container.publicCloudDatabase.fetch(withRecordID: ref.recordID, completionHandler: { (record, error) in
                         
@@ -216,7 +216,7 @@ class ConversationController: NSObject {
     func subscribeToConversations(_ conversationRecord:CKRecord, contentAvailable:Bool, alertBody:String? = nil, completion:@escaping (_ success:Bool) -> Void) {
         
         let pred = NSPredicate(format: "Users CONTAINS %@", UserController.sharedInstance.myRelationship!.userID)
-        let sub = CKSubscription(recordType: "Conversation", predicate: pred, subscriptionID: "\(conversationRecord.recordID)A", options: [.firesOnRecordUpdate, .firesOnRecordCreation])
+        let sub = CKQuerySubscription(recordType: "Conversation", predicate: pred, subscriptionID: "\(conversationRecord.recordID)A", options: [.firesOnRecordUpdate, .firesOnRecordCreation])
 
         let notificationInfo = CKNotificationInfo()
         notificationInfo.alertBody = alertBody
@@ -236,9 +236,9 @@ class ConversationController: NSObject {
         
     }
     
-    func subscribe(_ type: String, predicate: NSPredicate, subscriptionID: String, contentAvailable: Bool, alertBody: String? = nil, desiredKeys: [String]? = nil, options: CKSubscriptionOptions, completion: ((_ subscription: CKSubscription?, _ error: NSError?) -> Void)?) {
+    func subscribe(_ type: String, predicate: NSPredicate, subscriptionID: String, contentAvailable: Bool, alertBody: String? = nil, desiredKeys: [String]? = nil, options: CKQuerySubscriptionOptions, completion: ((_ subscription: CKSubscription?, _ error: NSError?) -> Void)?) {
         
-        let subscription = CKSubscription(recordType: type, predicate: predicate, subscriptionID: subscriptionID, options: options)
+        let subscription = CKQuerySubscription(recordType: type, predicate: predicate, subscriptionID: subscriptionID, options: options)
         
         let notificationInfo = CKNotificationInfo()
         notificationInfo.alertBody = alertBody

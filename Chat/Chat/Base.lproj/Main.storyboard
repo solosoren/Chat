@@ -202,8 +202,7 @@
                                                     <color key="textColor" red="0.0" green="0.21960784310000001" blue="0.39607843139999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ATc-4W-ciL">
-                                                    <frame key="frameInset" minX="258" minY="13" width="100" height="18"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ATc-4W-ciL">
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="100" id="9qQ-Ri-cm2"/>
                                                         <constraint firstAttribute="height" constant="18" id="awq-6E-dBo"/>
@@ -231,10 +230,12 @@
                                                 <constraint firstItem="gOf-kF-MaX" firstAttribute="centerY" secondItem="2HK-SW-3Fy" secondAttribute="centerY" id="AaN-qJ-alX"/>
                                                 <constraint firstItem="Owu-Dp-Dgi" firstAttribute="top" secondItem="ATc-4W-ciL" secondAttribute="bottom" id="KtU-hq-ecH"/>
                                                 <constraint firstItem="2HK-SW-3Fy" firstAttribute="leading" secondItem="bw9-xz-81B" secondAttribute="trailing" constant="10" id="QNi-Wi-MlP"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="ATc-4W-ciL" secondAttribute="trailing" constant="9" id="RNG-1n-x9z"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Owu-Dp-Dgi" secondAttribute="bottom" constant="1" id="XIm-JW-JKs"/>
                                                 <constraint firstItem="Owu-Dp-Dgi" firstAttribute="top" secondItem="2HK-SW-3Fy" secondAttribute="bottom" id="chs-vQ-jWt"/>
                                                 <constraint firstItem="bw9-xz-81B" firstAttribute="leading" secondItem="XaE-rD-mvW" secondAttribute="leadingMargin" constant="4" id="fDV-Ni-Ge5"/>
                                                 <constraint firstItem="Owu-Dp-Dgi" firstAttribute="leading" secondItem="bw9-xz-81B" secondAttribute="trailing" constant="10" id="jSN-aO-gOY"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Owu-Dp-Dgi" secondAttribute="trailing" constant="9" id="rZm-ij-uTC"/>
                                                 <constraint firstItem="bw9-xz-81B" firstAttribute="centerY" secondItem="XaE-rD-mvW" secondAttribute="centerY" constant="-1" id="v8O-Jt-lMP"/>
                                             </constraints>
                                             <variation key="default">

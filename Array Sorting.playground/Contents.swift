@@ -19,6 +19,14 @@ for object in array1 {
 print(sortedArray)
 
 
+var names: String = "Soren Nelson, Shawn Nelson"
+let array = names.components(separatedBy: ", ")
+print(array.count)
+
+
+
+
+
 
 
 

@@ -8,9 +8,10 @@
 
 import UIKit
 import CloudKit
+import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
     var alert: String?
@@ -19,12 +20,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let notificationSettings = UIUserNotificationSettings(types: [.alert, .sound, .badge], categories: nil)
-        application.registerUserNotificationSettings(notificationSettings)
-        application.registerForRemoteNotifications()
+        if #available(iOS 10.0, *) {
+            let center  = UNUserNotificationCenter.current()
+            center.delegate = self
+            center.requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
+                if granted {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            })
+            
+        } else {
+            let notificationSettings = UIUserNotificationSettings(types: [.alert, .sound, .badge], categories: nil)
+            application.registerUserNotificationSettings(notificationSettings)
+            application.registerForRemoteNotifications()
+        }
         
         return true
     }
+    
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler:@escaping (UIBackgroundFetchResult) -> Void) {
         
@@ -55,7 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
             case "Conversation":
                 let convo = Conversation(record: record)
-                userController.myRelationship!.myAlertedConversations += [convo]
+                userController.alerts.append(convo)
             case "Relationship":
                 let relationship = Relationship(record: record)
                 userController.myRelationship = relationship
@@ -65,6 +78,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
         }
         completionHandler(.newData)
+    }
+    
+// TODO: New Notifications
+    @available(iOS 10.0, *)
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+    }
+    
+    @available(iOS 10.0, *)
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
     }
 
 

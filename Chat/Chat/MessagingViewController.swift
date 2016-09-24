@@ -235,13 +235,13 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                                     }
                                     self.conversation?.messages = messages
                                     
-                                    UserController.sharedInstance.sendAlerts(messageRef: ref, otherConversationUsers: conversation.users)
-                                    
                                 } else {
                                     print("ERROR SAVING MESSAGES TO CONVO: \(error!.localizedDescription)")
                                 }
                             }
                             CKContainer.default().publicCloudDatabase.add(mod)
+                            let convoRef = CKReference(record: record, action: .deleteSelf)
+                            UserController.sharedInstance.sendAlert(convoRef: convoRef, convoName: self.navigationItem.title!)
                             
                         } else {
                             let messages = [ref]

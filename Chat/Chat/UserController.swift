@@ -16,6 +16,7 @@ class UserController {
     var currentUser:User?
     var myRelationshipRecord:CKRecord?
     var myRelationship:Relationship?
+    var alerts = [Conversation]()
     
     init() {
         defaultContainer = CKContainer.default()
@@ -58,31 +59,33 @@ class UserController {
     
     
 //    TODO: FIX UP
-    func setFriends(_ user:User, record:CKRecord, completion:@escaping (_ success:Bool, _ user:User?) -> Void) {
-        self.defaultContainer?.discoverAllContactUserInfos(completionHandler: { (info, error) in
-            if error == nil {
-                var references = [CKReference]()
-                for i in info! {
-                    let recordID = i.userRecordID
-                    let reference = CKReference(recordID: recordID!, action: CKReferenceAction.deleteSelf)
-                    references.append(reference)
-                }
-                user.friends = references
-                record.setObject(references as CKRecordValue?, forKey: "Friends")
-                
-                self.defaultContainer?.privateCloudDatabase.save(record, completionHandler: { (record, error) in
-                    if error == nil {
-                        completion(true, user)
-                    } else {
-                        NSLog("Couldn't get friends: \(error?.localizedDescription)")
-                        completion(false, nil)
-                    }
-                })
-            } else {
-                user.friends! = []
-            }
-        })
-    }
+//    func setFriends(_ user:User, record:CKRecord, completion:@escaping (_ success:Bool, _ user:User?) -> Void) {
+        
+        
+//        self.defaultContainer?.discoverAllContactUserInfos(completionHandler: { (info, error) in
+//            if error == nil {
+//                var references = [CKReference]()
+//                for i in info! {
+//                    let recordID = i.userRecordID
+//                    let reference = CKReference(recordID: recordID!, action: CKReferenceAction.deleteSelf)
+//                    references.append(reference)
+//                }
+//                user.friends = references
+//                record.setObject(references as CKRecordValue?, forKey: "Friends")
+//
+//                self.defaultContainer?.privateCloudDatabase.save(record, completionHandler: { (record, error) in
+//                    if error == nil {
+//                        completion(true, user)
+//                    } else {
+//                        NSLog("Couldn't get friends: \(error?.localizedDescription)")
+//                        completion(false, nil)
+//                    }
+//                })
+//            } else {
+//                user.friends! = []
+//            }
+//        })
+//    }
     
 //    MARK: Friend Requests
     func acceptRequest(_ user:User, friend:Relationship, completion:@escaping (_ success: Bool, _ record:CKRecord?) -> Void) {
@@ -208,47 +211,40 @@ class UserController {
         })
     }
     
-    
-//      get name for user
-    func fetchUserInfo(_ user: User, completion:@escaping (_ success: Bool, _ user: User?) -> Void) {
-        self.fetchRecord { (success, record) in
-            if success {
-                self.defaultContainer!.discoverUserInfo(withUserRecordID: user.userID) { (info, error) in
-                    if error == nil {
-                        if let firstName = info?.displayContact?.givenName,
-                        let lastName = info?.displayContact!.familyName {
-                            let fullName = "\(firstName) \(lastName)"
-                            user.fullName = fullName
-                            completion(true, user)
-                        }
-                    } else {
-                        print("Couldn't fetch User info \(error)")
-                        completion(false, nil)
-                    }
-                    
-                }
-            }
-        }
-        
-    }
-    
-    
 //      does the same thing as ^^ but this sets name to icloud
     func fetchUserInfoAndSetUserName(_ user: User, completion:@escaping (_ success: Bool, _ user: User?) -> Void) {
         self.fetchRecord { (success, record) in
             if success {
-                self.defaultContainer!.discoverUserInfo(withUserRecordID: user.userID) { (info, error) in
-                    if error == nil {
-                        
-                        if let firstName = info?.displayContact?.givenName,
-                            let lastName = info?.displayContact?.familyName {
-                            let fullName = "\(firstName) \(lastName)"
-                            user.fullName = fullName
-                            completion(true, user)
+                
+                if #available(iOS 10.0, *) {
+                    self.defaultContainer?.discoverUserIdentity(withUserRecordID: user.userID, completionHandler: { (userIdentity, error) in
+                        if error == nil {
+
+                            if let firstName = userIdentity?.nameComponents?.givenName,
+                                let lastName = userIdentity?.nameComponents?.familyName {
+                                let fullName = "\(firstName) \(lastName)"
+                                user.fullName = fullName
+                                completion(true, user)
+                            }
+                        } else {
+                            NSLog("COULDN'T FETCH USER INFO")
+                            completion(false, nil)
                         }
-                    } else {
-                        NSLog("COULDN'T FETCH USER INFO")
-                        completion(false, nil)
+                    })
+                } else {
+                    self.defaultContainer!.discoverUserInfo(withUserRecordID: user.userID) { (info, error) in
+                        if error == nil {
+                            
+                            if let firstName = info?.displayContact?.givenName,
+                                let lastName = info?.displayContact?.familyName {
+                                let fullName = "\(firstName) \(lastName)"
+                                user.fullName = fullName
+                                completion(true, user)
+                            }
+                        } else {
+                            NSLog("COULDN'T FETCH USER INFO")
+                            completion(false, nil)
+                        }
                     }
                 }
             } else {
@@ -264,7 +260,7 @@ class UserController {
             if permissionStatus == CKApplicationPermissionStatus.granted {
                 self.fetchUser({ (success, user) in
                     if success {
-                        self.fetchUserInfo(user!, completion: { (success, user) in
+                        self.fetchUserInfoAndSetUserName(user!, completion: { (success, user) in
                             if success {
                                 self.currentUser = user
                                 completion(true)
@@ -489,36 +485,42 @@ class UserController {
         }
     }
     
-    func sendAlerts(messageRef: CKReference, otherConversationUsers:[CKReference]) {
-        var alerts = UserController.sharedInstance.myRelationshipRecord?.object(forKey: "Alerts") as? [CKReference] ?? []
-        alerts.append(messageRef)
+//    MARK: Alerts
+    
+    func sendAlert(convoRef: CKReference, convoName:String) {
+        let array = convoName.components(separatedBy: ", ")
         
-        for ref in otherConversationUsers {
-            fetchRecordWithID(ref.recordID, completion: { (record, error) in
-                if error == nil {
+        for name in array {
+            self.queryForRelationshipByName(name, completion: { (success, relationshipRecord) in
+                guard let relationshipRecord = relationshipRecord else {
+                    return
+                }
+                if success {
+                    var alerts = relationshipRecord.object(forKey: "Alerts") as? [CKReference] ?? []
+                    alerts.append(convoRef)
                     
-                    self.saveRecordArray(alerts, record: record!, string: "Alerts") { (true) in
-                        if true {
-                            print("Sent Alerts")
-                        }
-                    }
-                } else {
-                    print("Failed to send alerts")
+                    self.saveRecordArray(alerts, record: relationshipRecord, string: "Alerts", completion: { (success) in
+                        
+                    })
+                    
                 }
             })
-            
         }
     }
     
-    func fetchAlerts(messageRef:CKReference) {
+    func fetchAlerts(convoRef:CKReference) {
         let alerts = UserController.sharedInstance.myRelationshipRecord?.object(forKey: "Alerts") as? [CKReference] ?? []
         var int = -1
         for alert in alerts {
             int = int + 1
-            if alert == messageRef {
+            if alert == convoRef {
                 UserController.sharedInstance.myRelationship?.alerts.append(alert)
             }
         }
+        
+    }
+    
+    func fetchRelationship(relationshipRef:CKReference) {
         
     }
     

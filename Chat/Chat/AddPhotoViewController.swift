@@ -59,57 +59,57 @@ class AddPhotoViewController: UIViewController, UIImagePickerControllerDelegate,
             saveImage({ (success, record) in
 
                 if success {
+//                    DispatchQueue.main.async(execute: {
+//                        let alert = UIAlertController(title: "One last thing", message: "Would you like to add all your contacts that are already Socializing", preferredStyle: .alert)
+//                        let yes = UIAlertAction(title: "Yes", style: .default, handler: { (action) in
+
+//                            UserController.sharedInstance.setFriends(UserController.sharedInstance.currentUser!, record: record!, completion: { (success, user) in
+//                                if success {
                     DispatchQueue.main.async(execute: {
-                        let alert = UIAlertController(title: "One last thing", message: "Would you like to add all your contacts that are already Socializing", preferredStyle: .alert)
-                        let yes = UIAlertAction(title: "Yes", style: .default, handler: { (action) in
-                            
-                            UserController.sharedInstance.setFriends(UserController.sharedInstance.currentUser!, record: record!, completion: { (success, user) in
-                                if success {
-                                    DispatchQueue.main.async(execute: {
-                                        indicator.stopAnimating()
-                                        let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .alert)
-                                        let ok = UIAlertAction(title: "Okay", style: .default, handler: {
-                                            (action) in
-                                            self.performSegue(withIdentifier: "loggedIn", sender: self)
-                                        })
-                                        successAlert.addAction(ok)
-                                        self.present(successAlert, animated: true, completion:nil)
-                                    })
-                                } else {
-//         TODO: add where they can go to try again to get friends
-                                    DispatchQueue.main.async(execute: {
-                                        indicator.stopAnimating()
-                                        let unsuccessful = UIAlertController(title: "Uh Oh", message: "We are having troubles getting your contacts", preferredStyle: .alert)
-                                        let action = UIAlertAction(title: "Okay", style: .default, handler: { (action) in
-                                            self.performSegue(withIdentifier: "loggedIn", sender: self)
-                                        })
-                                        unsuccessful.addAction(action)
-                                        self.present(unsuccessful, animated: true, completion: nil)
-                                    })
-                                }
-                            })
+                        indicator.stopAnimating()
+                        let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .alert)
+                        let ok = UIAlertAction(title: "Okay", style: .default, handler: {
+                            (action) in
+                            self.performSegue(withIdentifier: "loggedIn", sender: self)
                         })
-                        DispatchQueue.main.async(execute: { 
-                            let no = UIAlertAction(title: "No", style: .cancel, handler: { (action) in
-                                indicator.stopAnimating()
-                                let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .alert)
-                                let ok = UIAlertAction(title: "Okay", style: .default, handler: {
-                                    (action) in
-                                    self.performSegue(withIdentifier: "loggedIn", sender: self)
-                                })
-                                successAlert.addAction(ok)
-                                self.present(successAlert, animated: true, completion:nil)
-                            })
-                            
-                            alert.addAction(yes)
-                            alert.addAction(no)
-                            self.present(alert, animated: true, completion: nil)
-                        })
+                        successAlert.addAction(ok)
+                        self.present(successAlert, animated: true, completion:nil)
                     })
+//                                } else {
+//         TODO: add where they can go to try again to get friends
+//                                    DispatchQueue.main.async(execute: {
+//                                        indicator.stopAnimating()
+//                                        let unsuccessful = UIAlertController(title: "Uh Oh", message: "We are having troubles getting your contacts", preferredStyle: .alert)
+//                                        let action = UIAlertAction(title: "Okay", style: .default, handler: { (action) in
+//                                            self.performSegue(withIdentifier: "loggedIn", sender: self)
+//                                        })
+//                                        unsuccessful.addAction(action)
+//                                        self.present(unsuccessful, animated: true, completion: nil)
+//                                    })
+//                                }
+//                            })
+//                        })
+//                        DispatchQueue.main.async(execute: {
+//                            let no = UIAlertAction(title: "No", style: .cancel, handler: { (action) in
+//                                indicator.stopAnimating()
+//                                let successAlert = UIAlertController(title: "Account Created", message: "Enjoy Socializing", preferredStyle: .alert)
+//                                let ok = UIAlertAction(title: "Okay", style: .default, handler: {
+//                                    (action) in
+//                                    self.performSegue(withIdentifier: "loggedIn", sender: self)
+//                                })
+//                                successAlert.addAction(ok)
+//                                self.present(successAlert, animated: true, completion:nil)
+//                            })
+//
+//                            alert.addAction(yes)
+//                            alert.addAction(no)
+//                            self.present(alert, animated: true, completion: nil)
+//                        })
+//                    })
                     
                 } else {
                     DispatchQueue.main.async(execute: { 
-                        let errorAlert = UIAlertController(title: "Oops", message: "Error adding profile image to account", preferredStyle: .alert)
+                        let errorAlert = UIAlertController(title: "Oops", message: "There was an error adding your profile image to account", preferredStyle: .alert)
                         let retry = UIAlertAction(title: "Retry", style: .default, handler: nil)
                         errorAlert.addAction(retry)
 //                    TODO: fix?
