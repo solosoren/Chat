@@ -497,7 +497,11 @@ class UserController {
                 }
                 if success {
                     var alerts = relationshipRecord.object(forKey: "Alerts") as? [CKReference] ?? []
-                    alerts.append(convoRef)
+                    for alert in alerts {
+                        if alert != convoRef {
+                           alerts.append(convoRef)
+                        }
+                    }
                     
                     self.saveRecordArray(alerts, record: relationshipRecord, string: "Alerts", completion: { (success) in
                         

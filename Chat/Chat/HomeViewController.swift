@@ -376,6 +376,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                 destinationVC.conversation?.messages = []
                                 destinationVC.conversation?.theMessages = []
                                 destinationVC.sendButton.isEnabled = true
+                                destinationVC.setMessageNavBar(conversationName: (conversation?.convoName)!)
                                 print("ERROR: \(error)")
                             } else {
                                 if let messages = conversation!.messages,
@@ -419,6 +420,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             destinationVC.conversation = self.passOnConvo
             destinationVC.newConvo = true
             destinationVC.convoRecord = self.convoRecord
+            setMessageNavBar(conversationName: passOnConvo?.convoName)
+            
         } else if segue.identifier == "addToGroup" {
             let navController = segue.destination as! UINavigationController
             let destinationVC = navController.topViewController as! CreateGroupViewController
@@ -814,6 +817,21 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     if success {
                         self.convoRecord = record
                         self.passOnConvo = conversation
+                        
+                        // Send Alert
+                        var groupName = conversation.convoName
+                        if let myName = UserController.sharedInstance.myRelationship?.fullName {
+                            if groupName?.contains(myName) == true {
+                                if let range = groupName?.range(of: "\(myName), ") {
+                                    groupName?.removeSubrange(range)
+                                }
+                                if let range = groupName?.range(of: ", \(myName)") {
+                                    groupName?.removeSubrange(range)
+                                }
+                            }
+                        }
+                        let convoRef = CKReference(record: record, action: .deleteSelf)
+                        UserController.sharedInstance.sendAlert(convoRef: convoRef, convoName: groupName)
                         
                         DispatchQueue.main.async(execute: {
                             self.contactView.removeFromSuperview()

@@ -140,6 +140,21 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
                 if success {
                     self.convoRecord = record
                     
+                    // Send Alert
+                    var name = conversation.convoName
+                    if let myName = UserController.sharedInstance.myRelationship?.fullName {
+                        if name?.contains(myName) == true {
+                            if let range = name?.range(of: "\(myName), ") {
+                                name?.removeSubrange(range)
+                            }
+                            if let range = name?.range(of: ", \(myName)") {
+                                name?.removeSubrange(range)
+                            }
+                        }
+                    }
+                    let convoRef = CKReference(record: record, action: .deleteSelf)
+                    UserController.sharedInstance.sendAlert(convoRef: convoRef, convoName: name)
+                    
                     DispatchQueue.main.async(execute: {
                     self.performSegue(withIdentifier: "groupCreated", sender: self)
                     })
