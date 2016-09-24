@@ -352,6 +352,11 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                 alertInt = alertInt + 1
                                 if myConversation.lastMessage?.ref == alert {
                                     UserController.sharedInstance.myRelationship?.alerts.remove(at: alertInt)
+                                    UserController.sharedInstance.saveRecordArray(alerts, record: UserController.sharedInstance.myRelationshipRecord!, string: "Alerts", completion: { (success) in
+                                        if success == false {
+                                            print("had issues removing alerts")
+                                        }
+                                    })
                                 }
                             }
                         }
