@@ -168,9 +168,8 @@ class AddContactTableViewController: UITableViewController {
                         DispatchQueue.main.async(execute: {
                             let alert = UIAlertController(title: "A friend request has been sent to \(friend.fullName)", message: nil, preferredStyle: .alert)
                             let action = UIAlertAction(title: "Okay", style: .default, handler: { (action) in
-                                DispatchQueue.main.async(execute: {
-                                    self.performSegue(withIdentifier: "addedContact", sender: self)
-                                })
+                                self.performSegue(withIdentifier: "addedContact", sender: self)
+                                
                             })
                             alert.addAction(action)
                             self.present(alert, animated: true, completion:nil)

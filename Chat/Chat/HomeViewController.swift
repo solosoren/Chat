@@ -103,22 +103,22 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     if myFriends.count != 0 {
                         if myFriends.count % 3 == 1 {
                             contactCellHeight = CGFloat(150 * ((myFriends.count + 2)/3)) + 30
-                            let height = contactHeight(contactCellHeight)
-                            return height - requestHeight
+                            let height = contactHeight(contactCellHeight, requestHeight: requestHeight)
+                            return height
                         } else if myFriends.count % 3 == 2 {
                             contactCellHeight = CGFloat(150 * ((myFriends.count + 1)/3)) + 30
-                            let height = contactHeight(contactCellHeight)
-                            return height - requestHeight
+                            let height = contactHeight(contactCellHeight, requestHeight: requestHeight)
+                            return height
                         } else {
                             contactCellHeight = CGFloat(150 * (myFriends.count/3)) + 30
-                            let height = contactHeight(contactCellHeight)
-                            return height - requestHeight
+                            let height = contactHeight(contactCellHeight, requestHeight: requestHeight)
+                            return height
                         }
                     } else {
-                        return contactCellHeight - requestHeight
+                        return contactHeight(contactCellHeight, requestHeight: requestHeight)
                     }
                 } else {
-                    return contactCellHeight - requestHeight
+                    return contactHeight(contactCellHeight, requestHeight: requestHeight)
                 }
                 
             } else {
@@ -126,14 +126,16 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
         }
     }
-
-    func contactHeight(_ contactCellHeight:CGFloat) -> CGFloat {
-        if contactCellHeight < view.frame.size.height {
-            let height = view.frame.size.height
+    
+    func contactHeight(_ contactCellHeight:CGFloat, requestHeight:CGFloat) -> CGFloat {
+        if contactCellHeight + requestHeight < view.frame.size.height {
+            let height = view.frame.size.height - requestHeight
             return height
         } else {
             return contactCellHeight
         }
+        
+        
     }
 
 
@@ -354,13 +356,14 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             var alertInt = -1
                             for alert in alerts {
                                 alertInt = alertInt + 1
-                                if CKReference(record:convoRecords![convoIndex], action:.deleteSelf) == alert {
+                                if convoRecords![convoIndex].recordID == alert.recordID {
+                                    
                                     UserController.sharedInstance.myRelationship?.alerts.remove(at: alertInt)
                                     // Fix constraint that was moved for alertview
                                     let cell = tableView.cellForRow(at: IndexPath(row: convoIndex, section: 0)) as! HomeMessageCell
                                     cell.userNameLeadingConstraint.constant = cell.userNameLeadingConstraint.constant - 15
                                     
-                                    UserController.sharedInstance.saveRecordArray(alerts, record: UserController.sharedInstance.myRelationshipRecord!, string: "Alerts", completion: { (success) in
+                                    UserController.sharedInstance.saveRecordArray((UserController.sharedInstance.myRelationship?.alerts)!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Alerts", completion: { (success) in
                                         if success == false {
                                             print("had issues removing alerts")
                                         }
@@ -420,7 +423,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             destinationVC.conversation = self.passOnConvo
             destinationVC.newConvo = true
             destinationVC.convoRecord = self.convoRecord
-            setMessageNavBar(conversationName: passOnConvo?.convoName)
+            setMessageNavBar(conversationName: (passOnConvo?.convoName)!)
             
         } else if segue.identifier == "addToGroup" {
             let navController = segue.destination as! UINavigationController
@@ -435,17 +438,14 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func acceptButtonTapped(_ sender: AnyObject) {
         if myRequests != nil {
+            requests = []
             let requester = myRequests?[sender.tag]
             myRequests!.remove(at: sender.tag)
             guard let myRequests = myRequests else {
                 return
             }
             for request in myRequests {
-                let ref = CKReference(recordID: request.userID.recordID, action: .deleteSelf)
-                requests? += [ref]
-            }
-            if requests == nil {
-                requests = []
+                requests? += [request.userID]
             }
             UserController.sharedInstance.saveRecordArray(self.requests!, record: UserController.sharedInstance.myRelationshipRecord!, string: "FriendRequests") { (success) in
                 if success {
@@ -505,7 +505,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                         })
                                     } else {
                                         DispatchQueue.main.async(execute: {
-                                            let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .alert)
+                                            let alert = UIAlertController(title: "There was an issue accepting your friend requests.", message: nil, preferredStyle: .alert)
                                             let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                                                 return
                                             })
@@ -516,7 +516,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                 })
                             } else {
                                 DispatchQueue.main.async(execute: {
-                                    let alert = UIAlertController(title: "Error", message: "Couldn't save friends friends", preferredStyle: .alert)
+                                    let alert = UIAlertController(title: "There was an issue accepting your friend requests.", message: nil, preferredStyle: .alert)
                                     let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                                         return
                                     })
@@ -528,7 +528,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     }
                 } else {
                     DispatchQueue.main.async(execute: {
-                        let alert = UIAlertController(title: "Error", message: "Couldn't remove requests", preferredStyle: .alert)
+                        let alert = UIAlertController(title: "There was an issue accepting your friend requests.", message: nil, preferredStyle: .alert)
                         let action = UIAlertAction(title: "Okay", style: .cancel, handler: { (action) in
                             return
                         })
@@ -811,7 +811,6 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if let myFriends = myFriends {
             if myFriends.count != 0 {
                 let myRelationship = UserController.sharedInstance.myRelationship
-                //        TODO: fix name of convo
                 let conversation = Conversation.init(convoName: "\((myRelationship?.fullName)!), \((contactRelationship?.fullName)!)", users: [myRelationship!.userID, contactRelationship!.userID], messages: [])
                 ConversationController.createConversation(conversation) { (success, record) in
                     if success {
@@ -830,8 +829,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                 }
                             }
                         }
-                        let convoRef = CKReference(record: record, action: .deleteSelf)
-                        UserController.sharedInstance.sendAlert(convoRef: convoRef, convoName: groupName)
+                        let convoRef = CKReference(record: record!, action: .deleteSelf)
+                        UserController.sharedInstance.sendAlert(convoRef: convoRef, convoName: groupName!)
                         
                         DispatchQueue.main.async(execute: {
                             self.contactView.removeFromSuperview()
