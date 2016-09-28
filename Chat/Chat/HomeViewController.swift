@@ -102,15 +102,15 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 if let myFriends = myFriends {
                     if myFriends.count != 0 {
                         if myFriends.count % 3 == 1 {
-                            contactCellHeight = CGFloat(150 * ((myFriends.count + 2)/3)) + 30
+                            contactCellHeight = CGFloat(150 * ((myFriends.count + 2)/3)) + 50
                             let height = contactHeight(contactCellHeight, requestHeight: requestHeight)
                             return height
                         } else if myFriends.count % 3 == 2 {
-                            contactCellHeight = CGFloat(150 * ((myFriends.count + 1)/3)) + 30
+                            contactCellHeight = CGFloat(150 * ((myFriends.count + 1)/3)) + 50
                             let height = contactHeight(contactCellHeight, requestHeight: requestHeight)
                             return height
                         } else {
-                            contactCellHeight = CGFloat(150 * (myFriends.count/3)) + 30
+                            contactCellHeight = CGFloat(150 * (myFriends.count/3)) + 50
                             let height = contactHeight(contactCellHeight, requestHeight: requestHeight)
                             return height
                         }
@@ -207,14 +207,20 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     if let userPic = convo.lastMessage?.userPic {
                         convoCell.userImage.image = userPic
                     }
+                    
+                    var alertShown = false
                     if UserController.sharedInstance.myRelationship!.alerts.count != 0 {
                         if let convoRecord = convoRecords?[indexPath.row] {
                             let convoRef = CKReference(record: convoRecord, action: .deleteSelf)
                             for a in UserController.sharedInstance.myRelationship!.alerts {
-                                if convoRef != a {
-                                    convoCell.alertImage.isHidden = true
-                                } else {
+                                
+                                if convoRef == a {
+                                    alertShown = true
                                     convoCell.userNameLeadingConstraint.constant = convoCell.userNameLeadingConstraint.constant + 15
+                                } else {
+                                    if a == UserController.sharedInstance.myRelationship?.alerts.last && alertShown == false {
+                                        convoCell.alertImage.isHidden = true
+                                    }
                                 }
                             }
                         }

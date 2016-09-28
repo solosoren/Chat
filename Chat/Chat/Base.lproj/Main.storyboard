@@ -212,7 +212,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gOf-kF-MaX">
-                                                    <color key="backgroundColor" red="1" green="0.16143058733507665" blue="0.10874547160505488" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="backgroundColor" red="1" green="0.16143058733507665" blue="0.10874547160505488" alpha="0.82761706656346745" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="10" id="WAq-SS-2H6"/>
                                                         <constraint firstAttribute="width" constant="10" id="zfy-13-KLF"/>

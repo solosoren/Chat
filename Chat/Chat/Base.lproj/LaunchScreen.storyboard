@@ -9,6 +9,7 @@
         <!--View Controller-->
         <scene sceneID="EHf-IW-A2E">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
@@ -17,12 +18,37 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rwz-3o-LSU">
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="White Icon" translatesAutoresizingMaskIntoConstraints="NO" id="ecg-QB-60a">
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="280" id="WfR-hE-R7n"/>
+                                            <constraint firstAttribute="height" constant="273" id="lrW-Tb-0Bx"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.0" green="0.38431372549999998" blue="0.60784313729999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="ecg-QB-60a" firstAttribute="centerX" secondItem="rwz-3o-LSU" secondAttribute="centerX" id="Xbw-7x-Wp7"/>
+                                    <constraint firstItem="ecg-QB-60a" firstAttribute="top" secondItem="rwz-3o-LSU" secondAttribute="top" constant="74" id="jcf-nh-Ds9"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="rwz-3o-LSU" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="H1b-nl-k2b"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="rwz-3o-LSU" secondAttribute="bottom" id="a38-Fj-Kvy"/>
+                            <constraint firstAttribute="trailing" secondItem="rwz-3o-LSU" secondAttribute="trailing" id="gqE-OC-n08"/>
+                            <constraint firstItem="rwz-3o-LSU" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="lbY-7H-h5b"/>
+                        </constraints>
                     </view>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="White Icon" width="256" height="256"/>
+    </resources>
 </document>
