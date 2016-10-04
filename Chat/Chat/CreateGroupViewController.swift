@@ -175,6 +175,7 @@ class CreateGroupViewController: UIViewController, UICollectionViewDataSource, U
             destinationVC.conversation?.messages = []
             destinationVC.convoRecord = convoRecord
             destinationVC.grouped = true
+            destinationVC.setMessageNavBar(conversationName: (conversation?.convoName)!)
         }
     }
 }

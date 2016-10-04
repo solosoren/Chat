@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/MessagingViewController.swift"
-            timestampString = "496443532.148956"
+            timestampString = "497221664.049886"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "348"
@@ -26,7 +26,7 @@
                   moduleName = "Chat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/MessagingViewController.swift"
-                  timestampString = "496722918.963651"
+                  timestampString = "497238090.76143"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "348"
@@ -41,7 +41,7 @@
                   moduleName = "Chat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/MessagingViewController.swift"
-                  timestampString = "496722918.968904"
+                  timestampString = "497238090.763036"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "349"
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chat/MessagingViewController.swift"
-            timestampString = "496461958.340776"
+            timestampString = "497236660.825978"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "311"
-            endingLineNumber = "311"
+            startingLineNumber = "346"
+            endingLineNumber = "346"
             landmarkName = "unwind(for:towardsViewController:)"
             landmarkType = "7">
             <Locations>
@@ -74,12 +74,12 @@
                   moduleName = "Chat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/MessagingViewController.swift"
-                  timestampString = "496722918.976288"
+                  timestampString = "497238090.766348"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311"
-                  offsetFromSymbolStart = "10880">
+                  startingLineNumber = "346"
+                  endingLineNumber = "346"
+                  offsetFromSymbolStart = "33292">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -89,12 +89,12 @@
                   moduleName = "Chat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/solosoren/Desktop/Dev/Chat/Chat/Chat/MessagingViewController.swift"
-                  timestampString = "496722918.978483"
+                  timestampString = "497238090.768161"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311"
-                  offsetFromSymbolStart = "34264">
+                  startingLineNumber = "346"
+                  endingLineNumber = "346"
+                  offsetFromSymbolStart = "34288">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -105,13 +105,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Chat/HomeViewController.swift"
-            timestampString = "496722844.640313"
+            filePath = "Chat/MessagingViewController.swift"
+            timestampString = "497236668.273789"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "365"
-            endingLineNumber = "365"
-            landmarkName = "prepare(for:sender:)"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
+            landmarkName = "backButton(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -121,13 +121,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Chat/HomeViewController.swift"
-            timestampString = "496722844.640313"
+            filePath = "Chat/MessagingViewController.swift"
+            timestampString = "497236921.922275"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "827"
-            endingLineNumber = "827"
-            landmarkName = "sendMessageButtonTapped(_:)"
+            startingLineNumber = "279"
+            endingLineNumber = "279"
+            landmarkName = "unwind(for:towardsViewController:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -137,13 +137,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Chat/HomeViewController.swift"
-            timestampString = "496722844.640313"
+            filePath = "Chat/MessagingViewController.swift"
+            timestampString = "497236923.379819"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "838"
-            endingLineNumber = "838"
-            landmarkName = "sendMessageButtonTapped(_:)"
+            startingLineNumber = "282"
+            endingLineNumber = "282"
+            landmarkName = "unwind(for:towardsViewController:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

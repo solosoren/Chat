@@ -37,6 +37,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var convoRecord: CKRecord?
     var contactRelationship: Relationship?
     var addContactIndex:Int?
+    var convoIndex = -1
+    var cIndex = 0
     var demo = false
     var skippedLogin = false
     
@@ -47,12 +49,14 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             navigationItem.rightBarButtonItem?.isEnabled = false
         }
         setNavBar()
+        
         leftSwipe.addTarget(self, action: #selector(HomeViewController.leftSwiped))
         leftSwipe.direction = .left
         tableView.addGestureRecognizer(leftSwipe)
         rightSwipe.addTarget(self, action: #selector(HomeViewController.rightSwiped))
         rightSwipe.direction = .right
         tableView.addGestureRecognizer(rightSwipe)
+        
         tableView.isUserInteractionEnabled = true
         tableView.reloadData()
     }
@@ -306,6 +310,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if segmentedControl.selectedSegmentIndex == 0 {
+            convoIndex = -1
             performSegue(withIdentifier: "messageSegue", sender: self)
         } else {
             if indexPath.row < numberInSection! {
@@ -353,60 +358,59 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if let myConversations = myConversations {
                 if myConversations.count != 0 {
                     let destinationVC = segue.destination as! MessagingViewController
-                    if let convoIndex = (tableView.indexPathForSelectedRow as NSIndexPath?)?.row {
-                        destinationVC.convoRecord = convoRecords![convoIndex]
-                        let myConversation = myConversations[convoIndex]
-                        
-                        // Alerts work
-                        if let alerts = UserController.sharedInstance.myRelationship?.alerts {
-                            var alertInt = -1
-                            for alert in alerts {
-                                alertInt = alertInt + 1
-                                if convoRecords![convoIndex].recordID == alert.recordID {
-                                    
-                                    UserController.sharedInstance.myRelationship?.alerts.remove(at: alertInt)
-                                    // Fix constraint that was moved for alertview
-                                    let cell = tableView.cellForRow(at: IndexPath(row: convoIndex, section: 0)) as! HomeMessageCell
-                                    cell.userNameLeadingConstraint.constant = cell.userNameLeadingConstraint.constant - 15
-                                    
-                                    UserController.sharedInstance.saveRecordArray((UserController.sharedInstance.myRelationship?.alerts)!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Alerts", completion: { (success) in
-                                        if success == false {
-                                            print("had issues removing alerts")
-                                        }
-                                    })
-                                }
+                    if convoIndex == -1 {
+                        cIndex = ((tableView.indexPathForSelectedRow as NSIndexPath?)?.row)!
+                    }
+                    destinationVC.convoRecord = convoRecords![cIndex]
+                    let myConversation = myConversations[cIndex]
+                    
+                    // Alerts work
+                    if let alerts = UserController.sharedInstance.myRelationship?.alerts {
+                        var alertInt = -1
+                        for alert in alerts {
+                            alertInt = alertInt + 1
+                            if convoRecords![cIndex].recordID == alert.recordID {
+                                
+                                UserController.sharedInstance.myRelationship?.alerts.remove(at: alertInt)
+                                // Fix constraint that was moved for alertview
+                                let cell = tableView.cellForRow(at: IndexPath(row: convoIndex, section: 0)) as! HomeMessageCell
+                                cell.userNameLeadingConstraint.constant = cell.userNameLeadingConstraint.constant - 15
+                                
+                                UserController.sharedInstance.saveRecordArray((UserController.sharedInstance.myRelationship?.alerts)!, record: UserController.sharedInstance.myRelationshipRecord!, string: "Alerts", completion: { (success) in
+                                    if success == false {
+                                        print("had issues removing alerts")
+                                    }
+                                })
                             }
                         }
-                        
-                        // Grab Messages
-                        ConversationController.sharedInstance.grabMessages(myConversation, completion: { (error, conversation, theMessages) in
-                            if let error = error {
-                                destinationVC.conversation = conversation
-                                destinationVC.conversation?.messages = []
-                                destinationVC.conversation?.theMessages = []
-                                destinationVC.sendButton.isEnabled = true
-                                destinationVC.setMessageNavBar(conversationName: (conversation?.convoName)!)
-                                print("ERROR: \(error)")
-                            } else {
-                                if let messages = conversation!.messages,
-                                    let theMessages = theMessages {
-                                    var passOnConversation = Conversation(convoName: conversation?.convoName, users: (conversation?.users)!, messages: messages)
-                                    passOnConversation.theMessages = theMessages
-                                    destinationVC.conversation?.theMessages = theMessages
-                                    destinationVC.conversation?.messages = messages
-                                    destinationVC.conversation = passOnConversation
-                                    DispatchQueue.main.async(execute: {
-                                        destinationVC.tableView.reloadData(destinationVC.conversation)
-                                        destinationVC.sendButton.isEnabled = true
-                                        
-                                        destinationVC.setMessageNavBar(conversationName: (conversation?.convoName)!)
-                                    })
-                                }
-                            }
-                        })
-                    } else {
-                        print("ERROR")
                     }
+                    
+                    // Grab Messages
+                    ConversationController.sharedInstance.grabMessages(myConversation, completion: { (error, conversation, theMessages) in
+                        if let error = error {
+                            destinationVC.conversation = conversation
+                            destinationVC.conversation?.messages = []
+                            destinationVC.conversation?.theMessages = []
+                            destinationVC.sendButton.isEnabled = true
+                            destinationVC.setMessageNavBar(conversationName: (conversation?.convoName)!)
+                            print("ERROR: \(error)")
+                        } else {
+                            if let messages = conversation!.messages,
+                                let theMessages = theMessages {
+                                var passOnConversation = Conversation(convoName: conversation?.convoName, users: (conversation?.users)!, messages: messages)
+                                passOnConversation.theMessages = theMessages
+                                destinationVC.conversation?.theMessages = theMessages
+                                destinationVC.conversation?.messages = messages
+                                destinationVC.conversation = passOnConversation
+                                DispatchQueue.main.async(execute: {
+                                    destinationVC.tableView.reloadData(destinationVC.conversation)
+                                    destinationVC.sendButton.isEnabled = true
+                                    
+                                    destinationVC.setMessageNavBar(conversationName: (conversation?.convoName)!)
+                                })
+                            }
+                        }
+                    })
                 } else {
                     let destinationVC = segue.destination as! MessagingViewController
                     destinationVC.demo = demo
@@ -429,7 +433,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             destinationVC.conversation = self.passOnConvo
             destinationVC.newConvo = true
             destinationVC.convoRecord = self.convoRecord
-            setMessageNavBar(conversationName: (passOnConvo?.convoName)!)
+            destinationVC.setMessageNavBar(conversationName: (passOnConvo?.convoName)!)
             
         } else if segue.identifier == "addToGroup" {
             let navController = segue.destination as! UINavigationController
@@ -636,10 +640,11 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         let cellIndex = IndexPath(row: numberInSection!, section: 0)
         let cell = tableView.cellForRow(at: cellIndex) as! ContactTableViewCell
+        
 //        start view at item
         if let item = cell.collectionView.layoutAttributesForItem(at: indexPath) {
             contactView.center.x = item.center.x
-            contactView.center.y = item.frame.maxY
+            contactView.center.y = item.center.y
         } else {
             contactView.center = CGPoint(x: view.frame.width + 100, y: view.bounds.height / 2)
         }
@@ -661,20 +666,24 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
             }
         }
-        view.addSubview(darkView)
-        messageContactViewButton.isHidden = false
-        messageContactViewButton.isEnabled = true
-        view.addSubview(contactView)
-    
-        UIView.animate(withDuration: 0.3, delay: 0.0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.0) { 
+            self.view.addSubview(self.darkView)
+            self.messageContactViewButton.isHidden = false
+            self.messageContactViewButton.isEnabled = true
+            self.view.addSubview(self.contactView)
+            self.contactView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
+        }
+        
+        UIView.animate(withDuration: 0.4, delay: 0.0, options: .curveEaseOut, animations: {
             self.contactView.center = CGPoint(x: self.view.bounds.width / 2, y: self.view.bounds.height / 2)
+            self.contactView.transform = CGAffineTransform.identity
             }, completion: nil)
     }
     
 // MARK: Contact View
     
     @IBAction func contactDismissButtonTapped(_ sender: AnyObject) {
-        UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseIn, animations: {
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: .curveEaseIn, animations: {
             guard case self.segmentedControl.selectedSegmentIndex = 1 else {
                 return
             }
@@ -686,10 +695,11 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 
                 if let item = cell.collectionView.layoutAttributesForItem(at: indexPath) {
                     self.contactView.center.x = item.center.x
-                    self.contactView.center.y = item.frame.maxY
+                    self.contactView.center.y = item.center.y
                 } else {
                     self.contactView.center = CGPoint(x: -100, y: self.view.bounds.height / 2)
                 }
+                self.contactView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
                 self.index = nil
             // Request
             } else {
@@ -818,36 +828,27 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if myFriends.count != 0 {
                 let myRelationship = UserController.sharedInstance.myRelationship
                 let conversation = Conversation.init(convoName: "\((myRelationship?.fullName)!), \((contactRelationship?.fullName)!)", users: [myRelationship!.userID, contactRelationship!.userID], messages: [])
-                ConversationController.createConversation(conversation) { (success, record) in
+                
+                convoIndex = -1
+                cIndex = 0
+                sendMessage(conversation: conversation, completion: { (success, newMessage, conversationIndex) in
                     if success {
-                        self.convoRecord = record
-                        self.passOnConvo = conversation
-                        
-                        // Send Alert
-                        var groupName = conversation.convoName
-                        if let myName = UserController.sharedInstance.myRelationship?.fullName {
-                            if groupName?.contains(myName) == true {
-                                if let range = groupName?.range(of: "\(myName), ") {
-                                    groupName?.removeSubrange(range)
-                                }
-                                if let range = groupName?.range(of: ", \(myName)") {
-                                    groupName?.removeSubrange(range)
-                                }
-                            }
+                        if newMessage == false {
+                            DispatchQueue.main.async(execute: {
+                                self.contactView.removeFromSuperview()
+                                self.darkView.removeFromSuperview()
+                                self.cIndex = conversationIndex
+                                self.performSegue(withIdentifier: "messageSegue", sender: self)
+                            })
+                        } else {
+                            DispatchQueue.main.async(execute: {
+                                self.contactView.removeFromSuperview()
+                                self.darkView.removeFromSuperview()
+                                self.performSegue(withIdentifier: "newMessageSegue", sender: self)
+                            })
                         }
-                        let convoRef = CKReference(record: record!, action: .deleteSelf)
-                        UserController.sharedInstance.sendAlert(convoRef: convoRef, convoName: groupName!)
-                        
-                        DispatchQueue.main.async(execute: {
-                            self.contactView.removeFromSuperview()
-                            self.darkView.removeFromSuperview()
-                            self.performSegue(withIdentifier: "newMessageSegue", sender: self)
-                        })
-                        
-                    } else {
-                        print("Not this time")
                     }
-                }
+                })
                 
             } else {
                 DispatchQueue.main.async(execute: {
@@ -862,6 +863,58 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             alert.addAction(action)
             self.present(alert, animated: true, completion: nil)
             
+        }
+    }
+    
+    func sendMessage(conversation:Conversation, completion:((_ success:Bool, _ newMessage:Bool, _ index:Int) -> Void)?) {
+        let myConversations = self.myConversations ?? []
+        for convo in myConversations {
+            convoIndex = self.convoIndex + 1
+            if (convo.convoName?.contains((contactRelationship?.fullName)!))! {
+                var array = [CKReference]()
+                for user in convo.users {
+                    for relationship in conversation.users {
+                        if user.recordID == relationship.recordID {
+                            array.append(user)
+                        }
+                    }
+                }
+                if convo.users == array {
+                    if let completion = completion {
+                        completion(true, false, convoIndex)
+                    }
+                } else if convoIndex == myConversations.count - 1 {
+                    ConversationController.createConversation(conversation) { (success, record) in
+                        if success {
+                            self.convoRecord = record
+                            self.passOnConvo = conversation
+                            
+                            // Send Alert
+                            var groupName = conversation.convoName
+                            if let myName = UserController.sharedInstance.myRelationship?.fullName {
+                                if groupName?.contains(myName) == true {
+                                    if let range = groupName?.range(of: "\(myName), ") {
+                                        groupName?.removeSubrange(range)
+                                    }
+                                    if let range = groupName?.range(of: ", \(myName)") {
+                                        groupName?.removeSubrange(range)
+                                    }
+                                }
+                            }
+                            let convoRef = CKReference(record: record!, action: .deleteSelf)
+                            UserController.sharedInstance.sendAlert(convoRef: convoRef, convoName: groupName!)
+                            
+                            if let completion = completion {
+                                self.convoIndex = -1
+                                completion(true, true, -1)
+                            }
+                            
+                        } else {
+                            print("Not this time")
+                        }
+                    }
+                }
+            }
         }
     }
 }

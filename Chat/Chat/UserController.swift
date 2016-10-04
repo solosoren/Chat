@@ -133,40 +133,23 @@ class UserController {
                 guard let myRelationshipRecord = self.myRelationshipRecord else {
                     return
                 }
-                if let alreadyFriends = myRelationshipRecord["Friends"] {
-                    let friends = alreadyFriends as! [CKReference]
-                    self.dontSendRequest(friends, ref: friend.userID, completion: { (dontSend) in
-                        
-                        if dontSend {
-                            // Already Friends
-                            completion(false, nil, true, false)
-                        } else {
-                            if let friendRequests = relationshipRecord!["FriendRequests"] {
-                                var priorRequests = friendRequests as! [CKReference]
-                                self.dontSendRequest(priorRequests, ref: self.myRelationship!.userID, completion: { (dontSend) in
-                                    
-                                    if dontSend {
-                                        // Already Requested
-                                        completion(false, nil, false, true)
-                                    } else {
-                                        let ref = CKReference(recordID: user.userID, action: .deleteSelf)
-                                        priorRequests.append(ref)
-                                        relationshipRecord?.setObject(priorRequests as CKRecordValue?, forKey: "FriendRequests")
-                                        self.defaultContainer?.publicCloudDatabase.save(relationshipRecord!, completionHandler: { (record, error) in
-                                            
-                                            if error == nil {
-                                                completion(true, record, false, false)
-                                            } else {
-                                                print(error)
-                                                completion(false, nil, false, false)
-                                            }
-                                        })
-                                    }
-                                })
+                let friends = myRelationshipRecord["Friends"] as? [CKReference] ?? []
+                self.dontSendRequest(friends, ref: friend.userID, completion: { (dontSend) in
+                    
+                    if dontSend {
+                        // Already Friends
+                        completion(false, nil, true, false)
+                    } else {
+                        var friendRequests = relationshipRecord!["FriendRequests"] as? [CKReference] ?? []
+                        self.dontSendRequest(friendRequests, ref: self.myRelationship!.userID, completion: { (dontSend) in
+                            
+                            if dontSend {
+                                // Already Requested
+                                completion(false, nil, false, true)
                             } else {
                                 let ref = CKReference(recordID: user.userID, action: .deleteSelf)
-                                let refArray = [ref]
-                                relationshipRecord?.setObject(refArray as CKRecordValue?, forKey: "FriendRequests")
+                                friendRequests.append(ref)
+                                relationshipRecord?.setObject(friendRequests as CKRecordValue?, forKey: "FriendRequests")
                                 self.defaultContainer?.publicCloudDatabase.save(relationshipRecord!, completionHandler: { (record, error) in
                                     
                                     if error == nil {
@@ -177,19 +160,20 @@ class UserController {
                                     }
                                 })
                             }
-                        }
-                    })
-                } else {
-                    
-                }
+                        })
+                    }
+                })
             } else {
                 completion(false, nil, false, false)
             }
         }
     }
-
-
+    
+    
     func dontSendRequest(_ refArray: [CKReference], ref:CKReference, completion:(_ success: Bool) -> Void) {
+        if refArray.count == 0 {
+            completion(false)
+        }
         for person in refArray {
             if person.recordID == ref.recordID {
                 completion(true)

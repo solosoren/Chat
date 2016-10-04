@@ -125,14 +125,12 @@ class ConversationController: NSObject {
                         records.append(record)
                         let time = Timer.sharedInstance.setMessageTime(record.creationDate!)
                         var message = Message(record: record)
-                        print("MESSAGE: \(message)")
                         message.timeString = time
                         message.time = record.creationDate
                         
                         UserController.sharedInstance.grabImageByUID(message.senderUID.recordID, completion: { (success, image) in
                             if success {
                                 refNumber = refNumber + 1
-                                print("REF NUMBER: \(refNumber)")
                                 if image != nil {
                                     message.userPic = image
                                     if messages.count == 0 {

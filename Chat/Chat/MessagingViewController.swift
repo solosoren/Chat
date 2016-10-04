@@ -17,7 +17,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     @IBOutlet weak var messageTextView: UITextView!
     @IBOutlet var constraint: NSLayoutConstraint!
     @IBOutlet var keyboardViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet var messagingBorder: UIView!
     @IBOutlet var sendButton: UIButton!
     
     var conversation: Conversation?
@@ -46,7 +45,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let conversation = conversation {
             return conversation.theMessages.count
-            
         } else {
             return 1
         }
@@ -68,7 +66,6 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
         
 //    fix
         if let conversation = conversation {
-            
             let message = conversation.theMessages[(indexPath as NSIndexPath).row]
             
             if message.senderUID == UserController.sharedInstance.myRelationship?.userID {
@@ -79,6 +76,7 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
                     meMessageCell.userIcon?.image = UIImage(named: "Contact")
                 }
                 return meMessageCell
+                
             } else {
                 themMessageCell.messageText.text = message.messageText
                 if let image = message.userPic {
@@ -90,9 +88,11 @@ class MessagingViewController: UIViewController, UITableViewDataSource, UITableV
             }
         } else if demo {
             return themMessageCell
+            
         } else if skippedLogin {
             themMessageCell.messageText.text = "Create an account to get started socializing."
             return themMessageCell
+        
         } else {
             themMessageCell.messageText.text = "Loading..."
             return themMessageCell

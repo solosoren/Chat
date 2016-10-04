@@ -160,8 +160,9 @@ class AddContactTableViewController: UITableViewController {
     
     @IBAction func addContactButtonTapped(_ sender: AnyObject) {
         let user = UserController.sharedInstance.currentUser
+        let relationshipID = UserController.sharedInstance.myRelationship?.userID.recordID
         let friend = searchedUsers[sender.tag]
-        if user?.userID != friend.userID.recordID {
+        if relationshipID != friend.userID.recordID {
             if let user = user {
                 UserController.sharedInstance.sendRequest(user, friend: friend) { (success, record, alreadyFriends, alreadyRequested) in
                     if success {
@@ -199,6 +200,8 @@ class AddContactTableViewController: UITableViewController {
                     }
                 }
             }
+        } else {
+            print("error")
         }
     }
     
