@@ -168,7 +168,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kC4-mX-Q4O">
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="conversationCell" rowHeight="80" id="Ga7-q3-ul4" customClass="HomeMessageCell" customModule="Chat" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="375" height="80"/>
@@ -286,12 +286,12 @@
                                             <constraints>
                                                 <constraint firstItem="Xnj-cz-emA" firstAttribute="leading" secondItem="CIb-Ug-8Rj" secondAttribute="leading" constant="12" id="6zi-bj-P2a"/>
                                                 <constraint firstAttribute="trailing" secondItem="EyM-pB-hpq" secondAttribute="trailing" constant="8" id="Ikx-FW-H1A"/>
-                                                <constraint firstAttribute="topMargin" secondItem="EyM-pB-hpq" secondAttribute="top" constant="-1" id="OdA-A2-923"/>
                                                 <constraint firstItem="8Pr-Po-O6q" firstAttribute="trailing" secondItem="EyM-pB-hpq" secondAttribute="trailing" id="V8L-yN-YHF"/>
                                                 <constraint firstItem="EyM-pB-hpq" firstAttribute="centerY" secondItem="Xnj-cz-emA" secondAttribute="centerY" constant="-10" id="WHI-IW-IHh"/>
                                                 <constraint firstItem="8Pr-Po-O6q" firstAttribute="leading" secondItem="EyM-pB-hpq" secondAttribute="leading" id="YYA-pz-LPv"/>
                                                 <constraint firstItem="EyM-pB-hpq" firstAttribute="leading" secondItem="Xnj-cz-emA" secondAttribute="trailing" constant="10" id="jxT-RG-BXO"/>
                                                 <constraint firstItem="Xnj-cz-emA" firstAttribute="centerY" secondItem="CIb-Ug-8Rj" secondAttribute="centerY" id="oZl-vS-Tzr"/>
+                                                <constraint firstItem="EyM-pB-hpq" firstAttribute="centerY" secondItem="Xnj-cz-emA" secondAttribute="centerY" constant="-16.25" id="pZv-W4-Mwd"/>
                                                 <constraint firstItem="8Pr-Po-O6q" firstAttribute="top" secondItem="EyM-pB-hpq" secondAttribute="bottom" constant="2" id="wla-GY-mhn"/>
                                             </constraints>
                                             <variation key="default">
@@ -427,7 +427,7 @@
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="kC4-mX-Q4O" secondAttribute="trailing" id="Hbt-mv-wqa"/>
                             <constraint firstItem="zvP-8E-aO2" firstAttribute="leading" secondItem="Hqf-X3-afN" secondAttribute="leading" constant="29" id="IUH-vn-bJe"/>
-                            <constraint firstItem="zvP-8E-aO2" firstAttribute="top" secondItem="kC4-mX-Q4O" secondAttribute="bottom" constant="-34" id="PXt-NO-22x"/>
+                            <constraint firstItem="zvP-8E-aO2" firstAttribute="top" secondItem="kC4-mX-Q4O" secondAttribute="bottom" constant="-14" id="PXt-NO-22x"/>
                             <constraint firstItem="kC4-mX-Q4O" firstAttribute="leading" secondItem="Hqf-X3-afN" secondAttribute="leading" id="TSD-0c-bUP"/>
                             <constraint firstAttribute="trailing" secondItem="zvP-8E-aO2" secondAttribute="trailing" constant="28" id="awW-Mt-rnY"/>
                             <constraint firstItem="kC4-mX-Q4O" firstAttribute="top" secondItem="Hqf-X3-afN" secondAttribute="top" id="uJu-D2-3UI"/>
@@ -1397,7 +1397,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="dpH-XW-Jl8"/>
-        <segue reference="j4p-Xa-mpQ"/>
+        <segue reference="2wJ-Oh-Csn"/>
         <segue reference="i1d-R3-GKv"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -83,7 +83,79 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         tableView.reloadData()
     }
-
+    
+// MARK: Sections
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if segmentedControl.selectedSegmentIndex == 1 {
+            return 35
+        } else {
+            return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UITableViewHeaderFooterView()
+        headerView.contentView.backgroundColor = UIColor.init(red: 89/250, green: 167/250, blue: 212/250, alpha: 1.0)
+        
+        // Detail Text label
+        let label = UILabel(frame: CGRect(x: view.frame.width - 30, y: 5, width: 25, height:25))
+        label.textColor = UIColor.white
+        label.font = label.font.withSize(14)
+        if tableView.numberOfSections == 2 {
+            if section == tableView.numberOfSections - 1 {
+                label.text = "\((myFriends?.count)!)"
+            } else {
+                label.text = "\((myRequests?.count)!)"
+            }
+        } else {
+            if let myFriends = myFriends?.count {
+                label.text = "\(myFriends)"
+            }
+        }
+        headerView.addSubview(label)
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let headerView = view as! UITableViewHeaderFooterView
+        headerView.textLabel?.textColor = UIColor.white
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let _ = self.myRequests, let _ = self.myFriends else {
+            return nil
+        }
+        if segmentedControl.selectedSegmentIndex == 1 {
+            if tableView.numberOfSections == 2 {
+                if section == 0 {
+                    return "Friend Requests"
+                } else {
+                    return "Friends"
+                }
+            } else {
+                return "Friends"
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if segmentedControl.selectedSegmentIndex == 1 {
+            if let myRequests = myRequests {
+                if myRequests.count > 0 {
+                    return 2
+                } else {
+                    return 1
+                }
+            } else {
+                return 1
+            }
+        } else {
+            return 1
+        }
+    }
     
 // MARK: TableView
     
@@ -102,7 +174,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 contactCellHeight = view.frame.size.height
                 requestHeight = 0
             }
-            if (indexPath as NSIndexPath).row == numberInSection {
+            if (indexPath as NSIndexPath).section == tableView.numberOfSections - 1 {
                 if let myFriends = myFriends {
                     if myFriends.count != 0 {
                         if myFriends.count % 3 == 1 {
@@ -126,7 +198,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
                 
             } else {
-                return 72
+                return 78
             }
         }
     }
@@ -134,52 +206,19 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func contactHeight(_ contactCellHeight:CGFloat, requestHeight:CGFloat) -> CGFloat {
         if contactCellHeight + requestHeight < view.frame.size.height {
             let height = view.frame.size.height - requestHeight
+            tableView.isScrollEnabled = false
             return height
         } else {
             return contactCellHeight
         }
-        
+    }
+    
+    func returnLastMessage(_ conversation: Conversation, profilePic: CKAsset?) {
+        changedConvo = conversation
+        convoImage = profilePic
         
     }
-
-
-//  TODO: create sections ??
     
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        if segmentedControl.selectedSegmentIndex == 1 {
-//            if let myRequests = myRequests, let myFriends = myFriends {
-//                if myRequests.count > 0 && myFriends.count > 0 {
-//                    return 2
-//                } else {
-//                    return 1
-//                }
-//            } else {
-//                return 1
-//            }
-//        } else {
-//            return 1
-//        }
-//    }
-    
-//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        guard let myRequests = myRequests , let myFriends = myFriends else {
-//            return nil
-//        }
-//        if segmentedControl.selectedSegmentIndex == 1 {
-//            if myRequests.count > 0 && myFriends.count > 0 {
-//                if section == 1 {
-//                    return "Friend Requests"
-//                } else {
-//                    return "Friends"
-//                }
-//            } else {
-//               return nil
-//            }
-//        } else {
-//            return nil
-//        }
-//    }
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if segmentedControl.selectedSegmentIndex == 0 {
@@ -228,7 +267,6 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                 }
                             }
                         }
-                        
                     } else {
                         convoCell.alertImage.isHidden = true
                     }
@@ -242,7 +280,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return convoCell
             
         } else {
-            if (indexPath as NSIndexPath).row == numberInSection {
+            if (indexPath as NSIndexPath).section == tableView.numberOfSections - 1 {
                 let contactCell = tableView.dequeueReusableCell(withIdentifier: "contactCell", for: indexPath) as! ContactTableViewCell
                 return contactCell
                 
@@ -264,14 +302,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func returnLastMessage(_ conversation: Conversation, profilePic: CKAsset?) {
-        changedConvo = conversation
-        convoImage = profilePic
-        
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         if segmentedControl.selectedSegmentIndex == 0 {
             if let myConversations = myConversations {
                 if myConversations.count != 0 {
@@ -288,20 +319,26 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
             
         } else {
-            if let requests = self.myRequests {
-                if requests.count == 0 {
-                    self.numberInSection = 0
-                    return 1
-                    
+            
+            if tableView.numberOfSections == 2 {
+                if let requests = self.myRequests, let _ = self.myFriends {
+                    if section == 0 {
+                        return requests.count
+                    } else {
+//                        self.numberInSection = 1
+                        return 1
+                    }
                 } else {
-                    let number = requests.count + 1
-                    self.numberInSection = number - 1
-                    return number
+                    return 1
                 }
-            } else {
-                self.tableView.isScrollEnabled = false
-                self.numberInSection = 0
+            } else if demo {
                 return 1
+            } else if skippedLogin {
+                return 1
+            } else {
+//                self.numberInSection = 0
+                return 1
+                
             }
         }
     }
@@ -313,7 +350,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             convoIndex = -1
             performSegue(withIdentifier: "messageSegue", sender: self)
         } else {
-            if indexPath.row < numberInSection! {
+            if indexPath.section < (tableView.numberOfSections - 1) {
                 contactView.center = CGPoint(x: view.frame.width + 100, y: view.bounds.height / 2)
                 darkView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height)
                 darkView.backgroundColor = UIColor.black
@@ -339,7 +376,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         messageContactViewButton.isHidden = true
                     }
                 }
-                
+                self.contactView.transform = CGAffineTransform.identity
                 self.view.addSubview(self.darkView)
                 self.view.addSubview(self.contactView)
                 self.removeFriendContactViewButton.imageView?.image = UIImage(named: "Red Cancel")
@@ -471,7 +508,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                         DispatchQueue.main.async(execute: {
                                             self.myFriends! += [relationship]
                                             self.tableView.reloadData()
-                                            let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                                            let indexPath = IndexPath(row: 0, section: self.tableView.numberOfSections - 1)
                                             let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                                             cell.collectionView.reloadData()
                                         })
@@ -509,7 +546,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                         DispatchQueue.main.async(execute: {
                                             self.myFriends! += [relationship]
                                             self.tableView.reloadData()
-                                            let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                                            let indexPath = IndexPath(row: 0, section: self.tableView.numberOfSections - 1)
                                             let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                                             cell.collectionView.reloadData()
                                         })
@@ -597,8 +634,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
             }
         }
-//        item.layer.borderWidth = 0.4
-//        item.layer.borderColor = UIColor.init(red: 0, green: 98/250, blue: 155/250, alpha: 1.0).CGColor
+        
         return item
     }
     
@@ -638,13 +674,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         guard case segmentedControl.selectedSegmentIndex = 1 else {
             return
         }
-        let cellIndex = IndexPath(row: numberInSection!, section: 0)
+        let cellIndex = IndexPath(row: 0, section: tableView.numberOfSections - 1)
         let cell = tableView.cellForRow(at: cellIndex) as! ContactTableViewCell
         
 //        start view at item
         if let item = cell.collectionView.layoutAttributesForItem(at: indexPath) {
             contactView.center.x = item.center.x
-            contactView.center.y = item.center.y
+            contactView.center.y = item.center.y + cell.frame.origin.y
         } else {
             contactView.center = CGPoint(x: view.frame.width + 100, y: view.bounds.height / 2)
         }
@@ -689,13 +725,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
             // Contact
             if self.index != nil {
-                let cellIndex = IndexPath(row: self.numberInSection!, section: 0)
+                let cellIndex = IndexPath(row: 0, section: self.tableView.numberOfSections - 1)
                 let cell = self.tableView.cellForRow(at: cellIndex) as! ContactTableViewCell
                 let indexPath = IndexPath(item: self.index!, section: 0)
                 
                 if let item = cell.collectionView.layoutAttributesForItem(at: indexPath) {
                     self.contactView.center.x = item.center.x
-                    self.contactView.center.y = item.center.y
+                    self.contactView.center.y = item.center.y + cell.frame.origin.y
                 } else {
                     self.contactView.center = CGPoint(x: -100, y: self.view.bounds.height / 2)
                 }
@@ -711,11 +747,16 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
             
         }) { (true) in
-            self.contactView.removeFromSuperview()
-            self.darkView.removeFromSuperview()
+            UIView.animate(withDuration: 0.05) {
+                self.contactView.removeFromSuperview()
+                self.darkView.removeFromSuperview()
+            }
+
         }
         
+        
     }
+ 
     
     @IBAction func addToGroupButtonPressed(_ sender: AnyObject) {
         guard let myFriends = myFriends else {
@@ -768,7 +809,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     DispatchQueue.main.async(execute: {
                         self.contactView.removeFromSuperview()
                         self.darkView.removeFromSuperview()
-                        let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                        let indexPath = IndexPath(row: 0, section: self.tableView.numberOfSections - 1)
                         let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                         cell.collectionView.reloadData()
                     })
@@ -776,7 +817,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     DispatchQueue.main.async(execute: {
                         self.contactView.removeFromSuperview()
                         self.darkView.removeFromSuperview()
-                        let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+                        let indexPath = IndexPath(row: 0, section: self.tableView.numberOfSections - 1)
                         let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
                         cell.collectionView.reloadData()
                     })
@@ -804,7 +845,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     }
                 }
             }
-            let indexPath = IndexPath(row: self.numberInSection!, section: 0)
+            let indexPath = IndexPath(row: 0, section: self.tableView.numberOfSections - 1)
             let cell = self.tableView.cellForRow(at: indexPath) as! ContactTableViewCell
             cell.collectionView.reloadData()
             
